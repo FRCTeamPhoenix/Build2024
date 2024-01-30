@@ -1,0 +1,24 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.1019852916509385,
+      "y": 4.696551146709396
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidChargePath"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null
+}
