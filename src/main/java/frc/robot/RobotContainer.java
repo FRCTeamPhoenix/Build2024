@@ -28,6 +28,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Shooter;
+
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -50,6 +55,9 @@ public class RobotContainer {
   private final XboxController xbox_operator = new XboxController(1);
   private final XboxController xbox_driver = new XboxController(0);
 
+  public final Shooter shooter = new Shooter(10, 11);
+  public final Intake intake = new Intake(12);
+  public final Arm arm = new Arm(13);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -92,7 +100,7 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive));
     //Reset the Gyro to zero heading with the Right Bumper
-    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));            

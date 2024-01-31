@@ -21,9 +21,10 @@ public class Shooter {
   private final SparkPIDController m_shooterMotorRightPIDController;
   private final SparkPIDController m_shooterMotorLeftPIDController;
 
+  // TODO: Confirm that constants used apply to the shooter. We may need new constants specific to the shooter.
   public Shooter(int leftCANID, int rightCANID) {
-    m_shooterMotorRight = new CANSparkMax(leftCANID, MotorType.kBrushless);
-    m_shooterMotorLeft = new CANSparkMax(rightCANID, MotorType.kBrushless);
+    m_shooterMotorRight = new CANSparkMax(rightCANID, MotorType.kBrushless);
+    m_shooterMotorLeft = new CANSparkMax(leftCANID, MotorType.kBrushless);
 
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.

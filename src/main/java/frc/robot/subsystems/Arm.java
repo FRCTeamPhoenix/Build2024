@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -16,14 +15,11 @@ import com.revrobotics.AbsoluteEncoder;
 import frc.robot.Constants.ModuleConstants;
 
 public class Arm {
-  private final CANSparkMax m_turningSparkMax;
+  private final CANSparkMax m_armSparkMax;
 
-  private final AbsoluteEncoder m_turningEncoder;
+  private final AbsoluteEncoder m_armEncoder;
 
-  private final SparkPIDController m_turningPIDController;
-
-  private double m_chassisAngularOffset = 0;
-  private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+  private final SparkPIDController m_armPIDController;
 
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -31,53 +27,52 @@ public class Arm {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public Arm(int turningCANId) {
-    m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
+  // TODO: Confirm that constants used apply to the arm. We may need new constants specific to the arm.
+  public Arm(int CANId) {
+    m_armSparkMax = new CANSparkMax(CANId, MotorType.kBrushless);
 
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.
-    m_turningSparkMax.restoreFactoryDefaults();
+    m_armSparkMax.restoreFactoryDefaults();
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-    m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    m_turningPIDController = m_turningSparkMax.getPIDController();
-    m_turningPIDController.setFeedbackDevice(m_turningEncoder);
+    m_armEncoder = m_armSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    m_armPIDController = m_armSparkMax.getPIDController();
+    m_armPIDController.setFeedbackDevice(m_armEncoder);
 
     // Apply position and velocity conversion factors for the turning encoder. We
     // want these in radians and radians per second to use with WPILib's swerve
     // APIs.
-    m_turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderPositionFactor);
-    m_turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderVelocityFactor);
+    m_armEncoder.setPositionConversionFactor(ModuleConstants.kDrivingEncoderPositionFactor);
+    m_armEncoder.setVelocityConversionFactor(ModuleConstants.kDrivingEncoderVelocityFactor);
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
-    m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
+    m_armEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
     // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
     // to 10 degrees will go through 0 rather than the other direction which is a
     // longer route.
-    m_turningPIDController.setPositionPIDWrappingEnabled(true);
-    m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
-    m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
+    m_armPIDController.setPositionPIDWrappingEnabled(true);
+    m_armPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
+    m_armPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
     // Set the PID gains for the turning motor. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_turningPIDController.setP(ModuleConstants.kTurningP);
-    m_turningPIDController.setI(ModuleConstants.kTurningI);
-    m_turningPIDController.setD(ModuleConstants.kTurningD);
-    m_turningPIDController.setFF(ModuleConstants.kTurningFF);
-    m_turningPIDController.setOutputRange(ModuleConstants.kTurningMinOutput,
-        ModuleConstants.kTurningMaxOutput);
+    m_armPIDController.setP(ModuleConstants.kNeoDrivingP);
+    m_armPIDController.setI(ModuleConstants.kNeoDrivingI);
+    m_armPIDController.setD(ModuleConstants.kNeoDrivingD);
+    m_armPIDController.setFF(ModuleConstants.kNeoDrivingFF);
+    m_armPIDController.setOutputRange(ModuleConstants.kNeoDrivingMinOutput,
+        ModuleConstants.kNeoDrivingMaxOutput);
 
-    m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
-    m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+    m_armSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
+    m_armSparkMax.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.
-    m_turningSparkMax.burnFlash();
-
-    m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
+    m_armSparkMax.burnFlash();
   }
 
   /**
@@ -88,7 +83,7 @@ public class Arm {
   public Rotation2d getPosition() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
-    return new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset);
+    return new Rotation2d(m_armEncoder.getPosition());
   }
 
   /**
@@ -98,6 +93,6 @@ public class Arm {
    */
   public void setDesiredAngle(double desiredAngle) {
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    m_turningPIDController.setReference(desiredAngle, CANSparkMax.ControlType.kPosition);
+    m_armPIDController.setReference(desiredAngle, CANSparkMax.ControlType.kPosition);
   }
 }

@@ -138,12 +138,28 @@ public final class Constants {
     public static final double kTurningMinOutput = -1;
     public static final double kTurningMaxOutput = 1;
 
+    public static final double kShooterNeoDrivingP = 0.04;
+    public static final double kShooterNeoDrivingI = 0;
+    public static final double kShooterNeoDrivingD = 0;
+    public static final double kShooterNeoDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+    public static final double kShooterNeoDrivingMinOutput = -1;
+    public static final double kShooterNeoDrivingMaxOutput = 1;
+
+    public static final double kIntakeP = 1;
+    public static final double kIntakeI = 0;
+    public static final double kIntakeD = 0;
+    public static final double kIntakeFF = 0;
+    public static final double kIntakeMinOutput = -1;
+    public static final double kIntakeMaxOutput = 1;
+
     public static final NeutralModeValue kDrivingMotorNeutralMode = NeutralModeValue.Brake;
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kIntakeMotorIdleMode = IdleMode.kBrake;
 
     public static final int kDrivingMotorCurrentLimit = 40; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
+    public static final int kIntakeMotorCurrentLimit = 20; // amps
   }
 
   public static final class OIConstants {

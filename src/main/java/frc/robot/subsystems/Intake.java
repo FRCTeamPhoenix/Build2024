@@ -18,8 +18,9 @@ public class Intake {
 
   private final SparkPIDController m_intakeMotorPIDController;
 
-  public Intake(int leftCANID, int rightCANID) {
-    m_intakeMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
+  // TODO: Confirm that constants used apply to the intake. We may need new constants specific to the intake.
+  public Intake(int CANID) {
+    m_intakeMotor = new CANSparkMax(CANID, MotorType.kBrushless);
 
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.
@@ -54,5 +55,19 @@ public class Intake {
   public void setDesiredVelocity(double desiredVelocity) {
     // Command intake motors towards their respective setpoints, with one motor being flipped
     m_intakeMotorPIDController.setReference(desiredVelocity, CANSparkMax.ControlType.kVelocity);
+  }
+
+  public double getVelocity() {
+    return m_intakeEncoder.getVelocity();
+  }
+
+  public void intakeNote(boolean noteInShooter) {
+    if (!noteInShooter) setDesiredVelocity(0.2);
+    else setDesiredVelocity(0.0);
+  }
+
+  public void loadNote(boolean noteInShooter) {
+    if (noteInShooter) setDesiredVelocity(0.2);
+    else setDesiredVelocity(0);
   }
 }

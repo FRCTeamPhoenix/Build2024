@@ -93,18 +93,43 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumberArray("RobotPose", pose);
     CommandScheduler.getInstance().run();
     currentLimeLight.Update_Limelight_Tracking();
+
     boolean trackTarget = m_robotContainer.getxboxDriver().getAButton();
-    if (trackTarget)
-        {
-          if (currentLimeLight.hasValidTarget())
-          {
+    if (trackTarget) {
+          if (currentLimeLight.hasValidTarget()) {
             m_drive.drive(currentLimeLight.getLLDriveY() * driveFlip, currentLimeLight.getLLDriveX() * driveFlip, currentLimeLight.getLLDriveRotation(), false, false);
           }
-          else
-          {
-                m_drive.drive(0.0, 0.0, 0.0, false, false);
+          else {
+            m_drive.drive(0.0, 0.0, 0.0, false, false);
           }
-        }
+    }
+
+    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
+    boolean runIntake = m_robotContainer.getxboxDriver().getYButton();
+    if (runIntake) {
+      m_robotContainer.intake.intakeNote(false); // TODO: Replace this boolean with the proximity sensor data
+    }
+    else {
+      m_robotContainer.intake.setDesiredVelocity(0.0);
+    }
+
+    // Runs the intake motors only when a note is in the intake (gives the already spinning shooter a note)
+    boolean loadIntake = m_robotContainer.getxboxDriver().getRightBumper();
+    if (loadIntake) {
+      m_robotContainer.intake.loadNote(true); // TODO: Replace this boolean with the proximity sensor data
+    }
+    else {
+      m_robotContainer.intake.setDesiredVelocity(0.0);
+    }
+
+    // Spins the shooters up to the specified speed to fire a note.
+    boolean spinShooter = m_robotContainer.getxboxDriver().getLeftBumper();
+    if (spinShooter) {
+      m_robotContainer.shooter.setDesiredVelocity(0.3);
+    }
+    else {
+      m_robotContainer.shooter.setDesiredVelocity(0.0);
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
