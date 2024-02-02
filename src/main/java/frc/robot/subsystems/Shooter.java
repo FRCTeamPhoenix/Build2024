@@ -73,7 +73,8 @@ public class Shooter {
 
   public void setDesiredVelocity(double desiredVelocity) {
     // Command intake motors towards their respective setpoints, with one motor being flipped
-    m_shooterMotorLeftPIDController.setReference(desiredVelocity, CANSparkMax.ControlType.kVelocity);
+    // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
+    m_shooterMotorLeftPIDController.setReference(-desiredVelocity, CANSparkMax.ControlType.kVelocity);
     m_shooterMotorRightPIDController.setReference(-desiredVelocity, CANSparkMax.ControlType.kVelocity);
   }
 }
