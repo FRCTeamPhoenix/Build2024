@@ -71,7 +71,6 @@ public final class Constants {
     public static final int kRearLeftDrivingCanId = 8;
     
     public static final int kPigeonCanId = 9;
-    public static final int kOldPigeonCanId = 20;
 
     public static final boolean kGyroReversed = false;
   }

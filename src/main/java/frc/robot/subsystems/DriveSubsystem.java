@@ -78,11 +78,9 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     if (Constants.DriveConstants.usingPigeon2){
         m_gyro = new IMU_Pigeon2();
-        m_gyro.setupPigeon(DriveConstants.kOldPigeonCanId, "rio");
     }
-    else{
-        m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
-    }
+    
+    m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
     AutoBuilder.configureHolonomic(
       this::getPose, // Robot pose supplier
       this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
