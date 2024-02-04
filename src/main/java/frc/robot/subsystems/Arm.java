@@ -1,105 +1,135 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.AbsoluteEncoder;
 
-import frc.robot.Constants.ModuleConstants;
+public class Arm {
+  private CANSparkMax m_motor;
+  private SparkPIDController m_pidController;
+  private AbsoluteEncoder m_encoder;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
-public class Arm extends SubsystemBase {
-  private final CANSparkMax m_armSparkMax;
+  public Arm(int deviceID) {
+    // initialize motor
+    m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
 
-  private final AbsoluteEncoder m_armEncoder;
+    /**
+     * The restoreFactoryDefaults method can be used to reset the configuration parameters
+     * in the SPARK MAX to their factory default state. If no argument is passed, these
+     * parameters will not persist between power cycles
+     */
+    m_motor.restoreFactoryDefaults();
 
-  private final SparkPIDController m_armPIDController;
+    m_motor.setIdleMode(IdleMode.kBrake);
 
-  /**
-   * Constructs a MAXSwerveModule and configures the driving and turning motor,
-   * encoder, and PID controller. This configuration is specific to the REV
-   * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
-   * Encoder.
-   */
-  // TODO: Confirm that constants used apply to the arm. We may need new constants specific to the arm.
-  public Arm(int CANId) {
-    m_armSparkMax = new CANSparkMax(CANId, MotorType.kBrushless);
+    /**
+     * In order to use PID functionality for a controller, a SparkPIDController object
+     * is constructed by calling the getPIDController() method on an existing
+     * CANSparkMax object
+     */
+    m_pidController = m_motor.getPIDController();
 
-    // Factory reset, so we get the SPARKS MAX to a known state before configuring
-    // them. This is useful in case a SPARK MAX is swapped out.
-    m_armSparkMax.restoreFactoryDefaults();
+    // Encoder object created to display position values
+    m_encoder = m_motor.getAbsoluteEncoder(Type.kDutyCycle);
 
-    // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-    m_armEncoder = m_armSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    m_armPIDController = m_armSparkMax.getPIDController();
-    m_armPIDController.setFeedbackDevice(m_armEncoder);
+    // PID coefficients
+    kP = 0.1; 
+    kI = 1e-4;
+    kD = 1; 
+    kIz = 0; 
+    kFF = 0; 
+    kMaxOutput = 1; 
+    kMinOutput = -1;
 
-    // Apply position and velocity conversion factors for the turning encoder. We
-    // want these in radians and radians per second to use with WPILib's swerve
-    // APIs.
-    m_armEncoder.setPositionConversionFactor(ModuleConstants.kDrivingEncoderPositionFactor);
-    m_armEncoder.setVelocityConversionFactor(ModuleConstants.kDrivingEncoderVelocityFactor);
+    // set PID coefficients
+    m_pidController.setP(kP);
+    m_pidController.setI(kI);
+    m_pidController.setD(kD);
+    m_pidController.setIZone(kIz);
+    m_pidController.setFF(kFF);
+    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
-    // the steering motor in the MAXSwerve Module.
-    m_armEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("P Gain", kP);
+    SmartDashboard.putNumber("I Gain", kI);
+    SmartDashboard.putNumber("D Gain", kD);
+    SmartDashboard.putNumber("I Zone", kIz);
+    SmartDashboard.putNumber("Feed Forward", kFF);
+    SmartDashboard.putNumber("Max Output", kMaxOutput);
+    SmartDashboard.putNumber("Min Output", kMinOutput);
+    SmartDashboard.putNumber("Set Rotations", 0);
+    SmartDashboard.putNumber("Rotation", m_encoder.getPosition());
 
-    // Enable PID wrap around for the turning motor. This will allow the PID
-    // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
-    // to 10 degrees will go through 0 rather than the other direction which is a
-    // longer route.
-    m_armPIDController.setPositionPIDWrappingEnabled(true);
-    m_armPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
-    m_armPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
-
-    // Set the PID gains for the turning motor. Note these are example gains, and you
-    // may need to tune them for your own robot!
-    m_armPIDController.setP(ModuleConstants.kNeoDrivingP);
-    m_armPIDController.setI(ModuleConstants.kNeoDrivingI);
-    m_armPIDController.setD(ModuleConstants.kNeoDrivingD);
-    m_armPIDController.setFF(ModuleConstants.kNeoDrivingFF);
-    m_armPIDController.setOutputRange(ModuleConstants.kNeoDrivingMinOutput,
-        ModuleConstants.kNeoDrivingMaxOutput);
-
-    m_armSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
-    m_armSparkMax.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
-
-    // Save the SPARK MAX configurations. If a SPARK MAX browns out during
-    // operation, it will maintain the above configurations.
-    m_armSparkMax.burnFlash();
+    m_motor.burnFlash();
   }
 
-  /**
-   * Returns the current position of the module.
-   *
-   * @return The current position of the module.
-   */
-  public Rotation2d getPosition() {
-    // Apply chassis angular offset to the encoder position to get the position
-    // relative to the chassis.
-    return new Rotation2d(m_armEncoder.getPosition());
+  public void setDesiredAngle() {
+    // read PID coefficients from SmartDashboard
+    double p = SmartDashboard.getNumber("P Gain", 0);
+    double i = SmartDashboard.getNumber("I Gain", 0);
+    double d = SmartDashboard.getNumber("D Gain", 0);
+    double iz = SmartDashboard.getNumber("I Zone", 0);
+    double ff = SmartDashboard.getNumber("Feed Forward", 0);
+    double max = SmartDashboard.getNumber("Max Output", 0);
+    double min = SmartDashboard.getNumber("Min Output", 0);
+    double rotations = 10.0;
+    
+
+    // if PID coefficients on SmartDashboard have changed, write new values to controller
+    if((p != kP)) { m_pidController.setP(p); kP = p; }
+    if((i != kI)) { m_pidController.setI(i); kI = i; }
+    if((d != kD)) { m_pidController.setD(d); kD = d; }
+    if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
+    if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+    if((max != kMaxOutput) || (min != kMinOutput)) { 
+      m_pidController.setOutputRange(min, max); 
+      kMinOutput = min; kMaxOutput = max; 
+    }
+
+    /**
+     * PIDController objects are commanded to a set point using the 
+     * SetReference() method.
+     * 
+     * The first parameter is the value of the set point, whose units vary
+     * depending on the control type set in the second parameter.
+     * 
+     * The second parameter is the control type can be set to one of four 
+     * parameters:
+     *  com.revrobotics.CANSparkMax.ControlType.kDutyCycle
+     *  com.revrobotics.CANSparkMax.ControlType.kPosition
+     *  com.revrobotics.CANSparkMax.ControlType.kVelocity
+     *  com.revrobotics.CANSparkMax.ControlType.kVoltage
+     */
+    if (getRot() < rotations * (Math.PI / 180.0)){
+      m_pidController.setReference(-0.5, ControlType.kVelocity);
+      SmartDashboard.putBoolean("moving", true);
+    }
+
+    if (getRot() >= rotations * (Math.PI / 180.0)){
+      stop();
+      SmartDashboard.putBoolean("moving", false);
+    }
+    
+    SmartDashboard.putNumber("SetPoint", rotations);
+    SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());
   }
 
-    @Override
-  public void periodic() {
-    SmartDashboard.putNumber("armposition",this.getPosition().getDegrees());
+  public void stop(){
+    m_pidController.setReference(0.0, ControlType.kVoltage);
+  }
+  public double getRot(){
+    return -m_encoder.getPosition();
   }
 
-  /**
-   * Sets the desired angle for the module.
-   *
-   * @param desiredAngle Desired angle.
-   */
-  public void setDesiredAngle(double desiredAngle) {
-    // Command driving and turning SPARKS MAX towards their respective setpoints.
-    m_armPIDController.setReference(Math.toRadians(-desiredAngle), CANSparkMax.ControlType.kPosition);
+  public void setVelocity(double velocity){
+    m_pidController.setReference(velocity, ControlType.kVelocity);
   }
 }

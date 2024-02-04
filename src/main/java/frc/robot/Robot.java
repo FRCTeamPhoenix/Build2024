@@ -125,18 +125,21 @@ public class Robot extends TimedRobot {
     // Spins the shooters up to the specified speed to fire a note.
     boolean spinShooter = m_robotContainer.getxboxDriver().getLeftBumper();
     if (spinShooter) {
-      m_robotContainer.shooter.setDesiredVelocity(5);
+      m_robotContainer.shooter.setDesiredVelocity(10);
     }
     else {
       m_robotContainer.shooter.setDesiredVelocity(0.0);
     }
-     boolean raisearm= m_robotContainer.getxboxDriver().getBButton();
-    if (raisearm){
-      m_robotContainer.arm.setDesiredAngle(50);
+
+    boolean arm = m_robotContainer.getxboxDriver().getBButton();
+    if (arm){
+      m_robotContainer.arm.setDesiredAngle();
     }
     else{
-      m_robotContainer.arm.setDesiredAngle(0);
+      m_robotContainer.arm.stop();
     }
+    SmartDashboard.putNumber("rot", m_robotContainer.arm.getRot());
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

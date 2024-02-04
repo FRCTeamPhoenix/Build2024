@@ -31,7 +31,7 @@ public final class Constants {
     //Are we using TalonFX or are we using SPARK MAX?
     public static final boolean usingTalons = true;
     //Are we using Pigeon2 or Pigeon
-    public static final boolean usingPigeon2 = false;
+    public static final boolean usingPigeon2 = true;
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -95,12 +95,11 @@ public final class Constants {
     public static final double kDriveWheelFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    public static final double kArmMotorReduction = (45.0 * 22) / (kNeoDrivingMotorPinionTeeth * 15);
+    public static final double kArmMotorReduction = 220.0 / 1.0;
     public static final double kArmFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
     
-    public static final double kIntakeMotorReduction = 1/3;
+    public static final double kIntakeMotorReduction = 3.0 / 1.0;
     public static final double kIntakeFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * 0.0508)
         / kIntakeMotorReduction;
 
