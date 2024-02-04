@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   private LimeLight currentLimeLight;
   private String currentLimeLightString = "Front";
   private double driveFlip = -1;
+  private double angle = 1.75;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -114,7 +115,7 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is in the intake (gives the already spinning shooter a note)
-    boolean loadIntake = m_robotContainer.getxboxDriver().getRightBumper();
+    boolean loadIntake = m_robotContainer.getxboxDriver().getLeftBumper();
     if (loadIntake) {
       m_robotContainer.intake.loadNote(false); // TODO: Replace this boolean with the proximity sensor data
     }
@@ -123,7 +124,7 @@ public class Robot extends TimedRobot {
     }
 
     // Spins the shooters up to the specified speed to fire a note.
-    boolean spinShooter = m_robotContainer.getxboxDriver().getLeftBumper();
+    boolean spinShooter = m_robotContainer.getxboxDriver().getRightBumper();
     if (spinShooter) {
       m_robotContainer.shooter.setDesiredVelocity(10);
     }
@@ -131,15 +132,13 @@ public class Robot extends TimedRobot {
       m_robotContainer.shooter.setDesiredVelocity(0.0);
     }
 
-    boolean arm = m_robotContainer.getxboxDriver().getBButton();
-    if (arm){
-      m_robotContainer.arm.setDesiredAngle();
-    }
-    else{
-      m_robotContainer.arm.stop();
-    }
-    SmartDashboard.putNumber("rot", m_robotContainer.arm.getRot());
 
+    angle += m_robotContainer.getxboxDriver().getRightTriggerAxis() * 0.5;
+    angle -= m_robotContainer.getxboxDriver().getLeftTriggerAxis() * 0.5;
+
+    SmartDashboard.putNumber("ang", angle);
+    SmartDashboard.putNumber("currentang", m_robotContainer.arm.angle());
+    m_robotContainer.arm.dosomething(angle);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
