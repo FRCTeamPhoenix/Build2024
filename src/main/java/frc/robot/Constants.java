@@ -29,9 +29,9 @@ public final class Constants {
 
     //VERY IMPORTANT!!!!!!
     //Are we using TalonFX or are we using SPARK MAX?
-    public static final boolean usingTalons = false;
+    public static final boolean usingTalons = true;
     //Are we using Pigeon2 or Pigeon
-    public static final boolean usingPigeon2 = true;
+    public static final boolean usingPigeon2 = false;
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -95,6 +95,17 @@ public final class Constants {
     public static final double kDriveWheelFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
+    public static final double kArmMotorReduction = (45.0 * 22) / (kNeoDrivingMotorPinionTeeth * 15);
+    public static final double kArmFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+        / kDrivingMotorReduction;
+    
+    public static final double kIntakeMotorReduction = 1/3;
+    public static final double kIntakeFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * 0.0508)
+        / kIntakeMotorReduction;
+
+    public static final double kShooterFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * 0.1016);
+
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kTalonDrivingMotorFreeSpeedRps = 6380;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
@@ -106,6 +117,19 @@ public final class Constants {
         / kDrivingMotorReduction; // meters
     public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
         / kDrivingMotorReduction) / 60.0; // meters per second
+
+    public static final double kArmEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
+        / kArmMotorReduction; // meters
+    public static final double kArmEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
+        / kArmMotorReduction) / 60.0; // meters per second
+
+    public static final double kIntakeEncoderPositionFactor = (0.0508 * Math.PI)
+        / kIntakeMotorReduction; // meters
+    public static final double kIntakeEncoderVelocityFactor = ((0.0508 * Math.PI)
+        / kIntakeMotorReduction) / 60.0; // meters per second
+
+    public static final double kShooterEncoderPositionFactor = (0.1016 * Math.PI) ; // meters
+    public static final double kShooterEncoderVelocityFactor = (0.1016 * Math.PI) / 60.0; // meters per second
 
     public static final double kTalonEncoderFactor = ((kWheelDiameterMeters * Math.PI)
         / kTalonDrivingMotorReduction);
@@ -137,17 +161,17 @@ public final class Constants {
     public static final double kTurningMinOutput = -1;
     public static final double kTurningMaxOutput = 1;
 
-    public static final double kShooterNeoDrivingP = 0.04;
-    public static final double kShooterNeoDrivingI = 0;
-    public static final double kShooterNeoDrivingD = 0;
-    public static final double kShooterNeoDrivingFF = 1 / kDriveWheelFreeSpeedRps;
-    public static final double kShooterNeoDrivingMinOutput = -1;
-    public static final double kShooterNeoDrivingMaxOutput = 1;
+    public static final double kShooterP = 0.04;
+    public static final double kShooterI = 0;
+    public static final double kShooterD = 0;
+    public static final double kShooterFF = 1 / kShooterFreeSpeedRps;
+    public static final double kShooterMinOutput = -1;
+    public static final double kShooterMaxOutput = 1;
 
-    public static final double kIntakeP = 1;
+    public static final double kIntakeP = 0.04;
     public static final double kIntakeI = 0;
     public static final double kIntakeD = 0;
-    public static final double kIntakeFF = 0;
+    public static final double kIntakeFF = 1 / kIntakeFreeSpeedRps;
     public static final double kIntakeMinOutput = -1;
     public static final double kIntakeMaxOutput = 1;
 
@@ -155,10 +179,12 @@ public final class Constants {
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kIntakeMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kShooterMotorIdleMode = IdleMode.kBrake;
 
     public static final int kDrivingMotorCurrentLimit = 40; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
-    public static final int kIntakeMotorCurrentLimit = 20; // amps
+    public static final int kIntakeMotorCurrentLimit = 40; // amps
+    public static final int kShooterMotorCurrentLimit = 40; // amps
   }
 
   public static final class OIConstants {

@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -14,7 +16,7 @@ import com.revrobotics.AbsoluteEncoder;
 
 import frc.robot.Constants.ModuleConstants;
 
-public class Arm {
+public class Arm extends SubsystemBase {
   private final CANSparkMax m_armSparkMax;
 
   private final AbsoluteEncoder m_armEncoder;
@@ -86,6 +88,11 @@ public class Arm {
     return new Rotation2d(m_armEncoder.getPosition());
   }
 
+    @Override
+  public void periodic() {
+    SmartDashboard.putNumber("armposition",this.getPosition().getDegrees());
+  }
+
   /**
    * Sets the desired angle for the module.
    *
@@ -93,6 +100,6 @@ public class Arm {
    */
   public void setDesiredAngle(double desiredAngle) {
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    m_armPIDController.setReference(desiredAngle, CANSparkMax.ControlType.kPosition);
+    m_armPIDController.setReference(Math.toRadians(-desiredAngle), CANSparkMax.ControlType.kPosition);
   }
 }

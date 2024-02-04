@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
     // Runs the intake motors only when a note is in the intake (gives the already spinning shooter a note)
     boolean loadIntake = m_robotContainer.getxboxDriver().getRightBumper();
     if (loadIntake) {
-      m_robotContainer.intake.loadNote(true); // TODO: Replace this boolean with the proximity sensor data
+      m_robotContainer.intake.loadNote(false); // TODO: Replace this boolean with the proximity sensor data
     }
     else {
       m_robotContainer.intake.setDesiredVelocity(0.0);
@@ -125,10 +125,17 @@ public class Robot extends TimedRobot {
     // Spins the shooters up to the specified speed to fire a note.
     boolean spinShooter = m_robotContainer.getxboxDriver().getLeftBumper();
     if (spinShooter) {
-      m_robotContainer.shooter.setDesiredVelocity(0.3);
+      m_robotContainer.shooter.setDesiredVelocity(5);
     }
     else {
       m_robotContainer.shooter.setDesiredVelocity(0.0);
+    }
+     boolean raisearm= m_robotContainer.getxboxDriver().getBButton();
+    if (raisearm){
+      m_robotContainer.arm.setDesiredAngle(50);
+    }
+    else{
+      m_robotContainer.arm.setDesiredAngle(0);
     }
   }
 

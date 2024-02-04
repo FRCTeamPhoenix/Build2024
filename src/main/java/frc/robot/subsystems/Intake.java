@@ -67,7 +67,7 @@ public class Intake {
   }
 
   public void loadNote(boolean noteInShooter) {
-    if (noteInShooter) setDesiredVelocity(0.2);
+    if (!noteInShooter) setDesiredVelocity(10);
     else setDesiredVelocity(0);
   }
 }

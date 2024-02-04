@@ -41,29 +41,29 @@ public class Shooter {
 
     // Apply position and velocity conversion factors for the motor encoders. The
     // native unit for velocity is RPM, but we want meters per second for human input.
-    m_leftEncoder.setVelocityConversionFactor(ModuleConstants.kDrivingEncoderVelocityFactor);
-    m_rightEncoder.setVelocityConversionFactor(ModuleConstants.kDrivingEncoderVelocityFactor);
+    m_leftEncoder.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
+    m_rightEncoder.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
 
     // Set the PID gains for the motors. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_shooterMotorLeftPIDController.setP(ModuleConstants.kIntakeP);
-    m_shooterMotorLeftPIDController.setI(ModuleConstants.kIntakeI);
-    m_shooterMotorLeftPIDController.setD(ModuleConstants.kIntakeD);
-    m_shooterMotorLeftPIDController.setFF(ModuleConstants.kIntakeFF);
-    m_shooterMotorLeftPIDController.setOutputRange(ModuleConstants.kIntakeMinOutput,
-        ModuleConstants.kIntakeMaxOutput);
+    m_shooterMotorLeftPIDController.setP(ModuleConstants.kShooterP);
+    m_shooterMotorLeftPIDController.setI(ModuleConstants.kShooterI);
+    m_shooterMotorLeftPIDController.setD(ModuleConstants.kShooterD);
+    m_shooterMotorLeftPIDController.setFF(ModuleConstants.kShooterFF);
+    m_shooterMotorLeftPIDController.setOutputRange(ModuleConstants.kShooterMinOutput,
+        ModuleConstants.kShooterMaxOutput);
 
-    m_shooterMotorRightPIDController.setP(ModuleConstants.kIntakeP);
-    m_shooterMotorRightPIDController.setI(ModuleConstants.kIntakeI);
-    m_shooterMotorRightPIDController.setD(ModuleConstants.kIntakeD);
-    m_shooterMotorRightPIDController.setFF(ModuleConstants.kIntakeFF);
-    m_shooterMotorRightPIDController.setOutputRange(ModuleConstants.kIntakeMinOutput,
-        ModuleConstants.kIntakeMaxOutput);
+    m_shooterMotorRightPIDController.setP(ModuleConstants.kShooterP);
+    m_shooterMotorRightPIDController.setI(ModuleConstants.kShooterI);
+    m_shooterMotorRightPIDController.setD(ModuleConstants.kShooterD);
+    m_shooterMotorRightPIDController.setFF(ModuleConstants.kShooterFF);
+    m_shooterMotorRightPIDController.setOutputRange(ModuleConstants.kShooterMinOutput,
+        ModuleConstants.kShooterMaxOutput);
 
     m_shooterMotorLeft.setIdleMode(ModuleConstants.kIntakeMotorIdleMode);
-    m_shooterMotorLeft.setSmartCurrentLimit(ModuleConstants.kIntakeMotorCurrentLimit);
-    m_shooterMotorRight.setIdleMode(ModuleConstants.kIntakeMotorIdleMode);
-    m_shooterMotorRight.setSmartCurrentLimit(ModuleConstants.kIntakeMotorCurrentLimit);
+    m_shooterMotorLeft.setSmartCurrentLimit(ModuleConstants.kShooterMotorCurrentLimit);
+    m_shooterMotorRight.setIdleMode(ModuleConstants.kShooterMotorIdleMode);
+    m_shooterMotorRight.setSmartCurrentLimit(ModuleConstants.kShooterMotorCurrentLimit);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.
