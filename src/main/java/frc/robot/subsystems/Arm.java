@@ -7,8 +7,8 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -50,7 +50,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
  * load the shuffleboard.json file in the root of this directory to get the full
  * effect of the GUI layout.
  */
-public class Arm {
+public class Arm extends SubsystemBase {
   private CANSparkMax m_motor;
   private SparkPIDController m_pidController;
   private RelativeEncoder m_encoder;
@@ -105,6 +105,12 @@ public class Arm {
     m_pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     m_pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+  }
+
+  @Override
+  public void periodic() {
+      // This method will be called once per scheduler run
+      
   }
 
   public void dosomething(double setpoint) {

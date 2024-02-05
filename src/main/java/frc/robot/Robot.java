@@ -84,7 +84,13 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    //DLL: I think we are calling Update_LimeLight_Tracking() here and in the LimeLight subsystem every 20ms.
+    //      we can rpobably remove the below line
     currentLimeLight.Update_Limelight_Tracking();
+
+
+    //Update all of our Shuffleboard data
     SmartDashboard.putNumber("Steer: ", currentLimeLight.getLLDriveRotation());
     SmartDashboard.putNumber("DriveX: ", currentLimeLight.getLLDriveX());
     SmartDashboard.putNumber("DriveY: ", currentLimeLight.getLLDriveY());
@@ -93,19 +99,26 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Current LimeLight: ", currentLimeLightString);
     SmartDashboard.putNumberArray("RobotPose", pose);
     CommandScheduler.getInstance().run();
+
+    //DLL: Hmm.. seems we are updating the limelight tracking.. again :)
     currentLimeLight.Update_Limelight_Tracking();
 
+    //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     boolean trackTarget = m_robotContainer.getxboxDriver().getAButton();
     if (trackTarget) {
+          //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
           if (currentLimeLight.hasValidTarget()) {
+            //Here we drive twoard the apriltag.  Not something we will do in a competition but great for Note Tracking
             m_drive.drive(currentLimeLight.getLLDriveY() * driveFlip, currentLimeLight.getLLDriveX() * driveFlip, currentLimeLight.getLLDriveRotation(), false, false);
           }
           else {
+            //If we have no valid target we will keep the robot stationary
             m_drive.drive(0.0, 0.0, 0.0, false, false);
           }
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
+    //DLL: Seems intakeNote and loadNote could be combined?  The do the same thing.
     boolean runIntake = m_robotContainer.getxboxDriver().getYButton();
     if (runIntake) {
       m_robotContainer.intake.intakeNote(false); // TODO: Replace this boolean with the proximity sensor data
@@ -124,18 +137,24 @@ public class Robot extends TimedRobot {
     }
 
     // Spins the shooters up to the specified speed to fire a note.
+    // DLL: We will have to keep track of all these button mappings.  Perhaps move all mappings like this to the top of periodic
+    //      Also we will have to move them to the operator controller.
     boolean spinShooter = m_robotContainer.getxboxDriver().getRightBumper();
     if (spinShooter) {
+      // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
+      //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
+      //      subsystem rather than in the robot periodic
       m_robotContainer.shooter.setDesiredVelocity(10);
     }
     else {
       m_robotContainer.shooter.setDesiredVelocity(0.0);
     }
 
-
+    //DLL: Here again probably move this to the operator and map it at the top of this function
     angle += m_robotContainer.getxboxDriver().getRightTriggerAxis() * 0.5;
     angle -= m_robotContainer.getxboxDriver().getLeftTriggerAxis() * 0.5;
 
+    //DLL: We should put all the SmartDashboard updates in on location to clean up the code if we can.
     SmartDashboard.putNumber("ang", angle);
     SmartDashboard.putNumber("currentang", m_robotContainer.arm.angle());
     m_robotContainer.arm.dosomething(angle);
