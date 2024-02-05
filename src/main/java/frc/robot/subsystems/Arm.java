@@ -113,20 +113,17 @@ public class Arm extends SubsystemBase {
       
   }
 
-  public void dosomething(double setpoint) {
+  public void moveArm(double setpoint) {
     m_pidController.setReference(-setpoint, CANSparkMax.ControlType.kSmartMotion);
-    double processVariable = m_encoder.getPosition();
     
-    SmartDashboard.putNumber("SetPoint", -setpoint);
-    SmartDashboard.putNumber("Process Variable", processVariable);
     SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
   }
 
-  public void stop(){
+  public void killArm(){
     m_pidController.setReference(0.0, ControlType.kVoltage);
   }
   
-  public double angle(){
+  public double currentAngle(){
     return m_encoder.getPosition();
   }
 }

@@ -55,9 +55,9 @@ public class RobotContainer {
   private final XboxController xbox_operator = new XboxController(1);
   private final XboxController xbox_driver = new XboxController(0);
 
-  public final Shooter shooter = new Shooter(10, 11);
-  public final Intake intake = new Intake(12);
-  public final Arm arm = new Arm(13);
+  private final Shooter m_shooter = new Shooter(10, 11);
+  private final Intake m_intake = new Intake(12);
+  private final Arm m_arm = new Arm(13);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -115,23 +115,35 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public LimeLight getm_frontLimeLight() {
+  public LimeLight getFrontLimeLight() {
     return m_frontLimeLight;
   }
 
-  public LimeLight getm_rearLimeLight() {
+  public LimeLight getRearLimeLight() {
     return m_rearLimeLight;
   }
 
-  public XboxController getxboxDriver() {
+  public XboxController getXboxDriver() {
     return xbox_driver;
   }
 
-  public XboxController getxboxOperator() {
+  public XboxController getXboxOperator() {
     return xbox_operator;
   }
 
-  public DriveSubsystem getm_driveTrain(){
+  public DriveSubsystem getDrivetrain(){
     return m_robotDrive;
+  }
+
+  public Arm getArm(){
+    return m_arm;
+  }
+
+  public Shooter getShooter(){
+    return m_shooter;
+  }
+
+  public Intake getIntake(){
+    return m_intake;
   }
 }

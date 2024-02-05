@@ -8,8 +8,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.Shooter;
 
 // import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.wpilibj.XboxController;
@@ -38,9 +41,9 @@ public class Robot extends TimedRobot {
   private LimeLight frontLimeLight;
   private LimeLight rearLimeLight;
   private LimeLight currentLimeLight;
-  private String currentLimeLightString = "Front";
   private double driveFlip = -1;
   private double angle = 1.75;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -50,8 +53,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    frontLimeLight = m_robotContainer.getm_frontLimeLight();
-    rearLimeLight = m_robotContainer.getm_rearLimeLight();
+    frontLimeLight = m_robotContainer.getFrontLimeLight();
+    rearLimeLight = m_robotContainer.getRearLimeLight();
     currentLimeLight = frontLimeLight;
   }
 
@@ -64,47 +67,47 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    frontLimeLight = m_robotContainer.getm_frontLimeLight();
-    rearLimeLight = m_robotContainer.getm_rearLimeLight();
-    DriveSubsystem m_drive = m_robotContainer.getm_driveTrain();
-    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
-
-    if (m_robotContainer.getxboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      currentLimeLightString = "Front";
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getxboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      currentLimeLightString = "Rear";
-      driveFlip = 1;
-    }
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    //DLL: I think we are calling Update_LimeLight_Tracking() here and in the LimeLight subsystem every 20ms.
-    //      we can rpobably remove the below line
-    currentLimeLight.Update_Limelight_Tracking();
+    //Get controller buttons
+    boolean spinShooter = m_robotContainer.getXboxDriver().getRightBumper();
+    boolean intake = m_robotContainer.getXboxDriver().getLeftBumper();
+    boolean trackTarget = m_robotContainer.getXboxDriver().getAButton();
+    boolean killArm = m_robotContainer.getXboxDriver().getBButton();
 
+    //Adjust current angle of arm based on triggers
+    angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
+    angle -= m_robotContainer.getXboxDriver().getLeftTriggerAxis() * 0.5;
+
+    DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
+    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
+
+    Arm m_arm = m_robotContainer.getArm();
+    Intake m_intake = m_robotContainer.getIntake();
+    Shooter m_shooter = m_robotContainer.getShooter();
+
+    if (m_robotContainer.getXboxDriver().getPOV() == 0){
+      currentLimeLight = frontLimeLight;
+      driveFlip = -1;
+    }
+    else if (m_robotContainer.getXboxDriver().getPOV() == 180){
+      currentLimeLight = rearLimeLight;
+      driveFlip = 1;
+    }
+
+    currentLimeLight.Update_Limelight_Tracking();
 
     //Update all of our Shuffleboard data
-    SmartDashboard.putNumber("Steer: ", currentLimeLight.getLLDriveRotation());
-    SmartDashboard.putNumber("DriveX: ", currentLimeLight.getLLDriveX());
-    SmartDashboard.putNumber("DriveY: ", currentLimeLight.getLLDriveY());
-    SmartDashboard.putNumber("TA: ", currentLimeLight.getLLTargetArea());
-    SmartDashboard.putNumber("Distance to target: ", currentLimeLight.getLLTargetDistance());
-    SmartDashboard.putString("Current LimeLight: ", currentLimeLightString);
+    SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
-    CommandScheduler.getInstance().run();
-
-    //DLL: Hmm.. seems we are updating the limelight tracking.. again :)
-    currentLimeLight.Update_Limelight_Tracking();
+    SmartDashboard.putNumber("DesiredAngle", angle);
+    SmartDashboard.putNumber("CurrentAngle", m_arm.currentAngle());
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
-    boolean trackTarget = m_robotContainer.getxboxDriver().getAButton();
     if (trackTarget) {
           //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
           if (currentLimeLight.hasValidTarget()) {
@@ -118,46 +121,30 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    //DLL: Seems intakeNote and loadNote could be combined?  The do the same thing.
-    boolean runIntake = m_robotContainer.getxboxDriver().getYButton();
-    if (runIntake) {
-      m_robotContainer.intake.intakeNote(false); // TODO: Replace this boolean with the proximity sensor data
+    if (intake) {
+      m_intake.runIntake(false); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
     }
     else {
-      m_robotContainer.intake.setDesiredVelocity(0.0);
-    }
-
-    // Runs the intake motors only when a note is in the intake (gives the already spinning shooter a note)
-    boolean loadIntake = m_robotContainer.getxboxDriver().getLeftBumper();
-    if (loadIntake) {
-      m_robotContainer.intake.loadNote(false); // TODO: Replace this boolean with the proximity sensor data
-    }
-    else {
-      m_robotContainer.intake.setDesiredVelocity(0.0);
+      m_intake.setDesiredVelocity(0.0);
     }
 
     // Spins the shooters up to the specified speed to fire a note.
-    // DLL: We will have to keep track of all these button mappings.  Perhaps move all mappings like this to the top of periodic
-    //      Also we will have to move them to the operator controller.
-    boolean spinShooter = m_robotContainer.getxboxDriver().getRightBumper();
     if (spinShooter) {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic
-      m_robotContainer.shooter.setDesiredVelocity(10);
+      m_shooter.setDesiredVelocity(10);
     }
     else {
-      m_robotContainer.shooter.setDesiredVelocity(0.0);
+      m_shooter.setDesiredVelocity(0.0);
     }
 
-    //DLL: Here again probably move this to the operator and map it at the top of this function
-    angle += m_robotContainer.getxboxDriver().getRightTriggerAxis() * 0.5;
-    angle -= m_robotContainer.getxboxDriver().getLeftTriggerAxis() * 0.5;
-
-    //DLL: We should put all the SmartDashboard updates in on location to clean up the code if we can.
-    SmartDashboard.putNumber("ang", angle);
-    SmartDashboard.putNumber("currentang", m_robotContainer.arm.angle());
-    m_robotContainer.arm.dosomething(angle);
+    if (killArm){
+      m_arm.killArm();
+    }
+    else{
+      m_arm.moveArm(angle);
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
