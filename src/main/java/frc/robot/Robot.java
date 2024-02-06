@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
   private LimeLight currentLimeLight;
   private double driveFlip = -1;
   private double angle = 1.75;
+  private double joystickDeadzone = 0.5;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -74,10 +76,14 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     //Get controller buttons
-    boolean spinShooter = m_robotContainer.getXboxDriver().getRightBumper();
-    boolean intake = m_robotContainer.getXboxDriver().getLeftBumper();
+    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
+    double reverseIntake = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
+    boolean intakeNote = m_robotContainer.getXboxOperator().getLeftBumper();
+    boolean loadNote = m_robotContainer.getXboxOperator().getRightBumper();
     boolean trackTarget = m_robotContainer.getXboxDriver().getAButton();
     boolean killArm = m_robotContainer.getXboxDriver().getBButton();
+
+    boolean isNote = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
     //Adjust current angle of arm based on triggers
     angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
@@ -121,15 +127,30 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (intake) {
-      m_intake.runIntake(false); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+    if (intakeNote) {
+      m_intake.intakeNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+    }
+    else {
+      m_intake.setDesiredVelocity(0.0);
+    }
+
+    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
+    if (loadNote) {
+      m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+    }
+    else {
+      m_intake.setDesiredVelocity(0.0);
+    }
+
+    if (reverseIntake >= joystickDeadzone) {
+      m_intake.setDesiredVelocity(-10.0);
     }
     else {
       m_intake.setDesiredVelocity(0.0);
     }
 
     // Spins the shooters up to the specified speed to fire a note.
-    if (spinShooter) {
+    if (spinShooter >= joystickDeadzone) {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic

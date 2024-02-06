@@ -29,7 +29,21 @@ public class Intake {
     return m_intakeMotor.getVelocity();
   }
 
-  public void runIntake(boolean noteInShooter) {
-    setDesiredVelocity(10);
+  public void intakeNote(boolean noteInShooter) {
+    if (!noteInShooter){
+      setDesiredVelocity(10.0);
+    }
+    else {
+      setDesiredVelocity(0.0);
+    }
+  }
+
+  public void loadNote(boolean noteInShooter) {
+    if (noteInShooter){
+      setDesiredVelocity(10.0);
+    }
+    else {
+      setDesiredVelocity(0.0);
+    }
   }
 }
