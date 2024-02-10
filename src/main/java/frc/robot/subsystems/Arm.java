@@ -51,20 +51,25 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
  * effect of the GUI layout.
  */
 public class Arm extends SubsystemBase {
-  private CANSparkMax m_motor;
-  private SparkPIDController m_pidController;
-  private RelativeEncoder m_encoder;
+  private CANSparkMax m_leftMotor, m_rightMotor;
+  private SparkPIDController m_leftPidController, m_rightPidController;
+  private RelativeEncoder m_leftEncoder, m_rightEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
-  public Arm(int deviceID) {
+  public Arm(int rightDeviceID, int leftDeviceID) {
     // initialize motor
-    m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+    m_leftMotor = new CANSparkMax(leftDeviceID, MotorType.kBrushless);
+    m_rightMotor = new CANSparkMax(rightDeviceID, MotorType.kBrushless);
 
-    m_motor.restoreFactoryDefaults();
+    m_leftMotor.restoreFactoryDefaults();
+    m_rightMotor.restoreFactoryDefaults();
 
     // initialze PID controller and encoder objects
-    m_pidController = m_motor.getPIDController();
-    m_encoder = m_motor.getEncoder();
+    m_leftPidController = m_leftMotor.getPIDController();
+    m_leftEncoder = m_leftMotor.getEncoder();
+
+    m_rightPidController = m_leftMotor.getPIDController();
+    m_rightEncoder = m_leftMotor.getEncoder();
 
     // PID coefficients
     kP = 5e-5; 
@@ -81,12 +86,19 @@ public class Arm extends SubsystemBase {
     maxAcc = 1500;
 
     // set PID coefficients
-    m_pidController.setP(kP);
-    m_pidController.setI(kI);
-    m_pidController.setD(kD);
-    m_pidController.setIZone(kIz);
-    m_pidController.setFF(kFF);
-    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+    m_leftPidController.setP(kP);
+    m_leftPidController.setI(kI);
+    m_leftPidController.setD(kD);
+    m_leftPidController.setIZone(kIz);
+    m_leftPidController.setFF(kFF);
+    m_leftPidController.setOutputRange(kMinOutput, kMaxOutput);
+
+    m_rightPidController.setP(kP);
+    m_rightPidController.setI(kI);
+    m_rightPidController.setD(kD);
+    m_rightPidController.setIZone(kIz);
+    m_rightPidController.setFF(kFF);
+    m_rightPidController.setOutputRange(kMinOutput, kMaxOutput);
 
     /**
      * Smart Motion coefficients are set on a SparkPIDController object
@@ -101,10 +113,15 @@ public class Arm extends SubsystemBase {
      * error for the pid controller in Smart Motion mode
      */
     int smartMotionSlot = 0;
-    m_pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    m_pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-    m_pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    m_leftPidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    m_leftPidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+    m_leftPidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    m_leftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+
+    m_rightPidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    m_rightPidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+    m_rightPidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    m_rightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
   }
 
   @Override
@@ -114,16 +131,18 @@ public class Arm extends SubsystemBase {
   }
 
   public void moveArm(double setpoint) {
-    m_pidController.setReference(-setpoint, CANSparkMax.ControlType.kSmartMotion);
+    m_leftPidController.setReference(-setpoint, CANSparkMax.ControlType.kSmartMotion);
+    m_rightPidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     
-    SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
+    SmartDashboard.putNumber("Output", m_rightMotor.getAppliedOutput());
   }
 
   public void killArm(){
-    m_pidController.setReference(0.0, ControlType.kVoltage);
+    m_leftPidController.setReference(0.0, ControlType.kVoltage);
+    m_rightPidController.setReference(0.0, ControlType.kVoltage);
   }
   
   public double currentAngle(){
-    return m_encoder.getPosition();
+    return m_leftEncoder.getPosition();
   }
 }

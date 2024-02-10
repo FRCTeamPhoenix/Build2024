@@ -57,7 +57,7 @@ public class RobotContainer {
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
-  private final Arm m_arm = new Arm(13);
+  private final Arm m_arm = new Arm(13, 14);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
