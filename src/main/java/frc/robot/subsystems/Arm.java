@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -52,8 +53,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
  */
 public class Arm extends SubsystemBase {
   private CANSparkMax m_leftMotor, m_rightMotor;
-  private SparkPIDController m_leftPidController, m_rightPidController;
-  private RelativeEncoder m_leftEncoder, m_rightEncoder;
+  private SparkPIDController m_leftPidController;
+  private RelativeEncoder m_leftEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
   public Arm(int rightDeviceID, int leftDeviceID) {
@@ -64,12 +65,12 @@ public class Arm extends SubsystemBase {
     m_leftMotor.restoreFactoryDefaults();
     m_rightMotor.restoreFactoryDefaults();
 
+    m_leftMotor.setIdleMode(IdleMode.kBrake);
+    m_rightMotor.setIdleMode(IdleMode.kBrake);
+
     // initialze PID controller and encoder objects
     m_leftPidController = m_leftMotor.getPIDController();
     m_leftEncoder = m_leftMotor.getEncoder();
-
-    m_rightPidController = m_leftMotor.getPIDController();
-    m_rightEncoder = m_leftMotor.getEncoder();
 
     // PID coefficients
     kP = 5e-5; 
@@ -93,13 +94,6 @@ public class Arm extends SubsystemBase {
     m_leftPidController.setFF(kFF);
     m_leftPidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    m_rightPidController.setP(kP);
-    m_rightPidController.setI(kI);
-    m_rightPidController.setD(kD);
-    m_rightPidController.setIZone(kIz);
-    m_rightPidController.setFF(kFF);
-    m_rightPidController.setOutputRange(kMinOutput, kMaxOutput);
-
     /**
      * Smart Motion coefficients are set on a SparkPIDController object
      * 
@@ -118,10 +112,7 @@ public class Arm extends SubsystemBase {
     m_leftPidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     m_leftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
 
-    m_rightPidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    m_rightPidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-    m_rightPidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    m_rightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    m_rightMotor.follow(m_leftMotor, true);
   }
 
   @Override
@@ -132,14 +123,12 @@ public class Arm extends SubsystemBase {
 
   public void moveArm(double setpoint) {
     m_leftPidController.setReference(-setpoint, CANSparkMax.ControlType.kSmartMotion);
-    m_rightPidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     
     SmartDashboard.putNumber("Output", m_rightMotor.getAppliedOutput());
   }
 
   public void killArm(){
     m_leftPidController.setReference(0.0, ControlType.kVoltage);
-    m_rightPidController.setReference(0.0, ControlType.kVoltage);
   }
   
   public double currentAngle(){
