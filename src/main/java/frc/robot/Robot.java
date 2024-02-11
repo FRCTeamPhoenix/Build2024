@@ -80,11 +80,11 @@ public class Robot extends TimedRobot {
     double spinShooter = 0;//m_robotContainer.getXboxDriver().getRightTriggerAxis();
     double reverseIntake = 0;//m_robotContainer.getXboxDriver().getLeftTriggerAxis();
     boolean intakeNote = false; //m_robotContainer.getXboxDriver().getLeftBumper();
-    boolean loadNote = false; //m_robotContainer.getXboxDriver().getRightBumper();
+    boolean loadNote = m_robotContainer.getXboxDriver().getRightBumper();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
     boolean killArm = m_robotContainer.getXboxDriver().getAButton();
 
-    boolean isNote = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
+    boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
     //Adjust current angle of arm based on triggers
     angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (loadNote) {
-      m_intake.setDesiredVelocity(10); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+      m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
     }
     else {
       m_intake.setDesiredVelocity(0.0);
