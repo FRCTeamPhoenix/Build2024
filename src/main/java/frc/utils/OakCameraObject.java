@@ -5,21 +5,21 @@ public class OakCameraObject {
 
     private final double xAngle;
     private final double yAngle;
-    private final int area;
-    private final int cameraDistance;
+    private final double area;
+    private final double cameraDistance;
     private final double confedence;
     private final String type;
     private final double horizontalDistance;
 
     public OakCameraObject(String objectData) {
         String[] splitData = objectData.split(", ");
-        this.xAngle = Math.toRadians(Float.parseFloat(splitData[0]));
-        this.yAngle = Math.toRadians(Float.parseFloat(splitData[1]));
-        this.area = Integer.parseInt(splitData[2]);
-        this.cameraDistance = Integer.parseInt(splitData[3]);
+        this.xAngle = Float.parseFloat(splitData[0]);
+        this.yAngle = Float.parseFloat(splitData[1]);
+        this.area = Float.parseFloat(splitData[2]);
+        this.cameraDistance = Float.parseFloat(splitData[3]);
         this.confedence = Float.parseFloat(splitData[4]);
         this.type = splitData[5];
-        this.horizontalDistance = cameraDistance * Math.sin(yAngle - 90);
+        this.horizontalDistance = cameraDistance * Math.sin(Math.toRadians(90 + yAngle));
     }
 
     public double getXAngle() {
@@ -28,10 +28,10 @@ public class OakCameraObject {
     public double getYAngle() {
         return this.yAngle;
     }
-    public int getArea() {
+    public double getArea() {
         return this.area;    
     }
-    public int getCameraDistance() {
+    public double getCameraDistance() {
         return this.cameraDistance;    
     }
     public Double getConfedence() {

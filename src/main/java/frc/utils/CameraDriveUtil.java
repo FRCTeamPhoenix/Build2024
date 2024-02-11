@@ -69,14 +69,18 @@ public class CameraDriveUtil {
     public static double getDriveX(double thetaX, double thetaY, double distance, double DESIRED_TARGET_DISTANCE, double DESIRED_HEADING){
         // These numbers must be tuned for your Robot!  Be careful!
         final double DRIVE_V = 0.4;                    // How hard to drive fwd toward the target
-        final double MAX_DRIVE = 0.4;    // maximum allowed drive velocity
+        final double MAX_DRIVE = 0.14;    // maximum allowed drive velocity
         
         // calculates horizontal distance to target 
-        m_HorizontalDistance = distance * Math.cos(thetaY * (Math.PI / 180));
+        m_HorizontalDistance = distance;
+
+        if (thetaX > 180){
+          thetaX -= 360;
+        }
 
         // if distance within 0.15 of desired distance set error to 0
         double errDistance = m_HorizontalDistance - DESIRED_TARGET_DISTANCE;
-        if (Math.abs(errDistance) < 100) {
+        if (Math.abs(errDistance) < 200) {
           errDistance = 0;
         }
 
@@ -102,14 +106,18 @@ public class CameraDriveUtil {
     public static double getDriveY(double thetaX, double thetaY, double distance, double DESIRED_TARGET_DISTANCE, double DESIRED_HEADING){ 
         // These numbers must be tuned for your Robot!  Be careful!
         final double DRIVE_V = 0.4;                    // How hard to drive fwd toward the target
-        final double MAX_DRIVE = 0.4;    // maximum allowed drive velocity
+        final double MAX_DRIVE = 0.14;    // maximum allowed drive velocity
         
         // calculates horizontal distance to target 
-        m_HorizontalDistance = distance * Math.cos(thetaY * (Math.PI / 180));
+        m_HorizontalDistance = distance;
+
+        if (thetaX > 180){
+          thetaX -= 360;
+        }
 
         // if distance within 0.15 of desired distance set error to 0
         double errDistance = m_HorizontalDistance - DESIRED_TARGET_DISTANCE;
-        if (Math.abs(errDistance) < 100) {
+        if (Math.abs(errDistance) < 200) {
           errDistance = 0;
         }
 
@@ -135,11 +143,14 @@ public class CameraDriveUtil {
     public static double getDriveRot(double thetaX, double DESIRED_HEADING){          
         // These numbers must be tuned for your Robot!  Be careful!
         final double STEER_V = 0.01;                  // How hard to turn toward the target
-        final double MAX_TURN = 0.1;    // Maximum allowed rotational velocity
+        final double MAX_TURN = 0.03;    // Maximum allowed rotational velocity
  
         // if angle within 2 degrees of desired angle set error to 0
-        double errAngle = DESIRED_HEADING - thetaX;
-        if (Math.abs(errAngle) < 2) {
+        if (thetaX > 180){
+          thetaX -= 360;
+        }
+        double errAngle = DESIRED_HEADING + thetaX;
+        if (Math.abs(errAngle) < 5) {
           errAngle = 0;
         }
         

@@ -40,7 +40,7 @@ public class OakCamera extends SubsystemBase {
     // loop through ever object the cammera detects
     for (OakCameraObject objectInstance : cameraObjects) {
       //filter out non notes
-      if (objectInstance.getType() != "note") {
+      if (!objectInstance.getType().equals("note")) {
         continue;
       }
       //filter out notes that are too far
