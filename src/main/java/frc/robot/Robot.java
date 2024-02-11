@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.OakCamera;
+import frc.utils.CameraDriveUtil;
+import frc.utils.OakCameraObject;
 
 // import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.wpilibj.XboxController;
@@ -63,6 +66,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    OakCamera oakCamera = m_robotContainer.m_OakCamera;
     frontLimeLight = m_robotContainer.getm_frontLimeLight();
     rearLimeLight = m_robotContainer.getm_rearLimeLight();
     DriveSubsystem m_drive = m_robotContainer.getm_driveTrain();
@@ -94,15 +98,37 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     currentLimeLight.Update_Limelight_Tracking();
     boolean trackTarget = m_robotContainer.getxboxDriver().getAButton();
+
+    double closestXAngle;
+    double closestYAngle;
+    double closestCameraDistance;
+    OakCameraObject closestNote = oakCamera.findClosestNote();
+    if (closestNote != null){
+      closestXAngle = closestNote.getXAngle();
+      closestYAngle = closestNote.getYAngle();
+      closestCameraDistance = closestNote.getCameraDistance();
+    }
+    else{
+      closestXAngle = 0;
+      closestYAngle = 0;
+      closestCameraDistance = 1000;
+    }
+
+    SmartDashboard.putNumber("Closest X Angle: ", closestXAngle);
+    SmartDashboard.putNumber("Closest Y Angle: ", closestYAngle);
+    SmartDashboard.putNumber("Distance to target: ", closestCameraDistance);
+    SmartDashboard.putBoolean("Note?: ", closestNote != null);
+
+
     if (trackTarget)
         {
-          if (currentLimeLight.hasValidTarget())
+          // m_drive.drive(0.5, 0.0, 0.0, true, false);
+          if (oakCamera.hasValidTarget())
           {
-            m_drive.drive(currentLimeLight.getLLDriveY() * driveFlip, currentLimeLight.getLLDriveX() * driveFlip, currentLimeLight.getLLDriveRotation(), false, false);
-          }
-          else
-          {
-                m_drive.drive(0.0, 0.0, 0.0, false, false);
+            m_drive.drive(CameraDriveUtil.getDriveX(closestXAngle, closestYAngle, closestCameraDistance, 1000, 0.0),
+                          CameraDriveUtil.getDriveY(closestXAngle, closestYAngle, closestCameraDistance, 1000, 0.0),
+                          CameraDriveUtil.getDriveRot(closestXAngle, 0.0), false, false);
+            SmartDashboard.putBoolean("Drive Working: ", true);
           }
         }
   }

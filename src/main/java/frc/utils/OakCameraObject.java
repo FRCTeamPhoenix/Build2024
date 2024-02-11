@@ -1,44 +1,49 @@
+package frc.utils;
 import java.lang.Math;
 
-public class oakCameraObject {
+public class OakCameraObject {
 
     private final double xAngle;
     private final double yAngle;
     private final int area;
-    private final int distanceCamera;
+    private final int cameraDistance;
+    private final double confedence;
     private final String type;
-    private final double distance;
+    private final double horizontalDistance;
 
-    public oakCameraObject(String objectDataArray) {
-        String[] objectData = objectData.split(", ");
-        this.xAngle = Math.toRadians(Float.parseFloat(objectData[0]));
-        this.yAngle = Math.toRadians(Float.parseFloat(objectData[1]));
-        this.area = Integer.parseInt(objectData[2]);
-        this.distanceCamera = Integer.parseInt(objectData[3]);
-        this.type = objectData[4];
-        this.distance = distanceCamera * sin(yAngle - 90);
+    public OakCameraObject(String objectData) {
+        String[] splitData = objectData.split(", ");
+        this.xAngle = Math.toRadians(Float.parseFloat(splitData[0]));
+        this.yAngle = Math.toRadians(Float.parseFloat(splitData[1]));
+        this.area = Integer.parseInt(splitData[2]);
+        this.cameraDistance = Integer.parseInt(splitData[3]);
+        this.confedence = Float.parseFloat(splitData[4]);
+        this.type = splitData[5];
+        this.horizontalDistance = cameraDistance * Math.sin(yAngle - 90);
     }
 
-    public returnData(String request) {
-        switch (request) {
-            case "xAngle":
-                return this.xAngle;
-                break;
-            case "yAngle":
-                return this.yAngle;
-                break;
-            case "area":
-                return this.area;
-                break;
-            case "distanceCamera":
-                return this.distanceCamera;
-                break;
-            case "type":
-                return this.type;
-                break;
-            case "distance":
-                return this.distance;
-                break;
-        }
+    public double getXAngle() {
+        return this.xAngle;
     }
+    public double getYAngle() {
+        return this.yAngle;
+    }
+    public int getArea() {
+        return this.area;    
+    }
+    public int getCameraDistance() {
+        return this.cameraDistance;    
+    }
+    public Double getConfedence() {
+        return this.confedence;  
+    }
+    public String getType() {
+        return this.type;   
+    }
+    public Double getHorizontalDistance() {
+        return this.horizontalDistance;  
+    }
+
+
+    
 }
