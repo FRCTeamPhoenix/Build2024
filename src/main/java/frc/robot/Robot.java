@@ -43,8 +43,9 @@ public class Robot extends TimedRobot {
   private LimeLight rearLimeLight;
   private LimeLight currentLimeLight;
   private double driveFlip = -1;
-  private double angle = 1.75;
+  private double angle = 0.31;
   private double joystickDeadzone = 0.5;
+  private boolean killedArm = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -76,18 +77,25 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     //Get controller buttons
-    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
-    double reverseIntake = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
-    boolean intakeNote = m_robotContainer.getXboxOperator().getLeftBumper();
-    boolean loadNote = m_robotContainer.getXboxOperator().getRightBumper();
-    boolean trackTarget = m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxDriver().getBButton();
+    double spinShooter = 0;//m_robotContainer.getXboxDriver().getRightTriggerAxis();
+    double reverseIntake = 0;//m_robotContainer.getXboxDriver().getLeftTriggerAxis();
+    boolean intakeNote = false; //m_robotContainer.getXboxDriver().getLeftBumper();
+    boolean loadNote = false; //m_robotContainer.getXboxDriver().getRightBumper();
+    boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
+    boolean killArm = m_robotContainer.getXboxDriver().getAButton();
 
     boolean isNote = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
     //Adjust current angle of arm based on triggers
     angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
     angle -= m_robotContainer.getXboxDriver().getLeftTriggerAxis() * 0.5;
+
+    if (angle > 120) {
+      angle = 120;
+    }
+    else if (angle < 0.31) {
+      angle = 0.31;
+    }
 
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
@@ -96,6 +104,9 @@ public class Robot extends TimedRobot {
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
+    if (killArm){
+      killedArm = true;
+    }
     if (m_robotContainer.getXboxDriver().getPOV() == 0){
       currentLimeLight = frontLimeLight;
       driveFlip = -1;
@@ -128,7 +139,7 @@ public class Robot extends TimedRobot {
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (intakeNote) {
-      m_intake.intakeNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+      m_intake.setDesiredVelocity(10); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
     }
     else {
       m_intake.setDesiredVelocity(0.0);
@@ -136,14 +147,14 @@ public class Robot extends TimedRobot {
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (loadNote) {
-      m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+      m_intake.setDesiredVelocity(10); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
     }
     else {
       m_intake.setDesiredVelocity(0.0);
     }
 
     if (reverseIntake >= joystickDeadzone) {
-      m_intake.setDesiredVelocity(-10.0);
+      m_intake.setDesiredVelocity(10.0);
     }
     else {
       m_intake.setDesiredVelocity(0.0);
@@ -160,11 +171,11 @@ public class Robot extends TimedRobot {
       m_shooter.setDesiredVelocity(0.0);
     }
 
-    if (killArm){
+    if (killedArm){
       m_arm.killArm();
     }
     else{
-      m_arm.moveArm(angle);
+      m_arm.killArm();
     }
   }
 
@@ -178,7 +189,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",

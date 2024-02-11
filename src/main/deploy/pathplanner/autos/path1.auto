@@ -1,0 +1,44 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.9763502326530165,
+      "y": 6.933593179167379
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "exit_shoot_preloaded"
+          }
+        },
+
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pickup_centeral_note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "central_shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pickup_front_note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
