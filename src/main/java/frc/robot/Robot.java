@@ -138,23 +138,8 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (intakeNote) {
-      m_intake.setDesiredVelocity(10); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
-    }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    }
-
-    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
-    }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    }
-
-    if (reverseIntake >= joystickDeadzone) {
-      m_intake.setDesiredVelocity(10.0);
     }
     else {
       m_intake.setDesiredVelocity(0.0);
@@ -175,7 +160,7 @@ public class Robot extends TimedRobot {
       m_arm.killArm();
     }
     else{
-      m_arm.killArm();
+      m_arm.moveArm(angle);
     }
   }
 
