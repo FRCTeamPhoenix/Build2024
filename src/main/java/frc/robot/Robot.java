@@ -136,6 +136,7 @@ public class Robot extends TimedRobot {
             m_drive.drive(0.0, 0.0, 0.0, false, false);
           }
     }
+
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function

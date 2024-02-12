@@ -14,10 +14,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 /**
  * Before Running:
@@ -56,7 +54,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 public class Arm extends SubsystemBase {
   private CANSparkMax m_leftMotor, m_rightMotor;
   private SparkPIDController m_leftPidController;
-  private AbsoluteEncoder m_leftEncoder;
+  private RelativeEncoder m_leftEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
   public Arm(int rightDeviceID, int leftDeviceID) {
@@ -73,7 +71,7 @@ public class Arm extends SubsystemBase {
 
     // initialze PID controller and encoder objects
     m_leftPidController = m_leftMotor.getPIDController();
-    m_leftEncoder = m_leftMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    m_leftEncoder = m_leftMotor.getEncoder();
 
     m_leftEncoder.setPositionConversionFactor(360.0);
 
@@ -83,7 +81,7 @@ public class Arm extends SubsystemBase {
     kP = 5e-5; 
     kI = 1e-6;
     kD = 0; 
-    kIz = 0;
+    kIz = 0; 
     kFF = 0.000156; 
     kMaxOutput = 1; 
     kMinOutput = -1;
