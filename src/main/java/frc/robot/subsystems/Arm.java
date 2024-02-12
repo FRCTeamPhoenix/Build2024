@@ -65,12 +65,17 @@ public class Arm extends SubsystemBase {
     m_leftMotor.restoreFactoryDefaults();
     m_rightMotor.restoreFactoryDefaults();
 
+
     m_leftMotor.setIdleMode(IdleMode.kBrake);
     m_rightMotor.setIdleMode(IdleMode.kBrake);
 
     // initialze PID controller and encoder objects
     m_leftPidController = m_leftMotor.getPIDController();
     m_leftEncoder = m_leftMotor.getEncoder();
+
+    m_leftEncoder.setPositionConversionFactor(360.0);
+
+    m_leftPidController.setFeedbackDevice(m_leftEncoder);
 
     // PID coefficients
     kP = 5e-5; 
@@ -83,8 +88,8 @@ public class Arm extends SubsystemBase {
     maxRPM = 5700;
 
     // Smart Motion Coefficients
-    maxVel = 2000; // rpm
-    maxAcc = 1500;
+    maxVel = 1000; // rpm
+    maxAcc = 250;
 
     // set PID coefficients
     m_leftPidController.setP(kP);
@@ -125,9 +130,8 @@ public class Arm extends SubsystemBase {
   }
 
   public void moveArm(double setpoint) {
-    m_leftPidController.setReference(-setpoint, CANSparkMax.ControlType.kSmartMotion);
-    
-    SmartDashboard.putNumber("Output", m_rightMotor.getAppliedOutput());
+    m_leftPidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+    SmartDashboard.putNumber("Output", m_leftMotor.getAppliedOutput());
   }
 
   public void killArm(){

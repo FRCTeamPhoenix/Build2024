@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   private LimeLight rearLimeLight;
   private LimeLight currentLimeLight;
   private double driveFlip = -1;
-  private double angle = 0.31;
+  private double angle = 2.0;
   private double joystickDeadzone = 0.5;
   private boolean killedArm = false;
 
@@ -90,12 +90,12 @@ public class Robot extends TimedRobot {
     angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
     angle -= m_robotContainer.getXboxDriver().getLeftTriggerAxis() * 0.5;
 
-    if (angle > 120) {
-      angle = 120;
-    }
-    else if (angle < 0.31) {
-      angle = 0.31;
-    }
+    // if (angle > 120) {
+    //   angle = 120;
+    // }
+    // else if (angle < 0.31) {
+    //   angle = 0.31;
+    // }
 
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("CurrentAngle", m_arm.currentAngle());
+    SmartDashboard.putNumber("Current Angle", m_arm.currentAngle());
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
       m_shooter.setDesiredVelocity(0.0);
     }
 
-    if (killedArm){
+    if (killArm){
       m_arm.killArm();
     }
     else{
