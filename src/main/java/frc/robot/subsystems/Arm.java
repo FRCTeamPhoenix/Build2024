@@ -56,7 +56,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 public class Arm extends SubsystemBase {
   private CANSparkMax m_leftMotor, m_rightMotor;
   private SparkPIDController m_leftPidController;
-  private AbsoluteEncoder m_leftEncoder;
+  private RelativeEncoder m_leftEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
   public Arm(int rightDeviceID, int leftDeviceID) {
@@ -72,7 +72,7 @@ public class Arm extends SubsystemBase {
 
     // initialze PID controller and encoder objects
     m_leftPidController = m_leftMotor.getPIDController();
-    m_leftEncoder = m_leftMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    m_leftEncoder = m_leftMotor.getEncoder();
 
     // PID coefficients
     kP = 5e-5; 

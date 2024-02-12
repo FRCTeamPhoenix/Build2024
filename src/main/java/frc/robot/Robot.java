@@ -81,6 +81,7 @@ public class Robot extends TimedRobot {
     double reverseIntake = 0;//m_robotContainer.getXboxDriver().getLeftTriggerAxis();
     boolean intakeNote = false; //m_robotContainer.getXboxDriver().getLeftBumper();
     boolean loadNote = m_robotContainer.getXboxDriver().getRightBumper();
+    boolean spitNote = m_robotContainer.getXboxDriver().getLeftBumper();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
     boolean killArm = m_robotContainer.getXboxDriver().getAButton();
 
@@ -138,28 +139,16 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (intakeNote) {
-      m_intake.setDesiredVelocity(10); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
-    }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    }
-
-    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
     }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    }
-
-    if (reverseIntake >= joystickDeadzone) {
-      m_intake.setDesiredVelocity(10.0);
+    else if (spitNote) {
+      m_intake.setDesiredVelocity(-4.0);
     }
     else {
       m_intake.setDesiredVelocity(0.0);
     }
-
+    
     // Spins the shooters up to the specified speed to fire a note.
     if (spinShooter >= joystickDeadzone) {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
@@ -175,7 +164,7 @@ public class Robot extends TimedRobot {
       m_arm.killArm();
     }
     else{
-      m_arm.killArm();
+      m_arm.moveArm(angle);
     }
   }
 
