@@ -47,7 +47,7 @@ public class RobotContainer {
   public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  //private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("ChargerDance");
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -67,7 +67,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     //Add Autos
-    //SmartDashboard.putData("Auto", autoChooser);
+    SmartDashboard.putData("Auto", autoChooser);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -111,9 +111,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  //public Command getAutonomousCommand() {
-    //return autoChooser.getSelected();
-  //}
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
 
   public LimeLight getFrontLimeLight() {
     return m_frontLimeLight;
