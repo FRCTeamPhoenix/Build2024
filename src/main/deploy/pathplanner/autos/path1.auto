@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9763502326530165,
-      "y": 6.933593179167379
+      "x": 2.1157187747352966,
+      "y": 6.2519196924514855
     },
     "rotation": 0
   },
@@ -14,26 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "exit_shoot_preloaded"
-          }
-        },
-
-        {
-          "type": "path",
-          "data": {
-            "pathName": "pickup_centeral_note"
+            "pathName": "Example Path"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "central_shoot"
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "pickup_front_note"
+            "pathName": "2Example Path"
           }
         }
       ]
