@@ -45,7 +45,6 @@ public class Robot extends TimedRobot {
   private double driveFlip = -1;
   private double angle = 2.0;
   private double joystickDeadzone = 0.5;
-  private boolean killedArm = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -74,28 +73,36 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
+    CommandScheduler.getInstance().run();  
 
     //Get controller buttons
-    double spinShooter = 0;//m_robotContainer.getXboxDriver().getRightTriggerAxis();
-    double reverseIntake = 0;//m_robotContainer.getXboxDriver().getLeftTriggerAxis();
-    boolean intakeNote = false; //m_robotContainer.getXboxDriver().getLeftBumper();
-    boolean loadNote = m_robotContainer.getXboxDriver().getRightBumper();
+    double spinShooter = m_robotContainer.getXboxDriver().getRightTriggerAxis();
+    boolean intakeNote = m_robotContainer.getXboxDriver().getRightBumper();
+    boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
+    double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxDriver().getAButton();
+    boolean killArm = m_robotContainer.getXboxOperator().getAButton();
+    double dPad = m_robotContainer.getXboxOperator().getPOV();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
-    //Adjust current angle of arm based on triggers
-    angle += m_robotContainer.getXboxDriver().getRightTriggerAxis() * 0.5;
-    angle -= m_robotContainer.getXboxDriver().getLeftTriggerAxis() * 0.5;
+    // //Adjust current angle of arm based on triggers
+    // angle += m_robotContainer.getXboxOperator().getRightTriggerAxis() * 0.5;
+    // angle -= m_robotContainer.getXboxOperator().getLeftTriggerAxis() * 0.5;
 
-    // if (angle > 120) {
-    //   angle = 120;
-    // }
-    // else if (angle < 0.31) {
-    //   angle = 0.31;
-    // }
+    if (dPad == 0) {
+      angle += 0.125;
+    }
+    else if (dPad == 180) {
+      angle -= 0.125;
+    }
+
+    if (angle > 120) {
+      angle = 120;
+    }
+    else if (angle < 2.0) {
+      angle = 2.0;
+    }
 
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
@@ -104,9 +111,6 @@ public class Robot extends TimedRobot {
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
-    if (killArm){
-      killedArm = true;
-    }
     if (m_robotContainer.getXboxDriver().getPOV() == 0){
       currentLimeLight = frontLimeLight;
       driveFlip = -1;
@@ -138,8 +142,14 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (loadNote) {
+    if (intakeNote) {
+      m_intake.intakeNote(isNote);
+    }
+    else if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
+    }
+    else if (spitNote >= joystickDeadzone) {
+      m_intake.spitNote(isNote);
     }
     else {
       m_intake.setDesiredVelocity(0.0);

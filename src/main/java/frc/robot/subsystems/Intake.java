@@ -76,4 +76,13 @@ public class Intake {
       setDesiredVelocity(0.0);
     }
   }
+
+  public void spitNote(boolean noteInShooter) {
+    if (noteInShooter) {
+      setDesiredVelocity(-3.5);
+    }
+    else {
+      setDesiredVelocity(0.0);
+    }
+  }
 }
