@@ -29,7 +29,7 @@ public final class Constants {
 
     //VERY IMPORTANT!!!!!!
     //Are we using TalonFX or are we using SPARK MAX?
-    public static final boolean usingTalons = false;
+    public static final boolean usingTalons = true;
     //Are we using Pigeon2 or Pigeon
     public static final boolean usingPigeon2 = true;
 

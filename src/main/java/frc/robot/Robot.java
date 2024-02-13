@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmModule;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
@@ -81,8 +81,8 @@ public class Robot extends TimedRobot {
     boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
     double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxOperator().getAButton();
-    double dPad = m_robotContainer.getXboxOperator().getPOV();
+    boolean killArm = m_robotContainer.getXboxDriver().getAButton();
+    double dPad = m_robotContainer.getXboxDriver().getPOV();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
-    Arm m_arm = m_robotContainer.getArm();
+    ArmModule m_arm = m_robotContainer.getArm();
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("Current Angle", m_arm.currentAngle());
+    SmartDashboard.putNumber("Current Angle", m_arm.getPosition());
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
@@ -170,7 +170,7 @@ public class Robot extends TimedRobot {
       m_arm.killArm();
     }
     else{
-      m_arm.moveArm(angle);
+      m_arm.setDesiredState(angle);
     }
   }
 

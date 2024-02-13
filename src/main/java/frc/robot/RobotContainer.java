@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmModule;
 import frc.robot.subsystems.Shooter;
 
 
@@ -57,7 +58,7 @@ public class RobotContainer {
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
-  private final Arm m_arm = new Arm(14, 13);
+  private final ArmModule m_arm = new ArmModule(13, 14);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -135,7 +136,7 @@ public class RobotContainer {
     return m_robotDrive;
   }
 
-  public Arm getArm(){
+  public ArmModule getArm(){
     return m_arm;
   }
 
