@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2530691728050125,
+      "y": 7.0934502362831875
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot_preloaded"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pick_note_home_center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot_note_home_center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pickup central_note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot_central_note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pickup_central(topmost)_note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot_central(topmost)_note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

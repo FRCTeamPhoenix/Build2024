@@ -28,6 +28,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmModule;
+import frc.robot.subsystems.Shooter;
+
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -42,7 +48,7 @@ public class RobotContainer {
   public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("ChargerDance");
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -50,6 +56,9 @@ public class RobotContainer {
   private final XboxController xbox_operator = new XboxController(1);
   private final XboxController xbox_driver = new XboxController(0);
 
+  private final Shooter m_shooter = new Shooter(10, 11);
+  private final Intake m_intake = new Intake(12);
+  private final ArmModule m_arm = new ArmModule(13, 14);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,10 +76,10 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
+                true, m_driverController.getRightBumper()),
             m_robotDrive));
 
         
@@ -92,7 +101,7 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive));
     //Reset the Gyro to zero heading with the Right Bumper
-    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));            
@@ -107,23 +116,35 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public LimeLight getm_frontLimeLight() {
+  public LimeLight getFrontLimeLight() {
     return m_frontLimeLight;
   }
 
-  public LimeLight getm_rearLimeLight() {
+  public LimeLight getRearLimeLight() {
     return m_rearLimeLight;
   }
 
-  public XboxController getxboxDriver() {
+  public XboxController getXboxDriver() {
     return xbox_driver;
   }
 
-  public XboxController getxboxOperator() {
+  public XboxController getXboxOperator() {
     return xbox_operator;
   }
 
-  public DriveSubsystem getm_driveTrain(){
+  public DriveSubsystem getDrivetrain(){
     return m_robotDrive;
+  }
+
+  public ArmModule getArm(){
+    return m_arm;
+  }
+
+  public Shooter getShooter(){
+    return m_shooter;
+  }
+
+  public Intake getIntake(){
+    return m_intake;
   }
 }
