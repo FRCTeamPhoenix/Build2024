@@ -78,7 +78,7 @@ public class CameraDriveUtil {
           theta -= 360;
         }
 
-        double xDistance = distance * Math.sin(Math.toRadians(theta));
+        double xDistance = distance * Math.cos(Math.toRadians(theta));
 
         // if distance within 0.15 of desired distance set error to 0
         double xError = xDistance - desiredXDistance;
@@ -108,7 +108,7 @@ public class CameraDriveUtil {
           theta -= 360;
         }
 
-        double yDistance = distance * Math.cos(Math.toRadians(theta));
+        double yDistance = distance * Math.sin(Math.toRadians(theta));
 
         // if distance within 0.15 of desired distance set error to 0
         double yError = yDistance - desiredYDistance;
