@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   private LimeLight rearLimeLight;
   private LimeLight currentLimeLight;
   private double driveFlip = -1;
-  private double angle = 2.0;
+  private double angle;
   private double joystickDeadzone = 0.5;
 
   /**
@@ -86,28 +86,32 @@ public class Robot extends TimedRobot {
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
-    // //Adjust current angle of arm based on triggers
-    // angle += m_robotContainer.getXboxOperator().getRightTriggerAxis() * 0.5;
-    // angle -= m_robotContainer.getXboxOperator().getLeftTriggerAxis() * 0.5;
-
-    if (dPad == 0) {
-      angle += 0.125;
-    }
-    else if (dPad == 180) {
-      angle -= 0.125;
-    }
-
-    if (angle > 120) {
-      angle = 120;
-    }
-    else if (angle < 2.0) {
-      angle = 2.0;
-    }
+    
 
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
     ArmModule m_arm = m_robotContainer.getArm();
+    /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
+     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
+     * ramp from get_position() For now arm position is in radians.
+     */
+    angle = m_arm.getArmPositionRequest();
+    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
+
+    if (dPad == 0) {
+      angle += arm_range/100;
+    }
+    else if (dPad == 180) {
+      angle -= arm_range/100;
+    }
+    if (angle > arm_range/3) {
+      angle = 2*Math.PI/3;  //120 degrees
+    }
+    else if (angle < 2.0) {
+      angle = arm_range/50;
+    }
+
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
@@ -126,7 +130,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("Current Angle", m_arm.getPosition());
+    SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
@@ -170,7 +174,7 @@ public class Robot extends TimedRobot {
       m_arm.killArm();
     }
     else{
-      m_arm.setDesiredState(angle);
+      m_arm.setArmPosition(angle);
     }
   }
 
