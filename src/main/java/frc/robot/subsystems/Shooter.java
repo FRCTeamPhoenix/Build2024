@@ -10,7 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;;
 
 public class Shooter {
   private final CANSparkMax m_leftMotor;
@@ -36,20 +36,21 @@ public class Shooter {
 
     // Apply position and velocity conversion factors for the motor encoders. The
     // native unit for velocity is RPM, but we want meters per second for human input.
-    m_encoder.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
+    m_encoder.setPositionConversionFactor(ShooterConstants.kShooterEncoderPositionFactor);
+    m_encoder.setVelocityConversionFactor(ShooterConstants.kShooterEncoderVelocityFactor);
 
     // Set the PID gains for the motors. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_PIDController.setP(ModuleConstants.kShooterP);
-    m_PIDController.setI(ModuleConstants.kShooterI);
-    m_PIDController.setD(ModuleConstants.kShooterD);
-    m_PIDController.setFF(ModuleConstants.kShooterFF);
+    m_PIDController.setP(ShooterConstants.kShooterP);
+    m_PIDController.setI(ShooterConstants.kShooterI);
+    m_PIDController.setD(ShooterConstants.kShooterD);
+    m_PIDController.setFF(ShooterConstants.kShooterFF);
     m_PIDController.setOutputRange(-1, 1);
 
-    m_leftMotor.setIdleMode(ModuleConstants.kShooterMotorIdleMode);
+    m_leftMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
     m_leftMotor.setSmartCurrentLimit(40);
 
-    m_rightMotor.setIdleMode(ModuleConstants.kShooterMotorIdleMode);
+    m_rightMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
     m_rightMotor.setSmartCurrentLimit(40);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during

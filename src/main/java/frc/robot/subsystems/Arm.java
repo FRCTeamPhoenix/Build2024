@@ -57,7 +57,7 @@ public class Arm extends SubsystemBase {
   private RelativeEncoder m_leftEncoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
-  public Arm(int rightDeviceID, int leftDeviceID) {
+  public Arm(int leftDeviceID, int rightDeviceID) {
     // initialize motor
     m_leftMotor = new CANSparkMax(leftDeviceID, MotorType.kBrushless);
     m_rightMotor = new CANSparkMax(rightDeviceID, MotorType.kBrushless);
