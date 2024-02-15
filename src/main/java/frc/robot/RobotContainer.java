@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ArmModule;
 import frc.robot.subsystems.Shooter;
 
 
@@ -51,14 +50,12 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
-  private final XboxController xbox_operator = new XboxController(1);
-  private final XboxController xbox_driver = new XboxController(0);
+  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
-  private final ArmModule m_arm = new ArmModule(13, 14);
+  private final Arm m_arm = new Arm(13, 14);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -125,18 +122,18 @@ public class RobotContainer {
   }
 
   public XboxController getXboxDriver() {
-    return xbox_driver;
+    return m_driverController;
   }
 
   public XboxController getXboxOperator() {
-    return xbox_operator;
+    return m_operatorController;
   }
 
   public DriveSubsystem getDrivetrain(){
     return m_robotDrive;
   }
 
-  public ArmModule getArm(){
+  public Arm getArm(){
     return m_arm;
   }
 
