@@ -100,15 +100,15 @@ public class Robot extends TimedRobot {
     double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
 
     if (dPad == 0) {
-      angle += arm_range/100;
+      angle += arm_range/300;
     }
     else if (dPad == 180) {
-      angle -= arm_range/100;
+      angle -= arm_range/300;
     }
-    if (angle > arm_range/3) {
-      angle = 2*Math.PI/3;  //120 degrees
+    if (angle > arm_range/2) {
+      angle = Math.PI;  //180 degrees
     }
-    else if (angle < 2.0) {
+    else if (angle < arm_range/50) {
       angle = arm_range/50;
     }
 

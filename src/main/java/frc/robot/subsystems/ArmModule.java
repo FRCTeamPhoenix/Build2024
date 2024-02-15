@@ -50,14 +50,14 @@ public class ArmModule {
     
     // this shoould become part of constants.java
     final class ArmConstants {
-      public static final double kArmP = 1;
+      public static final double kArmP = 0.2;
       public static final double kArmI = 0;
       public static final double kArmD = 0;
       public static final double kArmFF = 0;
-      public static final double kArmMinOutput = -1;
-      public static final double kArmMaxOutput = 1;
+      public static final double kArmMinOutput = -0.3;
+      public static final double kArmMaxOutput = 0.3;
       public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-      public static final int kArmMotorCurrentLimit = 20; // amps
+      public static final int kArmMotorCurrentLimit = 10; // amps
   
       public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
       public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per secon
@@ -83,6 +83,8 @@ public class ArmModule {
     m_armPIDController = m_leftMotor.getPIDController();
 
     m_armPIDController.setFeedbackDevice(m_armEncoder);
+
+    m_leftMotor.setInverted(true);
 
 
     // Apply position and velocity conversion factors for the turning encoder. We
