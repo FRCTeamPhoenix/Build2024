@@ -50,12 +50,12 @@ public class Arm {
     
     // this shoould become part of constants.java
     final class ArmConstants {
-      public static final double kArmP = 0.2;
+      public static final double kArmP = 0.5;
       public static final double kArmI = 0;
       public static final double kArmD = 0;
       public static final double kArmFF = 0;
-      public static final double kArmMinOutput = -0.3;
-      public static final double kArmMaxOutput = 0.3;
+      public static final double kArmMinOutput = -0.7;
+      public static final double kArmMaxOutput = 0.7;
       public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
       public static final int kArmMotorCurrentLimit = 10; // amps
   

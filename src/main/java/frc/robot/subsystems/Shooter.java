@@ -82,7 +82,7 @@ public class Shooter {
   public void setDesiredVelocity(double desiredVelocity) {
     // Command intake motors towards their respective setpoints, with one motor being flipped
     // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
-    m_PIDControllerLeft.setReference(desiredVelocity * 0.5, ControlType.kVelocity);
-    m_PIDControllerRight.setReference(desiredVelocity * 0.4, ControlType.kVelocity);
+    m_PIDControllerLeft.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
+    m_PIDControllerRight.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
   }
 }
