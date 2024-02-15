@@ -1,144 +1,164 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+/* This is derived from MAXSwerve module code by retaining only the turning motor code 
+ * and doing some renaming - also added a local ArmConstants class that should be 
+ * moved to constants.java.  For now, because the swerve code was all in radians this 
+ * is also in radians.  There are also edits to the arm control code in robot.java to 
+ * make the units consistent
+*/
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 
-/**
- * Before Running:
- * Open shuffleBoard, select File->Load Layout and select the 
- * shuffleboard.json that is in the root directory of this example
- */
+//import frc.robot.Constants.ModuleConstants;
 
-/**
- * REV Smart Motion Guide
- * 
- * The SPARK MAX includes a new control mode, REV Smart Motion which is used to 
- * control the position of the motor, and includes a max velocity and max 
- * acceleration parameter to ensure the motor moves in a smooth and predictable 
- * way. This is done by generating a motion profile on the fly in SPARK MAX and 
- * controlling the velocity of the motor to follow this profile.
- * 
- * Since REV Smart Motion uses the velocity to track a profile, there are only 
- * two steps required to configure this mode:
- *    1) Tune a velocity PID loop for the mechanism
- *    2) Configure the smart motion parameters
- * 
- * Tuning the Velocity PID Loop
- * 
- * The most important part of tuning any closed loop control such as the velocity 
- * PID, is to graph the inputs and outputs to understand exactly what is happening. 
- * For tuning the Velocity PID loop, at a minimum we recommend graphing:
- *
- *    1) The velocity of the mechanism (‘Process variable’)
- *    2) The commanded velocity value (‘Setpoint’)
- *    3) The applied output
- *
- * This example will use ShuffleBoard to graph the above parameters. Make sure to
- * load the shuffleboard.json file in the root of this directory to get the full
- * effect of the GUI layout.
- */
-public class Arm extends SubsystemBase {
-  private CANSparkMax m_leftMotor, m_rightMotor;
-  private SparkPIDController m_leftPidController;
-  private RelativeEncoder m_leftEncoder;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
-  public Arm(int rightDeviceID, int leftDeviceID) {
-    // initialize motor
-    m_leftMotor = new CANSparkMax(leftDeviceID, MotorType.kBrushless);
-    m_rightMotor = new CANSparkMax(rightDeviceID, MotorType.kBrushless);
+public class Arm {
+  
+  private final CANSparkMax m_leftMotor;
+  private final CANSparkMax m_rightMotor;
 
+  private final AbsoluteEncoder m_armEncoder;
+
+  private final SparkPIDController m_armPIDController;
+
+  private double armPositionRequest;
+
+  //private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+  /**
+   * Constructs a MAXSwerveModule and configures the driving and turning motor,
+   * encoder, and PID controller. This configuration is specific to the REV
+   * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
+   * Encoder.
+   */
+  public Arm(int leftCANID, int rightCANID) {
+    
+    // this shoould become part of constants.java
+    final class ArmConstants {
+      public static final double kArmP = 0.2;
+      public static final double kArmI = 0;
+      public static final double kArmD = 0;
+      public static final double kArmFF = 0;
+      public static final double kArmMinOutput = -0.3;
+      public static final double kArmMaxOutput = 0.3;
+      public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
+      public static final int kArmMotorCurrentLimit = 10; // amps
+  
+      public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
+      public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+      public static final double kArmEncoderPositionPIDMinInput = 0; // radians
+      public static final double kArmEncoderPositionPIDMaxInput = kArmEncoderPositionFactor; // radians
+  }
+  
+
+    m_leftMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
+    m_rightMotor = new CANSparkMax(rightCANID, MotorType.kBrushless);
+
+    // Factory reset, so we get the SPARKS MAX to a known state before configuring
+    // them. This is useful in case a SPARK MAX is swapped out.
+   
     m_leftMotor.restoreFactoryDefaults();
     m_rightMotor.restoreFactoryDefaults();
 
+    // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
 
-    m_leftMotor.setIdleMode(IdleMode.kBrake);
-    m_rightMotor.setIdleMode(IdleMode.kBrake);
+    m_armEncoder = m_leftMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
+   
+    m_armPIDController = m_leftMotor.getPIDController();
 
-    // initialze PID controller and encoder objects
-    m_leftPidController = m_leftMotor.getPIDController();
-    m_leftEncoder = m_leftMotor.getEncoder();
+    m_armPIDController.setFeedbackDevice(m_armEncoder);
 
-    m_leftEncoder.setPositionConversionFactor(360.0);
+    m_leftMotor.setInverted(true);
 
-    m_leftPidController.setFeedbackDevice(m_leftEncoder);
 
-    // PID coefficients
-    kP = 5e-5; 
-    kI = 1e-6;
-    kD = 0; 
-    kIz = 0; 
-    kFF = 0.000156; 
-    kMaxOutput = 1; 
-    kMinOutput = -1;
-    maxRPM = 5700;
+    // Apply position and velocity conversion factors for the turning encoder. We
+    // want these in radians and radians per second to use with WPILib's swerve
+    // APIs.
+    m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
+    m_armEncoder.setVelocityConversionFactor(ArmConstants.kArmEncoderVelocityFactor);
 
-    // Smart Motion Coefficients
-    maxVel = 1000; // rpm
-    maxAcc = 250;
+    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+    // the steering motor in the MAXSwerve Module.
+    //m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
 
-    // set PID coefficients
-    m_leftPidController.setP(kP);
-    m_leftPidController.setI(kI);
-    m_leftPidController.setD(kD);
-    m_leftPidController.setIZone(kIz);
-    m_leftPidController.setFF(kFF);
-    m_leftPidController.setOutputRange(kMinOutput, kMaxOutput);
+    // Enable PID wrap around for the turning motor. This will allow the PID
+    // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+    // to 10 degrees will go through 0 rather than the other direction which is a
+    // longer route.
 
-    /**
-     * Smart Motion coefficients are set on a SparkPIDController object
-     * 
-     * - setSmartMotionMaxVelocity() will limit the velocity in RPM of
-     * the pid controller in Smart Motion mode
-     * - setSmartMotionMinOutputVelocity() will put a lower bound in
-     * RPM of the pid controller in Smart Motion mode
-     * - setSmartMotionMaxAccel() will limit the acceleration in RPM^2
-     * of the pid controller in Smart Motion mode
-     * - setSmartMotionAllowedClosedLoopError() will set the max allowed
-     * error for the pid controller in Smart Motion mode
-     */
-    int smartMotionSlot = 0;
-    m_leftPidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    m_leftPidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-    m_leftPidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    m_leftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    /* this code was changed back to enable wrpping and configure the sensor range */
+    m_armPIDController.setPositionPIDWrappingEnabled(true);
+    m_armPIDController.setPositionPIDWrappingMinInput(ArmConstants.kArmEncoderPositionPIDMinInput);
+    m_armPIDController.setPositionPIDWrappingMaxInput(ArmConstants.kArmEncoderPositionPIDMaxInput);
+
+    // Set the PID gains for the turning motor. Note these are example gains, and you
+    // may need to tune them for your own robot!
+    m_armPIDController.setP(ArmConstants.kArmP);
+    m_armPIDController.setI(ArmConstants.kArmI);
+    m_armPIDController.setD(ArmConstants.kArmD);
+    m_armPIDController.setFF(ArmConstants.kArmFF);
+    m_armPIDController.setOutputRange(ArmConstants.kArmMinOutput,
+        ArmConstants.kArmMaxOutput);
+
+    m_leftMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
+    m_leftMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
+
+    m_rightMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
+    m_rightMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
+
+    // Save the SPARK MAX configurations. If a SPARK MAX browns out during
+    // operation, it will maintain the above configurations.
+    m_leftMotor.burnFlash();
 
     m_rightMotor.follow(m_leftMotor, true);
-
-    m_leftMotor.burnFlash();
     m_rightMotor.burnFlash();
+
+
+    armPositionRequest = getArmPosition();  // initialize to where we are
+
   }
 
-  @Override
-  public void periodic() {
-      // This method will be called once per scheduler run
-      
+  /**
+   * Returns the current position of the module.
+   *
+   * @return The current position of the module.
+   */
+  public double getArmPosition() {
+    return m_armEncoder.getPosition();
   }
 
-  public void moveArm(double setpoint) {
-    m_leftPidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    SmartDashboard.putNumber("Output", m_leftMotor.getAppliedOutput());
+  public double getArmPositionRequest() {
+    return armPositionRequest;
   }
 
-  public void killArm(){
-    m_leftPidController.setReference(0.0, ControlType.kVoltage);
+  /**
+   * Sets the desired state for the module.
+   *
+   * @param desiredState Desired state with speed and angle.
+   */
+  public void setArmPosition(double angle) {
+    // Command driving and turning SPARKS MAX towards their respective setpoints.
+    m_armPIDController.setReference(angle, ControlType.kPosition);
+    armPositionRequest = angle;
   }
-  
-  public double currentAngle(){
-    return m_leftEncoder.getPosition();
+
+  public void killArm() {
+    m_armPIDController.setReference(0.0, ControlType.kVoltage);
   }
 }

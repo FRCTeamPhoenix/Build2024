@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.ArmModule;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
@@ -76,13 +76,13 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();  
 
     //Get controller buttons
-    double spinShooter = m_robotContainer.getXboxDriver().getRightTriggerAxis();
-    boolean intakeNote = m_robotContainer.getXboxDriver().getRightBumper();
+    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
+    boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
     boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
     double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxDriver().getAButton();
-    double dPad = m_robotContainer.getXboxDriver().getPOV();
+    boolean killArm = m_robotContainer.getXboxOperator().getAButton();
+    double dPad = m_robotContainer.getXboxOperator().getPOV();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
-    ArmModule m_arm = m_robotContainer.getArm();
+    Arm m_arm = m_robotContainer.getArm();
     /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
      * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
      * ramp from get_position() For now arm position is in radians.
@@ -164,7 +164,7 @@ public class Robot extends TimedRobot {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(10);
+      m_shooter.setDesiredVelocity(30);
     }
     else {
       m_shooter.setDesiredVelocity(0.0);
