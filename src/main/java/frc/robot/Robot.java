@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
@@ -44,7 +45,7 @@ public class Robot extends TimedRobot {
   private LimeLight rearLimeLight;
   private LimeLight currentLimeLight;
   private double driveFlip = -1;
-  private double angle = 2.0;
+  private double angle;
   private double joystickDeadzone = 0.5;
 
   /**
@@ -77,38 +78,21 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();  
 
     //Get controller buttons
-    double spinShooter = m_robotContainer.getXboxDriver().getRightTriggerAxis();
-    boolean intakeNote = m_robotContainer.getXboxDriver().getRightBumper();
+    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
+    boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
     boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
     double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxDriver().getAButton();
-    double dPad = m_robotContainer.getXboxDriver().getPOV();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
-    // //Adjust current angle of arm based on triggers
-    // angle += m_robotContainer.getXboxOperator().getRightTriggerAxis() * 0.5;
-    // angle -= m_robotContainer.getXboxOperator().getLeftTriggerAxis() * 0.5;
-
-    if (dPad == 0) {
-      angle += 0.125;
-    }
-    else if (dPad == 180) {
-      angle -= 0.125;
-    }
-
-    if (angle > 120) {
-      angle = 120;
-    }
-    else if (angle < 2.0) {
-      angle = 2.0;
-    }
+    
 
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
     Arm m_arm = m_robotContainer.getArm();
+
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
@@ -127,7 +111,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("Current Angle", m_arm.currentAngle());
+    SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
@@ -144,7 +129,7 @@ public class Robot extends TimedRobot {
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (intakeNote) {
-      m_intake.intakeNote(isNote);
+      m_intake.intakeNote(false);
     }
     else if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
@@ -161,18 +146,12 @@ public class Robot extends TimedRobot {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(10);
+      m_shooter.setDesiredVelocity(30);
     }
     else {
       m_shooter.setDesiredVelocity(0.0);
     }
 
-    if (killArm){
-      m_arm.killArm();
-    }
-    else{
-      m_arm.moveArm(angle);
-    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

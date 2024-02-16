@@ -14,10 +14,13 @@ import frc.robot.Constants.ShooterConstants;;
 
 public class Shooter {
   private final CANSparkMax m_leftMotor;
-  private final SparkPIDController m_PIDController;
-  private final RelativeEncoder m_encoder;
+    private final CANSparkMax m_rightMotor;
 
-  private final CANSparkMax m_rightMotor;
+  private final SparkPIDController m_PIDControllerLeft;
+  private final SparkPIDController m_PIDControllerRight;
+
+  private final RelativeEncoder m_encoderLeft;
+  private final RelativeEncoder m_encoderRight;
 
   // TODO: Confirm that constants used apply to the shooter. We may need new constants specific to the shooter.
   public Shooter(int leftCANID, int rightCANID) {
@@ -30,22 +33,37 @@ public class Shooter {
     m_rightMotor.restoreFactoryDefaults();
 
     // Setup encoders and PID controllers for the left and right SPARKS MAX.
-    m_encoder = m_leftMotor.getEncoder();
-    m_PIDController = m_leftMotor.getPIDController();
-    m_PIDController.setFeedbackDevice(m_encoder);
+    m_encoderLeft = m_leftMotor.getEncoder();
+    m_PIDControllerLeft = m_leftMotor.getPIDController();
+    m_PIDControllerLeft.setFeedbackDevice(m_encoderLeft);
+
+    m_encoderRight = m_rightMotor.getEncoder();
+    m_PIDControllerRight = m_rightMotor.getPIDController();
+    m_PIDControllerRight.setFeedbackDevice(m_encoderRight);
+
+    m_leftMotor.setInverted(true);
 
     // Apply position and velocity conversion factors for the motor encoders. The
     // native unit for velocity is RPM, but we want meters per second for human input.
-    m_encoder.setPositionConversionFactor(ShooterConstants.kShooterEncoderPositionFactor);
-    m_encoder.setVelocityConversionFactor(ShooterConstants.kShooterEncoderVelocityFactor);
+    m_encoderLeft.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
+    m_encoderRight.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
 
     // Set the PID gains for the motors. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_PIDController.setP(ShooterConstants.kShooterP);
-    m_PIDController.setI(ShooterConstants.kShooterI);
-    m_PIDController.setD(ShooterConstants.kShooterD);
-    m_PIDController.setFF(ShooterConstants.kShooterFF);
-    m_PIDController.setOutputRange(-1, 1);
+    m_PIDControllerLeft.setP(ModuleConstants.kShooterP);
+    m_PIDControllerLeft.setI(ModuleConstants.kShooterI);
+    m_PIDControllerLeft.setD(ModuleConstants.kShooterD);
+    m_PIDControllerLeft.setFF(ModuleConstants.kShooterFF);
+    m_PIDControllerLeft.setOutputRange(-1, 1);
+
+    m_PIDControllerRight.setP(ModuleConstants.kShooterP);
+    m_PIDControllerRight.setI(ModuleConstants.kShooterI);
+    m_PIDControllerRight.setD(ModuleConstants.kShooterD);
+    m_PIDControllerRight.setFF(ModuleConstants.kShooterFF);
+    m_PIDControllerRight.setOutputRange(-1, 1);
+
+
+
 
     m_leftMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
     m_leftMotor.setSmartCurrentLimit(40);
@@ -56,14 +74,16 @@ public class Shooter {
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.
     m_leftMotor.burnFlash();
+
+    // m_rightMotor.follow(m_leftMotor, true);
     m_rightMotor.burnFlash();
 
-    m_rightMotor.follow(m_leftMotor, true);
   }
 
   public void setDesiredVelocity(double desiredVelocity) {
     // Command intake motors towards their respective setpoints, with one motor being flipped
     // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
-    m_PIDController.setReference(-desiredVelocity, ControlType.kVelocity);
+    m_PIDControllerLeft.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
+    m_PIDControllerRight.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
   }
 }

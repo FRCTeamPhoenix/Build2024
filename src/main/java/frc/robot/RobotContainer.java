@@ -59,8 +59,9 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
 
   // The driver's controller
-  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  private final XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
@@ -87,6 +88,8 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, m_driverController.getRightBumper()),
             m_robotDrive));
+    m_arm.setDefaultCommand(new RunCommand(
+      () -> m_arm.holdPosition()));
 
         
   }
@@ -110,7 +113,15 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
-            m_robotDrive));            
+            m_robotDrive));
+    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
+        .onTrue(new RunCommand(
+            () -> m_arm.moveArmUp(),
+            m_arm)); 
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .onTrue(new RunCommand(
+            () -> m_arm.moveArmDown(),
+            m_arm));       
   }
 
   /**
