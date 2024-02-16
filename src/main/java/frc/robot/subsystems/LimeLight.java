@@ -27,7 +27,7 @@ private double m_distanceToTarget;
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        Update_Limelight_Tracking();
+        
     }
 
     @Override

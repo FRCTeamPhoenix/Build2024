@@ -6,8 +6,17 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
@@ -25,11 +34,25 @@ import edu.wpi.first.math.util.Units;
  */
 
 public final class Constants {
+    public static final class VisionConstants {
+        public static final String kCameraName = "Arducam_OV9281_USB_Camera";
+        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        public static final Transform3d kRobotToCam =
+        new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 45, 0));
+
+        // The layout of the AprilTags on the field
+        public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+            // The standard deviations of our vision estimated poses, which affect correction rate
+            // (Fake values. Experiment and determine estimation noise on an actual robot.) 
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);  
+    }
   public static final class DriveConstants {
 
     //VERY IMPORTANT!!!!!!
     //Are we using TalonFX or are we using SPARK MAX?
-    public static final boolean usingTalons = false;
+    public static final boolean usingTalons = true;
     //Are we using Pigeon2 or Pigeon
     public static final boolean usingPigeon2 = true;
 
@@ -59,7 +82,7 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // SPARK MAX CAN IDs
+    // MOTOR CAN IDs
     public static final int kFrontLeftTurningCanId = 1;
     public static final int kFrontRightTurningCanId = 2;
     public static final int kRearRightTurningCanId = 3;
@@ -71,7 +94,6 @@ public final class Constants {
     public static final int kRearLeftDrivingCanId = 8;
     
     public static final int kPigeonCanId = 9;
-    public static final int kOldPigeonCanId = 20;
 
     public static final boolean kGyroReversed = false;
   }
@@ -92,21 +114,21 @@ public final class Constants {
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kNeoDrivingMotorPinionTeeth * 15);
-    public static final double kDriveWheelFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
-        / kDrivingMotorReduction;
+    public static final double kNeoDrivingMotorReduction = (45.0 * 22) / (kNeoDrivingMotorPinionTeeth * 15);
+    public static final double kNeoDriveWheelFreeSpeedRps = (kNeoDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+        / kNeoDrivingMotorReduction;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kTalonDrivingMotorFreeSpeedRps = 6380;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
     public static final double kTalonDrivingMotorReduction = (45.0 * 22) / (kTalonDrivingMotorPinionTeeth * 15);
     public static final double kTalonDriveWheelFreeSpeedRps = (kTalonDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
-        / kDrivingMotorReduction;
+        / kTalonDrivingMotorReduction;
 
     public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
-        / kDrivingMotorReduction; // meters
+        / kNeoDrivingMotorReduction; // meters
     public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
-        / kDrivingMotorReduction) / 60.0; // meters per second
+        / kNeoDrivingMotorReduction) / 60.0; // meters per second
 
     public static final double kTalonEncoderFactor = ((kWheelDiameterMeters * Math.PI)
         / kTalonDrivingMotorReduction);
@@ -120,7 +142,7 @@ public final class Constants {
     public static final double kNeoDrivingP = 0.04;
     public static final double kNeoDrivingI = 0;
     public static final double kNeoDrivingD = 0;
-    public static final double kNeoDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+    public static final double kNeoDrivingFF = 1 / kNeoDriveWheelFreeSpeedRps;
     public static final double kNeoDrivingMinOutput = -1;
     public static final double kNeoDrivingMaxOutput = 1;
 
@@ -149,7 +171,57 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
+    public static final int kOperatorControllerPort = 1;
   }
+
+  public static final class IntakeConstants{
+    public static final double kIntakeWheelDiameterMeters = 0.0508;
+    public static final double kIntakeMotorReduction = 3.0;
+
+    public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * 0.0508)
+        / kIntakeMotorReduction;
+
+    public static final double kIntakeEncoderPositionFactor = (kIntakeWheelDiameterMeters * Math.PI)
+        / kIntakeMotorReduction; // meters
+    public static final double kIntakeEncoderVelocityFactor = ((kIntakeWheelDiameterMeters * Math.PI)
+        / kIntakeMotorReduction) / 60.0; // meters per second
+
+    public static final double kIntakeP = 0.04;
+    public static final double kIntakeI = 0;
+    public static final double kIntakeD = 0;
+    public static final double kIntakeFF = 1 / kIntakeFreeSpeedRps;
+    public static final double kIntakeMinOutput = -1;
+    public static final double kIntakeMaxOutput = 1;
+
+    public static final int kIntakeMotorCurrentLimit = 40; // amps
+
+    public static final IdleMode kIntakeMotorIdleMode = IdleMode.kBrake;
+  }
+
+  public static final class ShooterConstants{
+    public static final double kShooterWheelDiameterMeters = 0.1016;
+    public static final double kShooterMotorReduction = 1.0;
+
+    public static final double kShooterFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kShooterWheelDiameterMeters)
+        / kShooterMotorReduction;
+
+    public static final double kShooterEncoderPositionFactor = (kShooterWheelDiameterMeters * Math.PI)
+        / kShooterMotorReduction; // meters
+    public static final double kShooterEncoderVelocityFactor = ((kShooterWheelDiameterMeters * Math.PI)
+        / kShooterMotorReduction) / 60.0; // meters per second
+
+    public static final double kShooterP = 0.04;
+    public static final double kShooterI = 0;
+    public static final double kShooterD = 0;
+    public static final double kShooterFF = 1 / kShooterFreeSpeedRps;
+    public static final double kShooterMinOutput = -1;
+    public static final double kShooterMaxOutput = 1;
+    
+    public static final int kShooterMotorCurrentLimit = 40; // amps
+
+    public static final IdleMode kShooterMotorIdleMode = IdleMode.kBrake;
+  }
+  
 
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
@@ -168,5 +240,6 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+    public static final double kFreeSpeedRps = 5676 / 60;
   }
 }
