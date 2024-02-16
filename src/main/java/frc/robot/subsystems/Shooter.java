@@ -10,7 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
-import frc.robot.Constants.ShooterConstants;;
+import frc.robot.Constants.ShooterConstants;
 
 public class Shooter {
   private final CANSparkMax m_leftMotor;
@@ -45,21 +45,21 @@ public class Shooter {
 
     // Apply position and velocity conversion factors for the motor encoders. The
     // native unit for velocity is RPM, but we want meters per second for human input.
-    m_encoderLeft.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
-    m_encoderRight.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
+    m_encoderLeft.setVelocityConversionFactor(ShooterConstants.kShooterEncoderVelocityFactor);
+    m_encoderRight.setVelocityConversionFactor(ShooterConstants.kShooterEncoderVelocityFactor);
 
     // Set the PID gains for the motors. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_PIDControllerLeft.setP(ModuleConstants.kShooterP);
-    m_PIDControllerLeft.setI(ModuleConstants.kShooterI);
-    m_PIDControllerLeft.setD(ModuleConstants.kShooterD);
-    m_PIDControllerLeft.setFF(ModuleConstants.kShooterFF);
+    m_PIDControllerLeft.setP(ShooterConstants.kShooterP);
+    m_PIDControllerLeft.setI(ShooterConstants.kShooterI);
+    m_PIDControllerLeft.setD(ShooterConstants.kShooterD);
+    m_PIDControllerLeft.setFF(ShooterConstants.kShooterFF);
     m_PIDControllerLeft.setOutputRange(-1, 1);
 
-    m_PIDControllerRight.setP(ModuleConstants.kShooterP);
-    m_PIDControllerRight.setI(ModuleConstants.kShooterI);
-    m_PIDControllerRight.setD(ModuleConstants.kShooterD);
-    m_PIDControllerRight.setFF(ModuleConstants.kShooterFF);
+    m_PIDControllerRight.setP(ShooterConstants.kShooterP);
+    m_PIDControllerRight.setI(ShooterConstants.kShooterI);
+    m_PIDControllerRight.setD(ShooterConstants.kShooterD);
+    m_PIDControllerRight.setFF(ShooterConstants.kShooterFF);
     m_PIDControllerRight.setOutputRange(-1, 1);
 
 
