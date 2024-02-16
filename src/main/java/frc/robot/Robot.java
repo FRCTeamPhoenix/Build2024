@@ -81,8 +81,6 @@ public class Robot extends TimedRobot {
     boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
     double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-    boolean killArm = m_robotContainer.getXboxOperator().getAButton();
-    double dPad = m_robotContainer.getXboxOperator().getPOV();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
@@ -92,25 +90,7 @@ public class Robot extends TimedRobot {
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
     Arm m_arm = m_robotContainer.getArm();
-    /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
-     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
-     * ramp from get_position() For now arm position is in radians.
-     */
-    angle = m_arm.getArmPositionRequest();
-    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
-
-    if (dPad == 0) {
-      angle += arm_range/300;
-    }
-    else if (dPad == 180) {
-      angle -= arm_range/300;
-    }
-    if (angle > arm_range/2) {
-      angle = Math.PI;  //180 degrees
-    }
-    else if (angle < arm_range/50) {
-      angle = arm_range/50;
-    }
+    
 
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
@@ -147,7 +127,7 @@ public class Robot extends TimedRobot {
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     if (intakeNote) {
-      m_intake.intakeNote(isNote);
+      m_intake.intakeNote(false);
     }
     else if (loadNote) {
       m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
@@ -170,12 +150,6 @@ public class Robot extends TimedRobot {
       m_shooter.setDesiredVelocity(0.0);
     }
 
-    if (killArm){
-      m_arm.killArm();
-    }
-    else{
-      m_arm.setArmPosition(angle);
-    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

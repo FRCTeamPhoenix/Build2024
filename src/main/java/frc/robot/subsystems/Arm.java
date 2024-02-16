@@ -14,6 +14,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -27,7 +28,7 @@ import com.revrobotics.RelativeEncoder;
 //import frc.robot.Constants.ModuleConstants;
 
 
-public class Arm {
+public class Arm extends SubsystemBase {
   
   private final CANSparkMax m_leftMotor;
   private final CANSparkMax m_rightMotor;
@@ -141,6 +142,40 @@ public class Arm {
    */
   public double getArmPosition() {
     return m_armEncoder.getPosition();
+  }
+
+  public void moveArmUp() {
+    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
+        /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
+     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
+     * ramp from get_position() For now arm position is in radians.
+     */
+    double angle = this.getArmPositionRequest();
+    angle += arm_range/300;
+    if (angle > arm_range/2) {
+      angle = Math.PI;  //180 degrees
+    }
+    else if (angle < arm_range/50) {
+      angle = arm_range/50;
+    }
+    this.setArmPosition(angle);
+  }
+
+  public void moveArmDown() {
+    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
+        /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
+     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
+     * ramp from get_position() For now arm position is in radians.
+     */
+    double angle = this.getArmPositionRequest();
+    angle -= arm_range/300;
+    if (angle > arm_range/2) {
+      angle = Math.PI;  //180 degrees
+    }
+    else if (angle < arm_range/50) {
+      angle = arm_range/50;
+    }
+    this.setArmPosition(angle);
   }
 
   public double getArmPositionRequest() {

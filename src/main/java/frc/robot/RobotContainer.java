@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
 
 
@@ -52,9 +51,7 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
-  private final XboxController xbox_operator = new XboxController(1);
-  private final XboxController xbox_driver = new XboxController(0);
+  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
@@ -104,7 +101,15 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
-            m_robotDrive));            
+            m_robotDrive));
+    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
+        .onTrue(new RunCommand(
+            () -> m_arm.moveArmUp(),
+            m_arm)); 
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .onTrue(new RunCommand(
+            () -> m_arm.moveArmDown(),
+            m_arm));       
   }
 
   /**
@@ -125,11 +130,11 @@ public class RobotContainer {
   }
 
   public XboxController getXboxDriver() {
-    return xbox_driver;
+    return m_driverController;
   }
 
   public XboxController getXboxOperator() {
-    return xbox_operator;
+    return m_operatorController;
   }
 
   public DriveSubsystem getDrivetrain(){
