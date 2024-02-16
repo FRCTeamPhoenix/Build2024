@@ -34,6 +34,12 @@ import edu.wpi.first.math.util.Units;
  */
 
 public final class Constants {
+    public static final class General {
+          //Logging Constant
+     public static final boolean LOGGING = true;
+   
+    }
+
     public static final class VisionConstants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -50,6 +56,7 @@ public final class Constants {
     }
   public static final class DriveConstants {
 
+ 
     //VERY IMPORTANT!!!!!!
     //Are we using TalonFX or are we using SPARK MAX?
     public static final boolean usingTalons = true;
@@ -241,5 +248,23 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
     public static final double kFreeSpeedRps = 5676 / 60;
+  }
+
+  public static final class ArmConstants{
+    public static final double ARM_MIN_ANGLE = 0.2;
+    public static final double ARM_MAX_ANGLE = 3.10;
+    public static final double kArmP = 1.5;
+    public static final double kArmI = 0;
+    public static final double kArmD = 0;
+    public static final double kArmFF = 0;
+    public static final double kArmMinOutput = -0.7;
+    public static final double kArmMaxOutput = 0.7;
+    public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
+    public static final int kArmMotorCurrentLimit = 30; // amps
+
+    public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
+    public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+    public static final double kArmEncoderPositionPIDMinInput = 0; // radians
+    public static final double kArmEncoderPositionPIDMaxInput = kArmEncoderPositionFactor; // radians
   }
 }

@@ -4,19 +4,7 @@
 
 package frc.robot;
 
-// Import statements commented for potential future use.
-// import edu.wpi.first.math.controller.PIDController;
-// import edu.wpi.first.math.controller.ProfiledPIDController;
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.math.trajectory.Trajectory;
-// import edu.wpi.first.math.trajectory.TrajectoryConfig;
-// import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-// import frc.robot.Constants.AutoConstants;
-// import frc.robot.Constants.DriveConstants;
-// import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-
+import frc.robot.commands.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OIConstants;
@@ -24,6 +12,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLight;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -46,30 +35,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
-  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
-
-  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
-
   public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
-
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
-
-  public final PhotonPose vision = m_robotDrive.getPhotonPose();
-
-  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
-
-  // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
-
-
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
   private final Arm m_arm = new Arm(13, 14);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  //Vision Subsystems
+  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
+  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
+  public final PhotonPose vision = m_robotDrive.getPhotonPose();
+  
+  //Auto From PathPlanner
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
+
+  //Driver and Operator Controllers
+  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
@@ -88,47 +72,39 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, m_driverController.getRightBumper()),
             m_robotDrive));
-    m_arm.setDefaultCommand(new RunCommand(
-      () -> m_arm.holdPosition()));
-
-        
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
+
   private void configureButtonBindings() {
     //Force robot to stop in X formation
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+
     //Reset the Gyro to zero heading with the Right Bumper
     new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
-    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .onTrue(new RunCommand(
-            () -> m_arm.moveArmUp(),
-            m_arm)); 
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .onTrue(new RunCommand(
-            () -> m_arm.moveArmDown(),
-            m_arm));       
+
+    //Move Arm To Speaker shoot
+    final JoystickButton btn_op_X = new JoystickButton(m_operatorController, XboxController.Button.kX.value);        
+    btn_op_X.onTrue(new cmd_MoveArmToPosition(1.5,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
+
+    //Move Arm Up
+    final JoystickButton btn_op_Y = new JoystickButton(m_operatorController, XboxController.Button.kY.value);        
+    btn_op_Y.whileTrue(new cmd_MoveArmUp(m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
+
+    //Move Arm Down
+    final JoystickButton btn_op_A = new JoystickButton(m_operatorController, XboxController.Button.kA.value);        
+    btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+  
+
+  //All Getters/Setters for the robot objects.
+  
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }

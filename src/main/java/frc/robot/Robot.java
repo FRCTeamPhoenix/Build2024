@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,25 +18,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Arm;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-// import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.wpilibj.XboxController;
-// import frc.robot.Constants.OIConstants;
-// import frc.robot.subsystems.DriveSubsystem;
-// import frc.robot.subsystems.LimeLight;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.RunCommand;
-// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
-
-
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
@@ -60,6 +43,9 @@ public class Robot extends TimedRobot {
     frontLimeLight = m_robotContainer.getFrontLimeLight();
     rearLimeLight = m_robotContainer.getRearLimeLight();
     currentLimeLight = frontLimeLight;
+
+    //Startup the Camera Server for the driver
+    CameraServer.startAutomaticCapture(0);
   }
 
   /**
@@ -110,9 +96,8 @@ public class Robot extends TimedRobot {
     //Update all of our Shuffleboard data
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
-    SmartDashboard.putNumber("DesiredAngle", angle);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
+    
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {

@@ -11,10 +11,9 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -23,7 +22,6 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 
 //import frc.robot.Constants.ModuleConstants;
 
@@ -49,24 +47,6 @@ public class Arm extends SubsystemBase {
    */
   public Arm(int leftCANID, int rightCANID) {
     
-    // this shoould become part of constants.java
-    final class ArmConstants {
-      public static final double kArmP = 1.0;
-      public static final double kArmI = 0;
-      public static final double kArmD = 0;
-      public static final double kArmFF = 0;
-      public static final double kArmMinOutput = -0.7;
-      public static final double kArmMaxOutput = 0.7;
-      public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-      public static final int kArmMotorCurrentLimit = 20; // amps
-  
-      public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
-      public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
-      public static final double kArmEncoderPositionPIDMinInput = 0; // radians
-      public static final double kArmEncoderPositionPIDMaxInput = kArmEncoderPositionFactor; // radians
-  }
-  
-
     m_leftMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
     m_rightMotor = new CANSparkMax(rightCANID, MotorType.kBrushless);
 
@@ -146,41 +126,32 @@ public class Arm extends SubsystemBase {
   }
 
   public void moveArmUp() {
-    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
-        /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
-     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
-     * ramp from get_position() For now arm position is in radians.
-     */
-    double angle = this.getArmPositionRequest();
-    angle += arm_range/20;
-    if (angle > arm_range/2) {
-      angle = Math.PI;  //180 degrees
+    SmartDashboard.putBoolean("MovingUp", true);
+    if (getArmPosition()<ArmConstants.ARM_MAX_ANGLE){
+      m_armPIDController.setReference(.3,ControlType.kVelocity);
     }
-    else if (angle < arm_range/50) {
-      angle = arm_range/50;
+    else{
+      m_armPIDController.setReference(0,ControlType.kVelocity);
     }
-    this.setArmPosition(angle);
   }
 
-  public void moveArmDown() {
-    double arm_range = 2*Math.PI;  //encoder native units appear to 0-1.0 = 360 degrees
-        /* this code does not belong in robot.java  for now it is hacked in to provide a way to test the 
-     * arm code -- note that this ramps the setpoint  -- real code for a ramp button command should probably
-     * ramp from get_position() For now arm position is in radians.
-     */
-    double angle = this.getArmPositionRequest();
-    angle -= arm_range/20;
-    if (angle > arm_range/2) {
-      angle = Math.PI;  //180 degrees
+ public void moveArmDown() {
+    if(General.LOGGING)   
+      System.out.println("Moving Down");
+    if (getArmPosition()>ArmConstants.ARM_MIN_ANGLE){
+      m_armPIDController.setReference(-.3,ControlType.kVelocity);
     }
-    else if (angle < arm_range/50) {
-      angle = arm_range/50;
+    else{
+      m_armPIDController.setReference(0,ControlType.kVelocity);
     }
-    this.setArmPosition(angle);
   }
 
-  public void holdPosition() {
-    setArmPosition(getArmPosition());
+  @Override
+  public void periodic(){
+  }
+
+  public void holdPosition(double m_position) {
+    setArmPosition(m_position);
   }
 
   public double getArmPositionRequest() {
@@ -198,7 +169,11 @@ public class Arm extends SubsystemBase {
     armPositionRequest = angle;
   }
 
-  public void killArm() {
-    m_armPIDController.setReference(0.0, ControlType.kVoltage);
+  public boolean isAtPosition(double setPosition){
+    //Need to account for some error
+    double armPosition = getArmPosition();
+    if ((armPosition<setPosition-.01) && (armPosition > setPosition+.01))
+      return true;
+    return false;
   }
 }
