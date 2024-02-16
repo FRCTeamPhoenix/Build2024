@@ -51,14 +51,14 @@ public class Arm extends SubsystemBase {
     
     // this shoould become part of constants.java
     final class ArmConstants {
-      public static final double kArmP = 0.5;
+      public static final double kArmP = 1.0;
       public static final double kArmI = 0;
       public static final double kArmD = 0;
       public static final double kArmFF = 0;
       public static final double kArmMinOutput = -0.7;
       public static final double kArmMaxOutput = 0.7;
       public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-      public static final int kArmMotorCurrentLimit = 10; // amps
+      public static final int kArmMotorCurrentLimit = 20; // amps
   
       public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
       public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
@@ -151,7 +151,7 @@ public class Arm extends SubsystemBase {
      * ramp from get_position() For now arm position is in radians.
      */
     double angle = this.getArmPositionRequest();
-    angle += arm_range/300;
+    angle += arm_range/20;
     if (angle > arm_range/2) {
       angle = Math.PI;  //180 degrees
     }
@@ -168,7 +168,7 @@ public class Arm extends SubsystemBase {
      * ramp from get_position() For now arm position is in radians.
      */
     double angle = this.getArmPositionRequest();
-    angle -= arm_range/300;
+    angle -= arm_range/20;
     if (angle > arm_range/2) {
       angle = Math.PI;  //180 degrees
     }
@@ -176,6 +176,10 @@ public class Arm extends SubsystemBase {
       angle = arm_range/50;
     }
     this.setArmPosition(angle);
+  }
+
+  public void holdPosition() {
+    setArmPosition(getArmPosition());
   }
 
   public double getArmPositionRequest() {

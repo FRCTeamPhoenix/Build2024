@@ -78,6 +78,8 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, m_driverController.getRightBumper()),
             m_robotDrive));
+    m_arm.setDefaultCommand(new RunCommand(
+      () -> m_arm.holdPosition()));
 
         
   }
