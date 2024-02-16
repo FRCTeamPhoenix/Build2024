@@ -14,6 +14,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Arm;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 // import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.wpilibj.XboxController;
@@ -90,7 +92,6 @@ public class Robot extends TimedRobot {
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
     Arm m_arm = m_robotContainer.getArm();
-    
 
     Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {

@@ -20,6 +20,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLight;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,10 +28,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
+import frc.robot.subsystems.PhotonPose;
+import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
+
 
 
 /*
@@ -44,14 +47,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class RobotContainer {
   // The robot's subsystems
   public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
+
   public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
 
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
+
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
+
+  public final PhotonPose vision = m_robotDrive.getPhotonPose();
+
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
 
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
@@ -153,5 +163,8 @@ public class RobotContainer {
 
   public Intake getIntake(){
     return m_intake;
+  }
+  public PhotonPose getPhotonPose(){
+    return vision;
   }
 }

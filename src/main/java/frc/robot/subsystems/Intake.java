@@ -10,7 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.IntakeConstants;;
 
 public class Intake {
   private final CANSparkMax m_intakeMotor;
@@ -32,17 +32,17 @@ public class Intake {
 
     // Apply position and velocity conversion factors for the motor encoders. The
     // native unit for velocity is RPM, but we want meters per second for human input.
-    m_encoder.setVelocityConversionFactor(ModuleConstants.kShooterEncoderVelocityFactor);
+    m_encoder.setVelocityConversionFactor(IntakeConstants.kIntakeEncoderVelocityFactor);
 
     // Set the PID gains for the motors. Note these are example gains, and you
     // may need to tune them for your own robot!
-    m_PIDController.setP(ModuleConstants.kIntakeP);
-    m_PIDController.setI(ModuleConstants.kIntakeI);
-    m_PIDController.setD(ModuleConstants.kIntakeD);
-    m_PIDController.setFF(ModuleConstants.kIntakeFF);
+    m_PIDController.setP(IntakeConstants.kIntakeP);
+    m_PIDController.setI(IntakeConstants.kIntakeI);
+    m_PIDController.setD(IntakeConstants.kIntakeD);
+    m_PIDController.setFF(IntakeConstants.kIntakeFF);
     m_PIDController.setOutputRange(-1, 1);
 
-    m_intakeMotor.setIdleMode(ModuleConstants.kIntakeMotorIdleMode);
+    m_intakeMotor.setIdleMode(IntakeConstants.kIntakeMotorIdleMode);
     m_intakeMotor.setSmartCurrentLimit(40);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during

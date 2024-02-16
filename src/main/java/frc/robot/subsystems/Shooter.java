@@ -10,7 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;;
 
 public class Shooter {
   private final CANSparkMax m_leftMotor;
@@ -64,10 +64,11 @@ public class Shooter {
 
 
 
-    m_leftMotor.setIdleMode(ModuleConstants.kShooterMotorIdleMode);
+
+    m_leftMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
     m_leftMotor.setSmartCurrentLimit(40);
 
-    m_rightMotor.setIdleMode(ModuleConstants.kShooterMotorIdleMode);
+    m_rightMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
     m_rightMotor.setSmartCurrentLimit(40);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during

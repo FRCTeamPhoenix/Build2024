@@ -70,6 +70,7 @@ public class Arm extends SubsystemBase {
     m_leftMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
     m_rightMotor = new CANSparkMax(rightCANID, MotorType.kBrushless);
 
+
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.
    
