@@ -4,20 +4,15 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.General;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class cmd_MoveArmUp extends Command {
-  private final Arm m_arm;
-  //private final double m_setPoint;
+public class cmd_EjectNote extends Command {
+  private final Intake m_intake;
 
-  private double m_dIncrement;
-
-  public cmd_MoveArmUp(Arm arm, double dIncrement) {
-    m_arm = arm;
-    m_dIncrement = dIncrement;
-    addRequirements(m_arm);
+  public cmd_EjectNote(Intake intake) {
+    m_intake = intake;
+    addRequirements(m_intake);
   }
 
   @Override
@@ -27,14 +22,11 @@ public class cmd_MoveArmUp extends Command {
 
   @Override
   public void execute() {
-    m_arm.moveArmUp(m_dIncrement);
+    m_intake.setDesiredVelocity(-2.5);
   }
 
   @Override
   public void end(boolean interrupted) {
-    if (General.LOGGING){
-      System.out.println("End of Move Arm UP");
-    }
   }
 
   @Override

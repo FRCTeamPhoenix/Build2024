@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -12,7 +15,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants.ShooterConstants;
 
-public class Shooter {
+public class Shooter extends SubsystemBase {
   private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
 
@@ -83,7 +86,7 @@ public class Shooter {
   public void setDesiredVelocity(double desiredVelocity) {
     // Command intake motors towards their respective setpoints, with one motor being flipped
     // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
-    m_PIDControllerLeft.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
-    m_PIDControllerRight.setReference(desiredVelocity * 0.6, ControlType.kVelocity);
+    m_PIDControllerLeft.setReference(desiredVelocity, ControlType.kVelocity);
+    m_PIDControllerRight.setReference(desiredVelocity, ControlType.kVelocity);
   }
 }

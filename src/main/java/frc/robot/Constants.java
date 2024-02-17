@@ -36,7 +36,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
     public static final class General {
           //Logging Constant
-     public static final boolean LOGGING = true;
+     public static final boolean LOGGING = false;
    
     }
 
@@ -251,14 +251,15 @@ public final class Constants {
   }
 
   public static final class ArmConstants{
-    public static final double ARM_MIN_ANGLE = 0.2;
+    public static final double ARM_MIN_ANGLE = 0.08;
     public static final double ARM_MAX_ANGLE = 3.10;
-    public static final double kArmP = 1.5;
+    public static final double kArmP = 1;
     public static final double kArmI = 0;
     public static final double kArmD = 0;
     public static final double kArmFF = 0;
-    public static final double kArmMinOutput = -0.7;
-    public static final double kArmMaxOutput = 0.7;
+    public static final double ArmMoveSetPoint = .25;
+    public static final double kArmMinOutput = -1;
+    public static final double kArmMaxOutput = 1;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final int kArmMotorCurrentLimit = 30; // amps
 

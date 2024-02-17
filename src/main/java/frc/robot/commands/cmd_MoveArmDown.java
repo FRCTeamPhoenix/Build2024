@@ -12,9 +12,11 @@ public class cmd_MoveArmDown extends Command {
   private final Arm m_arm;
   //private final double m_setPoint;
 
+  private double m_dIncrement;
 
-  public cmd_MoveArmDown(Arm arm) {
+  public cmd_MoveArmDown(Arm arm, double dIncrement) {
     m_arm = arm;
+    m_dIncrement = dIncrement;
     addRequirements(m_arm);
   }
 
@@ -25,7 +27,7 @@ public class cmd_MoveArmDown extends Command {
 
   @Override
   public void execute() {
-    m_arm.moveArmDown();
+    m_arm.moveArmDown(m_dIncrement);
   }
 
   @Override

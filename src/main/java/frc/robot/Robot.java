@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -64,10 +65,10 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();  
 
     //Get controller buttons
-    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
-    boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
-    boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
-    double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
+    //double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
+    //boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
+    //boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
+    //double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
     boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
@@ -79,7 +80,7 @@ public class Robot extends TimedRobot {
 
     Arm m_arm = m_robotContainer.getArm();
 
-    Intake m_intake = m_robotContainer.getIntake();
+    //Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
     if (m_robotContainer.getXboxDriver().getPOV() == 0){
@@ -89,6 +90,10 @@ public class Robot extends TimedRobot {
     else if (m_robotContainer.getXboxDriver().getPOV() == 180){
       currentLimeLight = rearLimeLight;
       driveFlip = 1;
+    }
+
+    if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
+      
     }
 
     currentLimeLight.Update_Limelight_Tracking();
@@ -113,7 +118,7 @@ public class Robot extends TimedRobot {
     }
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (intakeNote) {
+    /*if (intakeNote) {
       m_intake.intakeNote(false);
     }
     else if (loadNote) {
@@ -124,18 +129,18 @@ public class Robot extends TimedRobot {
     }
     else {
       m_intake.setDesiredVelocity(0.0);
-    }
+    } */
 
     // Spins the shooters up to the specified speed to fire a note.
-    if (spinShooter >= joystickDeadzone) {
+    /*if (spinShooter >= joystickDeadzone) {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(30);
+      m_shooter.setDesiredVelocity(15);
     }
     else {
       m_shooter.setDesiredVelocity(0.0);
-    }
+    }*/
 
   }
 

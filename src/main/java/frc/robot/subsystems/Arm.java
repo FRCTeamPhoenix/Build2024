@@ -125,24 +125,25 @@ public class Arm extends SubsystemBase {
     return m_armEncoder.getPosition();
   }
 
-  public void moveArmUp() {
-    SmartDashboard.putBoolean("MovingUp", true);
-    if (getArmPosition()<ArmConstants.ARM_MAX_ANGLE){
-      m_armPIDController.setReference(.3,ControlType.kVelocity);
+  public void moveArmUp(double dIncrement) {
+    double currentArm = getArmPosition();
+    double futureArmPosition = currentArm + dIncrement;
+    if ((currentArm<ArmConstants.ARM_MAX_ANGLE) && (futureArmPosition < ArmConstants.ARM_MAX_ANGLE)){
+      m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
     }
     else{
-      m_armPIDController.setReference(0,ControlType.kVelocity);
+      m_armPIDController.setReference(ArmConstants.ARM_MAX_ANGLE,ControlType.kPosition);
     }
   }
 
- public void moveArmDown() {
-    if(General.LOGGING)   
-      System.out.println("Moving Down");
-    if (getArmPosition()>ArmConstants.ARM_MIN_ANGLE){
-      m_armPIDController.setReference(-.3,ControlType.kVelocity);
+ public void moveArmDown(double dIncrement) {
+    double currentArm = getArmPosition();
+    double futureArmPosition = currentArm - dIncrement;
+    if ((currentArm>ArmConstants.ARM_MIN_ANGLE) && (futureArmPosition > ArmConstants.ARM_MIN_ANGLE)){
+      m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
     }
     else{
-      m_armPIDController.setReference(0,ControlType.kVelocity);
+      m_armPIDController.setReference(ArmConstants.ARM_MIN_ANGLE,ControlType.kPosition);
     }
   }
 
@@ -172,7 +173,7 @@ public class Arm extends SubsystemBase {
   public boolean isAtPosition(double setPosition){
     //Need to account for some error
     double armPosition = getArmPosition();
-    if ((armPosition<setPosition-.01) && (armPosition > setPosition+.01))
+    if ((armPosition<setPosition-.05) && (armPosition > setPosition+.05))
       return true;
     return false;
   }
