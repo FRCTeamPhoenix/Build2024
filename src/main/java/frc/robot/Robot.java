@@ -5,10 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -19,25 +21,7 @@ import frc.utils.OakCameraObject;
 import frc.robot.subsystems.Shooter;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-// import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.wpilibj.XboxController;
-// import frc.robot.Constants.OIConstants;
-// import frc.robot.subsystems.DriveSubsystem;
-// import frc.robot.subsystems.LimeLight;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.RunCommand;
-// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
-
-
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
@@ -62,6 +46,9 @@ public class Robot extends TimedRobot {
     frontLimeLight = m_robotContainer.getFrontLimeLight();
     rearLimeLight = m_robotContainer.getRearLimeLight();
     currentLimeLight = frontLimeLight;
+
+    //Startup the Camera Server for the driver
+    CameraServer.startAutomaticCapture(0);
   }
 
   /**
@@ -98,11 +85,11 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();  
 
     //Get controller buttons
-    double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
-    boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
-    boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
-    double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
-    //boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
+    //double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
+    //boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
+    //boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
+    //double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
+    boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
 
     boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
@@ -113,7 +100,7 @@ public class Robot extends TimedRobot {
 
     Arm m_arm = m_robotContainer.getArm();
 
-    Intake m_intake = m_robotContainer.getIntake();
+    //Intake m_intake = m_robotContainer.getIntake();
     Shooter m_shooter = m_robotContainer.getShooter();
 
     if (m_robotContainer.getXboxDriver().getPOV() == 0){
@@ -125,59 +112,19 @@ public class Robot extends TimedRobot {
       driveFlip = 1;
     }
 
+    if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
+      
+    }
+
     currentLimeLight.Update_Limelight_Tracking();
 
     //Update all of our Shuffleboard data
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
-    CommandScheduler.getInstance().run();
-    /* 
-    currentLimeLight.Update_Limelight_Tracking();
-    */
-    boolean trackTarget = m_robotContainer.getXboxDriver().getAButton();
-    double closestXAngle;
-    double closestYAngle;
-    double closestCameraDistance;
-    OakCameraObject closestNote = oakCamera.findClosestNote();
-    if (closestNote != null){
-      closestXAngle = closestNote.getXAngle();
-      closestYAngle = closestNote.getYAngle();
-      closestCameraDistance = closestNote.getHorizontalDistance();
-    }
-    else{
-      closestXAngle = 0;
-      closestYAngle = 0;
-      closestCameraDistance = 1000;
-    }
-
-    SmartDashboard.putNumber("Closest X Angle: ", closestXAngle);
-    SmartDashboard.putNumber("Closest Y Angle: ", closestYAngle);
-    SmartDashboard.putNumber("Distance to target: ", closestCameraDistance);
-    SmartDashboard.putBoolean("Note?: ", closestNote != null);
-
-
-    if (trackTarget)
-        {
-          // m_drive.drive(0.5, 0.0, 0.0, true, false);
-          if (oakCamera.hasValidTarget())
-         // {
-         //   m_drive.drive(CameraDriveUtil.getDriveX(360 - closestXAngle, closestYAngle, closestCameraDistance, 1000, 0.0),
-           //               CameraDriveUtil.getDriveY(360 - closestXAngle, closestYAngle, closestCameraDistance,1000, 0.0),
-             //             CameraDriveUtil.getDriveRot(360 - closestXAngle, 0.0), false, false);
-            //SmartDashboard.putBoolean("Drive Working: ", true);
-       //   }
-           {
-            m_drive.drive(CameraDriveUtil.getDriveX(closestXAngle, closestCameraDistance, 1000),
-                          CameraDriveUtil.getDriveY(closestXAngle, closestCameraDistance, 1000),
-                          CameraDriveUtil.getDriveRot(closestXAngle, 0) , false, false);
-            SmartDashboard.putBoolean("Drive Working: ", true);
-           }
-        }
-
     SmartDashboard.putNumber("DesiredAngle", angle);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
-    /* 
+
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
           //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
@@ -193,7 +140,7 @@ public class Robot extends TimedRobot {
     */
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    if (intakeNote) {
+    /*if (intakeNote) {
       m_intake.intakeNote(false);
     }
     else if (loadNote) {
@@ -204,18 +151,18 @@ public class Robot extends TimedRobot {
     }
     else {
       m_intake.setDesiredVelocity(0.0);
-    }
+    } */
 
     // Spins the shooters up to the specified speed to fire a note.
-    if (spinShooter >= joystickDeadzone) {
+    /*if (spinShooter >= joystickDeadzone) {
       // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
       //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
       //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(30);
+      m_shooter.setDesiredVelocity(15);
     }
     else {
       m_shooter.setDesiredVelocity(0.0);
-    }
+    }*/
 
   }
 
