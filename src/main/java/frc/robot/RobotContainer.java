@@ -22,12 +22,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonPose;
 import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
+
 
 
 
@@ -41,35 +44,37 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
-  public final OakCamera m_OakCamera = new OakCamera();
-  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
-
-  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
-
-  public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
+  //public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
   private final Arm m_arm = new Arm(13, 14);
 
   //Vision Subsystems
-  public final PhotonPose vision = m_robotDrive.getPhotonPose();
+  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
+
+  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
+  //public final PhotonPose vision = m_robotDrive.getPhotonPose();
   
   //Auto From PathPlanner
-  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
+  private final SendableChooser<Command> autoChooser;
 
   //Driver and Operator Controllers
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
   CommandXboxController m_op_command = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
+    NamedCommands.registerCommand("cg_ShootNote", new cg_ShootNote(m_intake, m_shooter));
+    NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake, m_shooter));
+
+    autoChooser = AutoBuilder.buildAutoChooser("week zero");
+
     //Add Autos
-    SmartDashboard.putData("Auto", autoChooser);
+    //SmartDashboard.putData("Auto", autoChooser);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -122,6 +127,9 @@ public class RobotContainer {
 
     m_op_command.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
     m_op_command.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
+    POVButton povRightPressed = new POVButton(m_operatorController, 90);
+    povRightPressed.onTrue(new cmd_MoveArmToPosition(0.14, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     m_op_command.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
   }
@@ -131,16 +139,16 @@ public class RobotContainer {
   //All Getters/Setters for the robot objects.
   
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+   return autoChooser.getSelected();
   }
 
-  public LimeLight getFrontLimeLight() {
-    return m_frontLimeLight;
-  }
+  //public LimeLight getFrontLimeLight() {
+    //return m_frontLimeLight;
+  //}
 
-  public LimeLight getRearLimeLight() {
-    return m_rearLimeLight;
-  }
+  //public LimeLight getRearLimeLight() {
+   // return m_rearLimeLight;
+ // }
 
   public XboxController getXboxDriver() {
     return m_driverController;
@@ -165,7 +173,7 @@ public class RobotContainer {
   public Intake getIntake(){
     return m_intake;
   }
-  public PhotonPose getPhotonPose(){
-    return vision;
-  }
+  //public PhotonPose getPhotonPose(){
+   // return vision;
+ // }
 }

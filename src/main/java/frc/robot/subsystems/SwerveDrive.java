@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
@@ -53,5 +55,9 @@ public class SwerveDrive {
         return sparkMax.getState();
 
     }
+   }
+
+   public TalonFX getTalon(){
+    return talon.getTalon();
    }
 }

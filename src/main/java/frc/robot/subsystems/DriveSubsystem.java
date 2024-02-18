@@ -26,6 +26,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import com.ctre.phoenix6.Orchestra;
+
 public class DriveSubsystem extends SubsystemBase {
   
   // Create MAXSwerveModules
@@ -83,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
-    poseEst = new PhotonPose(this, camera);
+    //poseEst = new PhotonPose(this, camera);
     
     m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
     AutoBuilder.configureHolonomic(
@@ -146,9 +148,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   
-  public PhotonPose getPhotonPose(){
-    return this.poseEst;
-  }
+ // public PhotonPose getPhotonPose(){
+   // return this.poseEst;
+  //}
 
   /**
    * Resets the odometry to the specified pose.

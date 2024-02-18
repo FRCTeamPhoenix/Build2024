@@ -171,4 +171,8 @@ public class TalonSwerveModule {
   public void resetEncoders() {
      m_drivingTalon.getConfigurator().setPosition(0.0);
   }
+
+  public TalonFX getTalon(){
+    return m_drivingTalon;
+  }
 }

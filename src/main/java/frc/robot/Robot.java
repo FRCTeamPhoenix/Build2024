@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     //frontLimeLight = m_robotContainer.getFrontLimeLight();
     //rearLimeLight = m_robotContainer.getRearLimeLight();
-    //urrentLimeLight = frontLimeLight;
+    //currentLimeLight = frontLimeLight;
 
     //Startup the Camera Server for the driver
     CameraServer.startAutomaticCapture(0);
@@ -89,9 +89,9 @@ public class Robot extends TimedRobot {
     //boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
     //boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
     //double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
-    boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
+    //boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
 
-    boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
+    //boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
 
     
 
@@ -101,8 +101,8 @@ public class Robot extends TimedRobot {
     Arm m_arm = m_robotContainer.getArm();
 
     //Intake m_intake = m_robotContainer.getIntake();
-    Shooter m_shooter = m_robotContainer.getShooter();
-
+    //Shooter m_shooter = m_robotContainer.getShooter();
+/*
     if (m_robotContainer.getXboxDriver().getPOV() == 0){
       currentLimeLight = frontLimeLight;
       driveFlip = -1;
@@ -115,19 +115,17 @@ public class Robot extends TimedRobot {
     if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
       
     }
-
-    currentLimeLight.Update_Limelight_Tracking();
+*/
+    //currentLimeLight.Update_Limelight_Tracking();
 
     //Update all of our Shuffleboard data
-    SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
+    //SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
-    SmartDashboard.putNumber("DesiredAngle", angle);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
+    
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
-    /* 
-    if (trackTarget) {
+   /* if (trackTarget) {
           //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
           if (currentLimeLight.hasValidTarget()) {
             //Here we drive twoard the apriltag.  Not something we will do in a competition but great for Note Tracking
@@ -137,8 +135,7 @@ public class Robot extends TimedRobot {
             //If we have no valid target we will keep the robot stationary
             m_drive.drive(0.0, 0.0, 0.0, false, false);
           }
-    }
-    */
+    }*/
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     /*if (intakeNote) {

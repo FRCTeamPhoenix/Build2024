@@ -129,7 +129,8 @@ public class Arm extends SubsystemBase {
     double currentArm = getArmPosition();
     double futureArmPosition = currentArm + dIncrement;
     if ((currentArm<ArmConstants.ARM_MAX_ANGLE) && (futureArmPosition < ArmConstants.ARM_MAX_ANGLE)){
-      m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+      //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+      m_armPIDController.setReference(dIncrement, ControlType.kVelocity);
     }
     else{
       m_armPIDController.setReference(ArmConstants.ARM_MAX_ANGLE,ControlType.kPosition);
@@ -140,7 +141,8 @@ public class Arm extends SubsystemBase {
     double currentArm = getArmPosition();
     double futureArmPosition = currentArm - dIncrement;
     if ((currentArm>ArmConstants.ARM_MIN_ANGLE) && (futureArmPosition > ArmConstants.ARM_MIN_ANGLE)){
-      m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+      //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+      m_armPIDController.setReference(-dIncrement, ControlType.kVelocity);
     }
     else{
       m_armPIDController.setReference(ArmConstants.ARM_MIN_ANGLE,ControlType.kPosition);
@@ -178,3 +180,4 @@ public class Arm extends SubsystemBase {
     return false;
   }
 }
+
