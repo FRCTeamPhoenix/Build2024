@@ -13,6 +13,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.OakCamera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -40,6 +41,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
+  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
+
+  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
+
   public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
   private final Shooter m_shooter = new Shooter(10, 11);

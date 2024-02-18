@@ -15,8 +15,10 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.OakCamera;
+import frc.utils.CameraDriveUtil;
+import frc.utils.OakCameraObject;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Arm;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 
@@ -58,6 +60,24 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    OakCamera oakCamera = m_robotContainer.m_OakCamera;
+    /*
+    frontLimeLight = m_robotContainer.getm_frontLimeLight();
+    rearLimeLight = m_robotContainer.getm_rearLimeLight();
+    DriveSubsystem m_drive = m_robotContainer.getm_driveTrain();
+    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
+
+    if (m_robotContainer.getxboxDriver().getPOV() == 0){
+      currentLimeLight = frontLimeLight;
+      currentLimeLightString = "Front";
+      driveFlip = -1;
+    }
+    else if (m_robotContainer.getxboxDriver().getPOV() == 180){
+      currentLimeLight = rearLimeLight;
+      currentLimeLightString = "Rear";
+      driveFlip = 1;
+    }
+    */
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -101,8 +121,9 @@ public class Robot extends TimedRobot {
     //Update all of our Shuffleboard data
     SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
+    SmartDashboard.putNumber("DesiredAngle", angle);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-    
+
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
     if (trackTarget) {
@@ -116,6 +137,7 @@ public class Robot extends TimedRobot {
             m_drive.drive(0.0, 0.0, 0.0, false, false);
           }
     }
+    */
 
     // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
     /*if (intakeNote) {
