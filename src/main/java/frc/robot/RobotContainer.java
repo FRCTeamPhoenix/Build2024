@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
+  public final OakCamera m_OakCamera = new OakCamera();
   public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
 
   public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
@@ -52,8 +53,6 @@ public class RobotContainer {
   private final Arm m_arm = new Arm(13, 14);
 
   //Vision Subsystems
-  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
-  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
   public final PhotonPose vision = m_robotDrive.getPhotonPose();
   
   //Auto From PathPlanner

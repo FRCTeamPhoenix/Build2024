@@ -43,9 +43,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    frontLimeLight = m_robotContainer.getFrontLimeLight();
-    rearLimeLight = m_robotContainer.getRearLimeLight();
-    currentLimeLight = frontLimeLight;
+    //frontLimeLight = m_robotContainer.getFrontLimeLight();
+    //rearLimeLight = m_robotContainer.getRearLimeLight();
+    //urrentLimeLight = frontLimeLight;
 
     //Startup the Camera Server for the driver
     CameraServer.startAutomaticCapture(0);
@@ -126,6 +126,7 @@ public class Robot extends TimedRobot {
 
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
+    /* 
     if (trackTarget) {
           //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
           if (currentLimeLight.hasValidTarget()) {
