@@ -117,7 +117,7 @@ public class PhotonPose extends SubsystemBase {
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
         SmartDashboard.putData("Field", field2d);
         double[] pose = {poseEstimator.getEstimatedPosition().getX(), poseEstimator.getEstimatedPosition().getY(), poseEstimator.getEstimatedPosition().getRotation().getRadians()};
-        SmartDashboard.putNumberArray("Me pose", pose);
+        SmartDashboard.putNumberArray("EstimatedPose", pose);
     }
     
 }

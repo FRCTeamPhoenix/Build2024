@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -40,29 +41,25 @@ import frc.robot.subsystems.Shooter;
  * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
  * (including subsystems, commands, and button mappings) should be declared here.
  */
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
-  //public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
+
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
   private final Arm m_arm = new Arm(13, 14);
 
   //Vision Subsystems
-  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
-
-  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
-  //public final PhotonPose vision = m_robotDrive.getPhotonPose();
+  public final PhotonPose vision = m_robotDrive.getPhotonPose();
   
   //Auto From PathPlanner
   private final SendableChooser<Command> autoChooser;
 
   //Driver and Operator Controllers
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
-  CommandXboxController m_op_command = new CommandXboxController(OIConstants.kOperatorControllerPort);
+  CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+  CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   public RobotContainer() {
     // Configure the button bindings
@@ -85,76 +82,66 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, m_driverController.getRightBumper()),
+                true, m_driverController.getHID().getRightBumper()),
             m_robotDrive));
   }
 
 
   private void configureButtonBindings() {
     //Force robot to stop in X formation
-    new JoystickButton(m_driverController, XboxController.Button.kX.value)
+    new Trigger(m_driverController.x())
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
-    //Reset the Gyro to zero heading with the Right Bumper
-    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+    //Reset the Gyro to zero heading with B
+    new Trigger(m_driverController.b())
         .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
 
     //Move Arm To Speaker shoot
-    final JoystickButton btn_op_X = new JoystickButton(m_operatorController, XboxController.Button.kX.value);        
+    final Trigger btn_op_X = new Trigger(m_operatorController.x());
     btn_op_X.onTrue(new cmd_MoveArmToPosition(.7,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
 
     //Move Arm To Amp shoot
-    final JoystickButton btn_op_B = new JoystickButton(m_operatorController, XboxController.Button.kB.value);        
+    final Trigger btn_op_B = new Trigger(m_operatorController.b());        
     btn_op_B.onTrue(new cmd_MoveArmToPosition(3.11,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
 
     //Move Arm Up
-    final JoystickButton btn_op_Y = new JoystickButton(m_operatorController, XboxController.Button.kY.value);        
+    final Trigger btn_op_Y = new Trigger(m_operatorController.y());        
     btn_op_Y.whileTrue(new cmd_MoveArmUp(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
 
     //Move Arm Down
-    final JoystickButton btn_op_A = new JoystickButton(m_operatorController, XboxController.Button.kA.value);        
+    final Trigger btn_op_A = new Trigger(m_operatorController.a());        
     btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
 
-    POVButton povUpPressed = new POVButton(m_operatorController, 0);
+    Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
-    POVButton povDownPressed = new POVButton(m_operatorController, 180);
+    Trigger povDownPressed = m_operatorController.povDown();
     povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
-    m_op_command.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
-    m_op_command.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+    m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
+    m_operatorController.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
-    POVButton povRightPressed = new POVButton(m_operatorController, 90);
+    Trigger povRightPressed = m_operatorController.povRight();
     povRightPressed.onTrue(new cmd_MoveArmToPosition(0.14, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    m_op_command.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
+    m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
   }
 
-  
-
   //All Getters/Setters for the robot objects.
-  
+
   public Command getAutonomousCommand() {
    return autoChooser.getSelected();
   }
 
-  //public LimeLight getFrontLimeLight() {
-    //return m_frontLimeLight;
-  //}
-
-  //public LimeLight getRearLimeLight() {
-   // return m_rearLimeLight;
- // }
-
-  public XboxController getXboxDriver() {
+  public CommandXboxController getXboxDriver() {
     return m_driverController;
   }
 
-  public XboxController getXboxOperator() {
+  public CommandXboxController getXboxOperator() {
     return m_operatorController;
   }
 
@@ -173,7 +160,4 @@ public class RobotContainer {
   public Intake getIntake(){
     return m_intake;
   }
-  //public PhotonPose getPhotonPose(){
-   // return vision;
- // }
 }

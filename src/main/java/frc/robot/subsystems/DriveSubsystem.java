@@ -26,6 +26,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+
 import com.ctre.phoenix6.Orchestra;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -55,8 +58,6 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private PigeonBase m_gyro = new IMU_Pigeon();
   
-  private PhotonPose poseEst;
-
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
@@ -66,6 +67,8 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
   
+  private PhotonPose poseEst;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -82,10 +85,8 @@ public class DriveSubsystem extends SubsystemBase {
     if (Constants.DriveConstants.usingPigeon2){
         m_gyro = new IMU_Pigeon2();
     }
-
-
-
-    //poseEst = new PhotonPose(this, camera);
+    
+    poseEst = new PhotonPose(this, camera);
     
     m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
     AutoBuilder.configureHolonomic(
@@ -148,9 +149,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   
- // public PhotonPose getPhotonPose(){
-   // return this.poseEst;
-  //}
+  public PhotonPose getPhotonPose(){
+   return this.poseEst;
+  }
 
   /**
    * Resets the odometry to the specified pose.

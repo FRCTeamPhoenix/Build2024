@@ -4,35 +4,18 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.OakCamera;
-import frc.utils.CameraDriveUtil;
-import frc.utils.OakCameraObject;
-import frc.robot.subsystems.Shooter;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
-  private LimeLight frontLimeLight;
-  private LimeLight rearLimeLight;
-  private LimeLight currentLimeLight;
-  private double driveFlip = -1;
-  private double angle;
-  private double joystickDeadzone = 0.5;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -43,9 +26,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    //frontLimeLight = m_robotContainer.getFrontLimeLight();
-    //rearLimeLight = m_robotContainer.getRearLimeLight();
-    //currentLimeLight = frontLimeLight;
 
     //Startup the Camera Server for the driver
     CameraServer.startAutomaticCapture(0);
@@ -60,108 +40,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    OakCamera oakCamera = m_robotContainer.m_OakCamera;
-    /*
-    frontLimeLight = m_robotContainer.getm_frontLimeLight();
-    rearLimeLight = m_robotContainer.getm_rearLimeLight();
-    DriveSubsystem m_drive = m_robotContainer.getm_driveTrain();
-    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
-
-    if (m_robotContainer.getxboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      currentLimeLightString = "Front";
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getxboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      currentLimeLightString = "Rear";
-      driveFlip = 1;
-    }
-    */
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();  
 
-    //Get controller buttons
-    //double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
-    //boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
-    //boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
-    //double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
-    //boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-
-    //boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
-
-    
-
-    DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
-    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
-
     Arm m_arm = m_robotContainer.getArm();
 
-    //Intake m_intake = m_robotContainer.getIntake();
-    //Shooter m_shooter = m_robotContainer.getShooter();
-/*
-    if (m_robotContainer.getXboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getXboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      driveFlip = 1;
-    }
-
-    if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
-      
-    }
-*/
-    //currentLimeLight.Update_Limelight_Tracking();
-
-    //Update all of our Shuffleboard data
-    //SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
-    SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-    
-
-    //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
-   /* if (trackTarget) {
-          //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
-          if (currentLimeLight.hasValidTarget()) {
-            //Here we drive twoard the apriltag.  Not something we will do in a competition but great for Note Tracking
-            m_drive.drive(currentLimeLight.getLLDriveY() * driveFlip, currentLimeLight.getLLDriveX() * driveFlip, currentLimeLight.getLLDriveRotation(), false, false);
-          }
-          else {
-            //If we have no valid target we will keep the robot stationary
-            m_drive.drive(0.0, 0.0, 0.0, false, false);
-          }
-    }*/
-
-    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    /*if (intakeNote) {
-      m_intake.intakeNote(false);
-    }
-    else if (loadNote) {
-      m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
-    }
-    else if (spitNote >= joystickDeadzone) {
-      m_intake.spitNote(isNote);
-    }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    } */
-
-    // Spins the shooters up to the specified speed to fire a note.
-    /*if (spinShooter >= joystickDeadzone) {
-      // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
-      //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
-      //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(15);
-    }
-    else {
-      m_shooter.setDesiredVelocity(0.0);
-    }*/
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
