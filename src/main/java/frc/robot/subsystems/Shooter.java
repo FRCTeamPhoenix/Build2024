@@ -89,4 +89,8 @@ public class Shooter extends SubsystemBase {
     m_PIDControllerLeft.setReference(desiredVelocity, ControlType.kVelocity);
     m_PIDControllerRight.setReference(desiredVelocity, ControlType.kVelocity);
   }
+
+  public double getVelocity(){
+    return m_encoderLeft.getVelocity();
+  }
 }

@@ -12,7 +12,7 @@ public class cg_ShootNote extends ParallelCommandGroup {
         addCommands(
             new cmd_Shoot(shooter),
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
+                new WaitCommand(0.7),
                 new cmd_LoadNote(intake)
                 )
             

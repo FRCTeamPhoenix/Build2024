@@ -48,6 +48,9 @@ public class Robot extends TimedRobot {
 
     Arm m_arm = m_robotContainer.getArm();
 
+    if (m_robotContainer.getShooter().getVelocity() != 0.0){
+      SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
+    }
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
   }
 

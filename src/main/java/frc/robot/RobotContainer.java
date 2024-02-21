@@ -102,7 +102,7 @@ public class RobotContainer {
 
     //Move Arm To Speaker shoot
     final Trigger btn_op_X = new Trigger(m_operatorController.x());
-    btn_op_X.onTrue(new cmd_MoveArmToPosition(.7,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
+    btn_op_X.onTrue(new cmd_MoveArmToPosition(.6,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
 
     //Move Arm To Amp shoot
     final Trigger btn_op_B = new Trigger(m_operatorController.b());        
@@ -115,6 +115,9 @@ public class RobotContainer {
     //Move Arm Down
     final Trigger btn_op_A = new Trigger(m_operatorController.a());        
     btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
+
+    final Trigger btn_op_rightBumper = new Trigger(m_operatorController.rightBumper());
+    //btn_op_rightBumper.whileTrue(new cmd_CalculateArmAngle(photonCamera.getAprilTag(4)., 0, m_arm))
 
     Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));

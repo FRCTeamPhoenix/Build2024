@@ -25,7 +25,7 @@ public class cmd_Shoot extends Command {
 
   @Override
   public void execute() {
-    m_shooter.setDesiredVelocity(15.0);
+    m_shooter.setDesiredVelocity(16.5);
   }
 
   @Override

@@ -44,7 +44,7 @@ public final class Constants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
         public static final Transform3d kRobotToCam =
-        new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 45, 0));
+        new Transform3d(new Translation3d(0.3302, 0.0, 0.10795), new Rotation3d(0, 25.0, 0));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -177,7 +177,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.005;
     public static final int kOperatorControllerPort = 1;
   }
 
