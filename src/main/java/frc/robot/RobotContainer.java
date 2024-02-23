@@ -6,20 +6,15 @@ package frc.robot;
 
 import frc.robot.commands.*;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.OakCamera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -50,6 +45,8 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter(10, 11);
   private final Intake m_intake = new Intake(12);
   private final Arm m_arm = new Arm(13, 14);
+  
+  private final InterpolatingDoubleTreeMap shooterInterpolate = new InterpolatingDoubleTreeMap();
 
   //Vision Subsystems
   public final PhotonPose vision = m_robotDrive.getPhotonPose();
@@ -73,6 +70,8 @@ public class RobotContainer {
     //Add Autos
     //SmartDashboard.putData("Auto", autoChooser);
 
+    //Configure shooter interpolation tree
+    configureShooterInterpolation();
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -100,7 +99,7 @@ public class RobotContainer {
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
 
-    //Move Arm To Speaker shoot
+    //Move Arm To Speaker shooting angle from subwooder
     final Trigger btn_op_X = new Trigger(m_operatorController.x());
     btn_op_X.onTrue(new cmd_MoveArmToPosition(.6,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
 
@@ -116,8 +115,9 @@ public class RobotContainer {
     final Trigger btn_op_A = new Trigger(m_operatorController.a());        
     btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
 
+    //Move Arm To Speaker shooting angle based on photonvision
     final Trigger btn_op_rightBumper = new Trigger(m_operatorController.rightBumper());
-    //btn_op_rightBumper.whileTrue(new cmd_CalculateArmAngle(photonCamera.getAprilTag(4)., 0, m_arm))
+    btn_op_rightBumper.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
 
     Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
@@ -132,6 +132,15 @@ public class RobotContainer {
     povRightPressed.onTrue(new cmd_MoveArmToPosition(0.14, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
     m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+  }
+
+  public void configureShooterInterpolation(){
+    //Put values for shooter angles into interpolation tree
+    shooterInterpolate.put(1.91, 0.7360);
+    shooterInterpolate.put(2.12, 0.7665);
+    shooterInterpolate.put(2.52, 0.8218);
+    shooterInterpolate.put(3.50, 0.9445);
+    shooterInterpolate.put(4.20, 0.9875);
   }
 
   //All Getters/Setters for the robot objects.

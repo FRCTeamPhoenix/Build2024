@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class cmd_Shoot extends Command {
   private final Shooter m_shooter;
 
-  private double m_dIncrement;
-
   public cmd_Shoot(Shooter shooter) {
     m_shooter = shooter;
     addRequirements(m_shooter);

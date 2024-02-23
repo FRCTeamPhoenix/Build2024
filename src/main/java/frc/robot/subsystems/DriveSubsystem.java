@@ -26,11 +26,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-
-import com.ctre.phoenix6.Orchestra;
-
 public class DriveSubsystem extends SubsystemBase {
   
   // Create MAXSwerveModules
