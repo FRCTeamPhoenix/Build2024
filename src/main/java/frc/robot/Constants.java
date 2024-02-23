@@ -183,14 +183,15 @@ public final class Constants {
 
   public static final class IntakeConstants{
     public static final double kIntakeWheelDiameterMeters = 0.0508;
+    public static final double kIntakeWheelCircumferenceMeters = 0.0508 * Math.PI;
     public static final double kIntakeMotorReduction = 3.0;
 
-    public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * 0.0508)
+    public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kIntakeWheelCircumferenceMeters)
         / kIntakeMotorReduction;
 
-    public static final double kIntakeEncoderPositionFactor = (kIntakeWheelDiameterMeters * Math.PI)
+    public static final double kIntakeEncoderPositionFactor = kIntakeWheelCircumferenceMeters
         / kIntakeMotorReduction; // meters
-    public static final double kIntakeEncoderVelocityFactor = ((kIntakeWheelDiameterMeters * Math.PI)
+    public static final double kIntakeEncoderVelocityFactor = (kIntakeWheelCircumferenceMeters
         / kIntakeMotorReduction) / 60.0; // meters per second
 
     public static final double kIntakeP = 0.04;
@@ -207,14 +208,15 @@ public final class Constants {
 
   public static final class ShooterConstants{
     public static final double kShooterWheelDiameterMeters = 0.1016;
+    public static final double kShooterWheelCircumferenceMeters = 0.1016 * Math.PI;
     public static final double kShooterMotorReduction = 1.0;
 
-    public static final double kShooterFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kShooterWheelDiameterMeters)
+    public static final double kShooterFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kShooterWheelCircumferenceMeters)
         / kShooterMotorReduction;
 
-    public static final double kShooterEncoderPositionFactor = (kShooterWheelDiameterMeters * Math.PI)
+    public static final double kShooterEncoderPositionFactor = kShooterWheelCircumferenceMeters
         / kShooterMotorReduction; // meters
-    public static final double kShooterEncoderVelocityFactor = ((kShooterWheelDiameterMeters * Math.PI)
+    public static final double kShooterEncoderVelocityFactor = (kShooterWheelCircumferenceMeters
         / kShooterMotorReduction) / 60.0; // meters per second
 
     public static final double kShooterP = 0.04;
