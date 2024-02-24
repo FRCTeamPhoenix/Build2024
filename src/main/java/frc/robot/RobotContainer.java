@@ -117,7 +117,7 @@ public class RobotContainer {
 
     //Move Arm To Speaker shooting angle based on photonvision
     final Trigger btn_op_rightBumper = new Trigger(m_operatorController.rightBumper());
-    btn_op_rightBumper.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
+    btn_op_rightBumper.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
 
     Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));

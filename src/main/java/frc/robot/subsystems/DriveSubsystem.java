@@ -69,6 +69,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   private PhotonPose poseEst;
 
+  private boolean isAllianceRed;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -322,4 +324,7 @@ public class DriveSubsystem extends SubsystemBase {
     return s;
   }
   
+  public boolean isAllianceRed() {
+    return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+  }
 }

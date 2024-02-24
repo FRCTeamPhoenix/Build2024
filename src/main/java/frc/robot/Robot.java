@@ -58,17 +58,7 @@ public class Robot extends TimedRobot {
 
         double range = 0.0;
 
-    var result = m_robotContainer.photonCamera.getAprilTag(4);
-    if (result != null) {
-    // First calculate range
-      range =
-        PhotonUtils.calculateDistanceToTargetMeters(
-            VisionConstants.kRobotToCam.getZ(),
-            1.451,
-            Math.toRadians(VisionConstants.kRobotToCam.getRotation().getY()),
-            Math.toRadians(result.getPitch()));
-        SmartDashboard.putNumber("Range", range);}
-    
+    var result = m_robotContainer.photonCamera.getAprilTag(4);    
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
