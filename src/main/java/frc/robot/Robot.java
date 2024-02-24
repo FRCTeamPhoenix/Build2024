@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
+import frc.robot.Constants.ShooterConstants;;
 
 
 public class Robot extends TimedRobot {
@@ -29,6 +30,13 @@ public class Robot extends TimedRobot {
 
     //Startup the Camera Server for the driver
     CameraServer.startAutomaticCapture(0);
+
+    SmartDashboard.putNumber("ShooterV", 30.0);
+    SmartDashboard.putNumber("PercentSpin", 0.7);
+    SmartDashboard.putNumber("ShooterP", 0.0);
+    SmartDashboard.putNumber("ShooterI", 0.0);
+    SmartDashboard.putNumber("ShooterD", 0.0);
+
   }
 
   /**
@@ -53,6 +61,8 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+
+    if (m_robotContainer.photonCamera.getAprilTag(4) != null) SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants.General;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_Shoot extends Command {
@@ -18,12 +19,11 @@ public class cmd_Shoot extends Command {
 
   @Override
   public void initialize() {
-    
   }
 
   @Override
   public void execute() {
-    m_shooter.setDesiredVelocity(16.5);
+    m_shooter.setDesiredVelocity(SmartDashboard.getNumber("ShooterV", 0.0));
   }
 
   @Override

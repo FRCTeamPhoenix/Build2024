@@ -19,6 +19,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -219,19 +220,18 @@ public final class Constants {
     public static final double kShooterEncoderVelocityFactor = (kShooterWheelCircumferenceMeters
         / kShooterMotorReduction) / 60.0; // meters per second
 
-    public static final double kShooterP = 0.04;
-    public static final double kShooterI = 0;
-    public static final double kShooterD = 0;
+    public static double kShooterP = 0.04;
+    public static double kShooterI = 0.0;
+    public static double kShooterD = 0.0;
     public static final double kShooterFF = 1 / kShooterFreeSpeedRps;
     public static final double kShooterMinOutput = -1;
     public static final double kShooterMaxOutput = 1;
     
     public static final int kShooterMotorCurrentLimit = 40; // amps
 
-    public static final IdleMode kShooterMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kShooterMotorIdleMode = IdleMode.kCoast;
   }
   
-
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;

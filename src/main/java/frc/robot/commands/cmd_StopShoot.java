@@ -23,7 +23,7 @@ public class cmd_StopShoot extends Command {
 
   @Override
   public void execute() {
-    m_shooter.setDesiredVelocity(0);
+    m_shooter.killShooter();
   }
 
   @Override

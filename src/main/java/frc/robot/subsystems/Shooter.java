@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -87,9 +88,13 @@ public class Shooter extends SubsystemBase {
     // Command intake motors towards their respective setpoints, with one motor being flipped
     // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
     m_PIDControllerLeft.setReference(desiredVelocity, ControlType.kVelocity);
-    m_PIDControllerRight.setReference(desiredVelocity, ControlType.kVelocity);
+    m_PIDControllerRight.setReference(desiredVelocity*SmartDashboard.getNumber("PercentSpin", 0.7), ControlType.kVelocity);
   }
 
+  public void killShooter(){
+    m_PIDControllerLeft.setReference(0.0, ControlType.kVoltage);
+    m_PIDControllerRight.setReference(0.0, ControlType.kVoltage);
+  }
   public double getVelocity(){
     return m_encoderLeft.getVelocity();
   }

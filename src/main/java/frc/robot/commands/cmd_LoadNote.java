@@ -22,7 +22,7 @@ public class cmd_LoadNote extends Command {
 
   @Override
   public void execute() {
-    m_intake.setDesiredVelocity(2.5);
+    m_intake.setDesiredVelocity(5);
   }
 
   @Override

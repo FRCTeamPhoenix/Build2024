@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -62,6 +64,8 @@ public class RobotContainer {
   CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   public RobotContainer() {
+    configureShooterInterpolation();
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -72,10 +76,6 @@ public class RobotContainer {
 
     //Add Autos
     //SmartDashboard.putData("Auto", autoChooser);
-
-    //Configure shooter interpolation tree
-    configureShooterInterpolation();
-
 
     if (m_robotDrive.isAllianceRed()) speakerTagID = 4;
     else speakerTagID = 7;
@@ -88,7 +88,7 @@ public class RobotContainer {
             () -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                getRobotRotation(m_driverController.getHID().getLeftBumper()),
                 true, m_driverController.getHID().getRightBumper()),
             m_robotDrive));
   }
@@ -133,16 +133,6 @@ public class RobotContainer {
     Trigger povDownPressed = m_operatorController.povDown();
     povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
-    final Trigger btn_drive_rightBumper = new Trigger(m_driverController.leftBumper());
-    btn_drive_rightBumper.whileTrue(
-    new RunCommand(
-        () -> m_robotDrive.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-            CameraDriveUtil.getDriveRot(photonCamera.getAprilTag(speakerTagID).getYaw(), 0),
-            true, m_driverController.getHID().getRightBumper()),
-        m_robotDrive));
-
     m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
     m_operatorController.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
@@ -185,6 +175,12 @@ public class RobotContainer {
 
   public Shooter getShooter(){
     return m_shooter;
+  }
+
+  public double getRobotRotation(boolean alignToSpeaker){
+    PhotonTrackedTarget target = photonCamera.getAprilTag(speakerTagID);
+    if (target != null) return -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
+    else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
   }
 
   public Intake getIntake(){
