@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonUtils;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Arm;
 
 
@@ -52,6 +55,20 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
     }
     SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+
+        double range = 0.0;
+
+    var result = m_robotContainer.photonCamera.getAprilTag(4);
+    if (result != null) {
+    // First calculate range
+      range =
+        PhotonUtils.calculateDistanceToTargetMeters(
+            VisionConstants.kRobotToCam.getZ(),
+            1.451,
+            Math.toRadians(VisionConstants.kRobotToCam.getRotation().getY()),
+            Math.toRadians(result.getPitch()));
+        SmartDashboard.putNumber("Range", range);}
+    
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

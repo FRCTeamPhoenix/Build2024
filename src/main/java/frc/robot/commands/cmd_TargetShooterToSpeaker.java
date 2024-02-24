@@ -41,10 +41,10 @@ public class cmd_TargetShooterToSpeaker extends Command {
         PhotonUtils.calculateDistanceToTargetMeters(
             VisionConstants.kRobotToCam.getZ(),
             1.451,
-            VisionConstants.kRobotToCam.getRotation().getY(),
+            Math.toRadians(VisionConstants.kRobotToCam.getRotation().getY()),
             Math.toRadians(result.getPitch()));}
     
-    if (range != 0.0){
+    if (range != 0.0 && range <= 4.2 && range >= 1.91){
       calculatedSetPoint = m_interpolator.get(range);
     }
     else {

@@ -161,8 +161,7 @@ public class Arm extends SubsystemBase {
 
   /**
    * Sets the desired state for the module.
-   *
-   * @param desiredState Desired state with speed and angle.
+   * @param angle Supposedly an angle in radians (Needs to be confirmed)
    */
   public void setArmPosition(double angle) {
     // Command driving and turning SPARKS MAX towards their respective setpoints.
