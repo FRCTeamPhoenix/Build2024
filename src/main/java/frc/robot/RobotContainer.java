@@ -59,6 +59,9 @@ public class RobotContainer {
   CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   public RobotContainer() {
+    //Configure shooter interpolation tree
+    configureShooterInterpolation();
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -70,8 +73,6 @@ public class RobotContainer {
     //Add Autos
     //SmartDashboard.putData("Auto", autoChooser);
 
-    //Configure shooter interpolation tree
-    configureShooterInterpolation();
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -117,8 +118,10 @@ public class RobotContainer {
 
     //Move Arm To Speaker shooting angle based on photonvision
     final Trigger btn_op_rightBumper = new Trigger(m_operatorController.rightBumper());
-    btn_op_rightBumper.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
+    btn_op_rightBumper.onTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
 
+    // final Trigger btn_drive_leftBumper = new Trigger(m_driverController.leftBumper());
+    // btn_drive_leftBumper.whileTrue(new cmd_AlignToSpeaker(m_robotDrive, photonCamera, m_driverController).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 

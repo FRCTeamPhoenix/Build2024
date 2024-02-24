@@ -48,7 +48,7 @@ public class cmd_TargetShooterToSpeaker extends Command {
       range = result.getBestCameraToTarget().getX();
     }
     
-    if (range != 0.0 && range <= 4.2 && range >= 1.91) {
+    if (range <= 4.2 && range >= 1.91) {
       calculatedSetPoint = m_interpolator.get(range);
     }
     else {
