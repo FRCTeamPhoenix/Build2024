@@ -26,6 +26,7 @@ import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
+import frc.utils.CameraDriveUtil;
 
 
 
@@ -48,6 +49,8 @@ public class RobotContainer {
   
   private final InterpolatingDoubleTreeMap shooterInterpolate = new InterpolatingDoubleTreeMap();
 
+  private int speakerTagID;
+  
   //Vision Subsystems
   public final PhotonPose vision = m_robotDrive.getPhotonPose();
   
@@ -59,9 +62,6 @@ public class RobotContainer {
   CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   public RobotContainer() {
-    //Configure shooter interpolation tree
-    configureShooterInterpolation();
-
     // Configure the button bindings
     configureButtonBindings();
 
@@ -73,6 +73,13 @@ public class RobotContainer {
     //Add Autos
     //SmartDashboard.putData("Auto", autoChooser);
 
+    //Configure shooter interpolation tree
+    configureShooterInterpolation();
+
+
+    if (m_robotDrive.isAllianceRed()) speakerTagID = 4;
+    else speakerTagID = 7;
+    
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -100,7 +107,7 @@ public class RobotContainer {
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
 
-    //Move Arm To Speaker shooting angle from subwooder
+    //Move Arm To subwoofer shooting
     final Trigger btn_op_X = new Trigger(m_operatorController.x());
     btn_op_X.onTrue(new cmd_MoveArmToPosition(.6,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
 
@@ -116,17 +123,25 @@ public class RobotContainer {
     final Trigger btn_op_A = new Trigger(m_operatorController.a());        
     btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
 
-    //Move Arm To Speaker shooting angle based on photonvision
+    //Move Arm To speaker shooting based on distance
     final Trigger btn_op_rightBumper = new Trigger(m_operatorController.rightBumper());
-    btn_op_rightBumper.onTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
+    btn_op_rightBumper.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, photonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));  
 
-    // final Trigger btn_drive_leftBumper = new Trigger(m_driverController.leftBumper());
-    // btn_drive_leftBumper.whileTrue(new cmd_AlignToSpeaker(m_robotDrive, photonCamera, m_driverController).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     Trigger povUpPressed = m_operatorController.povUp();
     povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
     Trigger povDownPressed = m_operatorController.povDown();
     povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+
+    final Trigger btn_drive_rightBumper = new Trigger(m_driverController.leftBumper());
+    btn_drive_rightBumper.whileTrue(
+    new RunCommand(
+        () -> m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+            CameraDriveUtil.getDriveRot(photonCamera.getAprilTag(speakerTagID).getYaw(), 0),
+            true, m_driverController.getHID().getRightBumper()),
+        m_robotDrive));
 
     m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
     m_operatorController.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));

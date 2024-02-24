@@ -26,11 +26,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-
-import com.ctre.phoenix6.Orchestra;
-
 public class DriveSubsystem extends SubsystemBase {
   
   // Create MAXSwerveModules
@@ -68,8 +63,6 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
   
   private PhotonPose poseEst;
-
-  private boolean isAllianceRed;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
