@@ -33,8 +33,6 @@ public class cmd_LoadNote extends Command {
 
     @Override
     public boolean isFinished() {
-        String status = SmartDashboard.getString("FRC-Note", "Captured");
-        if (status.equals("Not Found")) return true;
         return false;
     }
 }

@@ -131,10 +131,10 @@ public class RobotContainer {
         povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
-        m_operatorController.leftBumper().onTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.leftBumper().onTrue(new cmd_IntakeNote(m_intake));
 
         Trigger povRightPressed = m_operatorController.povRight();
-        povRightPressed.onTrue(new cmd_MoveArmToPosition(0.14, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(0.14, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
     }

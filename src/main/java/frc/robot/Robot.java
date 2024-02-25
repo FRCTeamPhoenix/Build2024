@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
             SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
         }
 
-        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Captured");
+        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
 
         SmartDashboard.putBoolean("hasNote", hasNote);
     }
