@@ -1,4 +1,5 @@
 package frc.robot.subsystems;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.Matrix;
@@ -11,14 +12,17 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants.DriveConstants;
 
 import java.util.Optional;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import static frc.robot.Constants.VisionConstants;
+
 public class PhotonPose extends SubsystemBase {
     // Camera whose name is declared in constants
     private final PhotonClass camera;
- 
+
     // The timestamp used to mark each timestamp
     private double lastEstTimestamp = 0;
 
@@ -39,16 +43,16 @@ public class PhotonPose extends SubsystemBase {
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         this.drive = drive;
         poseEstimator = new SwerveDrivePoseEstimator(
-            DriveConstants.kDriveKinematics,
-            drive.getRotation(), 
-            drive.getModulePositions(), 
-            new Pose2d());
+                DriveConstants.kDriveKinematics,
+                drive.getRotation(),
+                drive.getModulePositions(),
+                new Pose2d());
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         var visionEst = photonEstimator.update();
         double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
-        boolean newResult = Math.abs(latestTimestamp-lastEstTimestamp) > 1e-5;
+        boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         if (newResult) lastEstTimestamp = latestTimestamp;
         return visionEst;
     }
@@ -60,7 +64,7 @@ public class PhotonPose extends SubsystemBase {
         double avgDist = 0;
         for (var tgt : targets) {
             var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-        
+
             if (tagPose.isEmpty()) continue;
             numTags++;
             avgDist +=
@@ -78,9 +82,9 @@ public class PhotonPose extends SubsystemBase {
         return estStdDevs;
     }
 
-    public Pose2d getPose(){
+    public Pose2d getPose() {
         var visionEst = getEstimatedGlobalPose();
-    
+
         visionEst.ifPresent(
                 est -> {
                     var estPose = est.estimatedPose.toPose2d();
@@ -89,7 +93,7 @@ public class PhotonPose extends SubsystemBase {
 
                     poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-            
+
                 });
         poseEstimator.update(drive.getRotation(), drive.getModulePositions());
         return poseEstimator.getEstimatedPosition();
@@ -100,9 +104,9 @@ public class PhotonPose extends SubsystemBase {
     public void periodic() {
         // TODO Auto-generated method stub
         super.periodic();
-                // Correct pose estimate with vision measurements
+        // Correct pose estimate with vision measurements
         var visionEst = getEstimatedGlobalPose();
-    
+
         visionEst.ifPresent(
                 est -> {
                     var estPose = est.estimatedPose.toPose2d();
@@ -111,7 +115,7 @@ public class PhotonPose extends SubsystemBase {
 
                     poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-            
+
                 });
         poseEstimator.update(drive.getRotation(), drive.getModulePositions());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
@@ -119,5 +123,5 @@ public class PhotonPose extends SubsystemBase {
         double[] pose = {poseEstimator.getEstimatedPosition().getX(), poseEstimator.getEstimatedPosition().getY(), poseEstimator.getEstimatedPosition().getRotation().getRadians()};
         SmartDashboard.putNumberArray("EstimatedPose", pose);
     }
-    
+
 }

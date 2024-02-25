@@ -9,31 +9,31 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_StopShoot extends Command {
-  private final Shooter m_shooter;
+    private final Shooter m_shooter;
 
-  public cmd_StopShoot(Shooter shooter) {
-    m_shooter = shooter;
-    addRequirements(m_shooter);
-  }
+    public cmd_StopShoot(Shooter shooter) {
+        m_shooter = shooter;
+        addRequirements(m_shooter);
+    }
 
-  @Override
-  public void initialize() {
-    
-  }
+    @Override
+    public void initialize() {
 
-  @Override
-  public void execute() {
-    m_shooter.killShooter();
-  }
+    }
 
-  @Override
-  public void end(boolean interrupted) {
-    if (General.LOGGING)
-      System.out.println("End Move Arm Down");
-  }
+    @Override
+    public void execute() {
+        m_shooter.killShooter();
+    }
 
-  @Override
-  public boolean isFinished() {
-    return true;
-  }
+    @Override
+    public void end(boolean interrupted) {
+        if (General.LOGGING)
+            System.out.println("End Move Arm Down");
+    }
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }

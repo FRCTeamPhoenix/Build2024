@@ -14,67 +14,57 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_TargetShooterToSpeaker extends Command {
-  private final Arm m_arm;
-  private final InterpolatingDoubleTreeMap m_interpolator;
-  private final double calculatedSetPoint;
+    private final Arm m_arm;
+    private final InterpolatingDoubleTreeMap m_interpolator;
+    private double calculatedSetPoint;
 
-  private double range = 0.0;
+    private double range = 0.0;
 
-  private PhotonTrackedTarget result;
+    private PhotonTrackedTarget result;
 
-  /**
-   * Command the arm to move to a setpoint.
-   *
-   * @param interpolator Interpolating Tree Map for shooter vaules
-   * @param speed The speed the arm will move
-   * @param arm The Arm Subsystem
-   */
-  public cmd_TargetShooterToSpeaker(InterpolatingDoubleTreeMap interpolator, PhotonClass photonCam, Arm arm, boolean isAllianceRed) {
-    m_interpolator = interpolator;
-    m_arm = arm;
-    
-    if (isAllianceRed) result = photonCam.getAprilTag(4);
-    else result = photonCam.getAprilTag(7);
+    /**
+     * Command the arm to move to a setpoint.
+     *
+     * @param interpolator Interpolating Tree Map for shooter vaules
+     * @param arm          The Arm Subsystem
+     */
+    public cmd_TargetShooterToSpeaker(InterpolatingDoubleTreeMap interpolator, PhotonClass photonCam, Arm arm, boolean isAllianceRed) {
+        m_interpolator = interpolator;
+        m_arm = arm;
 
-    if (result != null) {
-    // First calculate range
-      // range =
-      //   PhotonUtils.calculateDistanceToTargetMeters(
-      //       VisionConstants.kRobotToCam.getZ(),
-      //       1.451,
-      //       Math.toRadians(VisionConstants.kRobotToCam.getRotation().getY()),
-      //       Math.toRadians(result.getPitch()));}
-
-      range = result.getBestCameraToTarget().getX();
+        if (isAllianceRed) result = photonCam.getAprilTag(4);
+        else result = photonCam.getAprilTag(7);
+        addRequirements(m_arm);
     }
-    
-    if (range <= 4.2 && range >= 1.91) {
-      calculatedSetPoint = m_interpolator.get(range);
+
+    @Override
+    public void initialize() {
+
     }
-    else {
-      calculatedSetPoint = m_arm.getArmPosition();
+
+    @Override
+    public void execute() {
+        if (result != null) {
+            range = result.getBestCameraToTarget().getX();
+        }
+
+        if (range <= 3.821 && range >= 1.735) {
+            calculatedSetPoint = m_interpolator.get(range);
+        } else {
+            calculatedSetPoint = m_arm.getArmPosition();
+        }
+
+        m_arm.setArmPosition(calculatedSetPoint);
+        SmartDashboard.putNumber("Range", range);
     }
-    addRequirements(m_arm);
-  }
 
-  @Override
-  public void initialize() {
-    
-  }
+    @Override
+    public void end(boolean interrupted) {
+    }
 
-  @Override
-  public void execute() {
-    m_arm.setArmPosition(calculatedSetPoint);
-    SmartDashboard.putNumber("Range", range);
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  @Override
-  public boolean isFinished() {
-    SmartDashboard.putBoolean("IsAtPosition", m_arm.isAtPosition(calculatedSetPoint));
-    return m_arm.isAtPosition(calculatedSetPoint);
-  }
+    @Override
+    public boolean isFinished() {
+        SmartDashboard.putBoolean("IsAtPosition", m_arm.isAtPosition(calculatedSetPoint));
+        return m_arm.isAtPosition(calculatedSetPoint);
+    }
 }

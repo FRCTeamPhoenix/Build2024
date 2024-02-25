@@ -2,12 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-/* This is derived from MAXSwerve module code by retaining only the turning motor code 
- * and doing some renaming - also added a local ArmConstants class that should be 
- * moved to constants.java.  For now, because the swerve code was all in radians this 
- * is also in radians.  There are also edits to the arm control code in robot.java to 
+/* This is derived from MAXSwerve module code by retaining only the turning motor code
+ * and doing some renaming - also added a local ArmConstants class that should be
+ * moved to constants.java.  For now, because the swerve code was all in radians this
+ * is also in radians.  There are also edits to the arm control code in robot.java to
  * make the units consistent
-*/
+ */
 
 package frc.robot.subsystems;
 
@@ -25,156 +25,155 @@ import com.revrobotics.AbsoluteEncoder;
 
 
 public class Arm extends SubsystemBase {
-  
-  private final CANSparkMax m_leftMotor;
-  private final CANSparkMax m_rightMotor;
 
-  private final AbsoluteEncoder m_armEncoder;
+    private final CANSparkMax m_leftMotor;
+    private final CANSparkMax m_rightMotor;
 
-  private final SparkPIDController m_armPIDController;
+    private final AbsoluteEncoder m_armEncoder;
 
-  private double armPositionRequest;
+    private final SparkPIDController m_armPIDController;
 
-  //private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private double armPositionRequest;
 
-  /**
-   * Constructs a MAXSwerveModule and configures the driving and turning motor,
-   * encoder, and PID controller. This configuration is specific to the REV
-   * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
-   * Encoder.
-   */
-  public Arm(int leftCANID, int rightCANID) {
-    
-    m_leftMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
-    m_rightMotor = new CANSparkMax(rightCANID, MotorType.kBrushless);
+    //private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
+    /**
+     * Constructs a MAXSwerveModule and configures the driving and turning motor,
+     * encoder, and PID controller. This configuration is specific to the REV
+     * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
+     * Encoder.
+     */
+    public Arm(int leftCANID, int rightCANID) {
 
-    // Factory reset, so we get the SPARKS MAX to a known state before configuring
-    // them. This is useful in case a SPARK MAX is swapped out.
-   
-    m_leftMotor.restoreFactoryDefaults();
-    m_rightMotor.restoreFactoryDefaults();
-
-    // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-
-    m_armEncoder = m_leftMotor.getAbsoluteEncoder(Type.kDutyCycle);
-    m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
-   
-    m_armPIDController = m_leftMotor.getPIDController();
-
-    m_armPIDController.setFeedbackDevice(m_armEncoder);
-
-    m_leftMotor.setInverted(true);
+        m_leftMotor = new CANSparkMax(leftCANID, MotorType.kBrushless);
+        m_rightMotor = new CANSparkMax(rightCANID, MotorType.kBrushless);
 
 
-    // Apply position and velocity conversion factors for the turning encoder. We
-    // want these in radians and radians per second to use with WPILib's swerve
-    // APIs.
-    m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
-    m_armEncoder.setVelocityConversionFactor(ArmConstants.kArmEncoderVelocityFactor);
+        // Factory reset, so we get the SPARKS MAX to a known state before configuring
+        // them. This is useful in case a SPARK MAX is swapped out.
 
-    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
-    // the steering motor in the MAXSwerve Module.
-    //m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
+        m_leftMotor.restoreFactoryDefaults();
+        m_rightMotor.restoreFactoryDefaults();
 
-    // Enable PID wrap around for the turning motor. This will allow the PID
-    // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
-    // to 10 degrees will go through 0 rather than the other direction which is a
-    // longer route.
+        // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
 
-    /* this code was changed back to enable wrpping and configure the sensor range */
-    m_armPIDController.setPositionPIDWrappingEnabled(true);
-    m_armPIDController.setPositionPIDWrappingMinInput(ArmConstants.kArmEncoderPositionPIDMinInput);
-    m_armPIDController.setPositionPIDWrappingMaxInput(ArmConstants.kArmEncoderPositionPIDMaxInput);
+        m_armEncoder = m_leftMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
 
-    // Set the PID gains for the turning motor. Note these are example gains, and you
-    // may need to tune them for your own robot!
-    m_armPIDController.setP(ArmConstants.kArmP);
-    m_armPIDController.setI(ArmConstants.kArmI);
-    m_armPIDController.setD(ArmConstants.kArmD);
-    m_armPIDController.setFF(ArmConstants.kArmFF);
-    m_armPIDController.setOutputRange(ArmConstants.kArmMinOutput,
-        ArmConstants.kArmMaxOutput);
+        m_armPIDController = m_leftMotor.getPIDController();
 
-    m_leftMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
-    m_leftMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
+        m_armPIDController.setFeedbackDevice(m_armEncoder);
 
-    m_rightMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
-    m_rightMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
-
-    // Save the SPARK MAX configurations. If a SPARK MAX browns out during
-    // operation, it will maintain the above configurations.
-    m_leftMotor.burnFlash();
-
-    m_rightMotor.follow(m_leftMotor, true);
-    m_rightMotor.burnFlash();
+        m_leftMotor.setInverted(true);
 
 
-    armPositionRequest = getArmPosition();  // initialize to where we are
+        // Apply position and velocity conversion factors for the turning encoder. We
+        // want these in radians and radians per second to use with WPILib's swerve
+        // APIs.
+        m_armEncoder.setPositionConversionFactor(ArmConstants.kArmEncoderPositionFactor);
+        m_armEncoder.setVelocityConversionFactor(ArmConstants.kArmEncoderVelocityFactor);
 
-  }
+        // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+        // the steering motor in the MAXSwerve Module.
+        //m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
 
-  /**
-   * Returns the current position of the module.
-   *
-   * @return The current position of the module.
-   */
-  public double getArmPosition() {
-    return m_armEncoder.getPosition();
-  }
+        // Enable PID wrap around for the turning motor. This will allow the PID
+        // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+        // to 10 degrees will go through 0 rather than the other direction which is a
+        // longer route.
 
-  public void moveArmUp(double dIncrement) {
-    double currentArm = getArmPosition();
-    double futureArmPosition = currentArm + dIncrement;
-    if ((currentArm<ArmConstants.ARM_MAX_ANGLE) && (futureArmPosition < ArmConstants.ARM_MAX_ANGLE)){
-      //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
-      m_armPIDController.setReference(dIncrement, ControlType.kVelocity);
+        /* this code was changed back to enable wrpping and configure the sensor range */
+        m_armPIDController.setPositionPIDWrappingEnabled(true);
+        m_armPIDController.setPositionPIDWrappingMinInput(ArmConstants.kArmEncoderPositionPIDMinInput);
+        m_armPIDController.setPositionPIDWrappingMaxInput(ArmConstants.kArmEncoderPositionPIDMaxInput);
+
+        // Set the PID gains for the turning motor. Note these are example gains, and you
+        // may need to tune them for your own robot!
+        m_armPIDController.setP(ArmConstants.kArmP);
+        m_armPIDController.setI(ArmConstants.kArmI);
+        m_armPIDController.setD(ArmConstants.kArmD);
+        m_armPIDController.setFF(ArmConstants.kArmFF);
+        m_armPIDController.setOutputRange(ArmConstants.kArmMinOutput,
+                ArmConstants.kArmMaxOutput);
+
+        m_leftMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
+        m_leftMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
+
+        m_rightMotor.setIdleMode(ArmConstants.kArmMotorIdleMode);
+        m_rightMotor.setSmartCurrentLimit(ArmConstants.kArmMotorCurrentLimit);
+
+        // Save the SPARK MAX configurations. If a SPARK MAX browns out during
+        // operation, it will maintain the above configurations.
+        m_leftMotor.burnFlash();
+
+        m_rightMotor.follow(m_leftMotor, true);
+        m_rightMotor.burnFlash();
+
+
+        armPositionRequest = getArmPosition();  // initialize to where we are
+
     }
-    else{
-      m_armPIDController.setReference(ArmConstants.ARM_MAX_ANGLE,ControlType.kPosition);
+
+    /**
+     * Returns the current position of the module.
+     *
+     * @return The current position of the module.
+     */
+    public double getArmPosition() {
+        return m_armEncoder.getPosition();
     }
-  }
 
- public void moveArmDown(double dIncrement) {
-    double currentArm = getArmPosition();
-    double futureArmPosition = currentArm - dIncrement;
-    if ((currentArm>ArmConstants.ARM_MIN_ANGLE) && (futureArmPosition > ArmConstants.ARM_MIN_ANGLE)){
-      //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
-      m_armPIDController.setReference(-dIncrement, ControlType.kVelocity);
+    public void moveArmUp(double dIncrement) {
+        double currentArm = getArmPosition();
+        double futureArmPosition = currentArm + dIncrement;
+        if ((currentArm < ArmConstants.ARM_MAX_ANGLE) && (futureArmPosition < ArmConstants.ARM_MAX_ANGLE)) {
+            //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+            m_armPIDController.setReference(dIncrement, ControlType.kVelocity);
+        } else {
+            m_armPIDController.setReference(ArmConstants.ARM_MAX_ANGLE, ControlType.kPosition);
+        }
     }
-    else{
-      m_armPIDController.setReference(ArmConstants.ARM_MIN_ANGLE,ControlType.kPosition);
+
+    public void moveArmDown(double dIncrement) {
+        double currentArm = getArmPosition();
+        double futureArmPosition = currentArm - dIncrement;
+        if ((currentArm > ArmConstants.ARM_MIN_ANGLE) && (futureArmPosition > ArmConstants.ARM_MIN_ANGLE)) {
+            //m_armPIDController.setReference(futureArmPosition,ControlType.kPosition);
+            m_armPIDController.setReference(-dIncrement, ControlType.kVelocity);
+        } else {
+            m_armPIDController.setReference(ArmConstants.ARM_MIN_ANGLE, ControlType.kPosition);
+        }
     }
-  }
 
-  @Override
-  public void periodic(){
-  }
+    @Override
+    public void periodic() {
+    }
 
-  public void holdPosition(double m_position) {
-    setArmPosition(m_position);
-  }
+    public void holdPosition(double m_position) {
+        setArmPosition(m_position);
+    }
 
-  public double getArmPositionRequest() {
-    return armPositionRequest;
-  }
+    public double getArmPositionRequest() {
+        return armPositionRequest;
+    }
 
-  /**
-   * Sets the desired state for the module.
-   * @param angle Supposedly an angle in radians (Needs to be confirmed)
-   */
-  public void setArmPosition(double angle) {
-    // Command driving and turning SPARKS MAX towards their respective setpoints.
-    m_armPIDController.setReference(angle, ControlType.kPosition);
-    armPositionRequest = angle;
-  }
+    /**
+     * Sets the desired state for the module.
+     *
+     * @param angle Supposedly an angle in radians (Needs to be confirmed)
+     */
+    public void setArmPosition(double angle) {
+        // Command driving and turning SPARKS MAX towards their respective setpoints.
+        m_armPIDController.setReference(angle, ControlType.kPosition);
+        armPositionRequest = angle;
+    }
 
-  public boolean isAtPosition(double setPosition){
-    //Need to account for some error
-    double armPosition = getArmPosition();
-    if ((armPosition<setPosition-.05) && (armPosition > setPosition+.05))
-      return true;
-    return false;
-  }
+    public boolean isAtPosition(double setPosition) {
+        //Need to account for some error
+        double armPosition = getArmPosition();
+        if ((armPosition < setPosition - .05) && (armPosition > setPosition + .05))
+            return true;
+        return false;
+    }
 }
 

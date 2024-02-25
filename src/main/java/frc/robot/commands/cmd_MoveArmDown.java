@@ -9,35 +9,35 @@ import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_MoveArmDown extends Command {
-  private final Arm m_arm;
-  //private final double m_setPoint;
+    private final Arm m_arm;
+    //private final double m_setPoint;
 
-  private double m_dIncrement;
+    private double m_dIncrement;
 
-  public cmd_MoveArmDown(Arm arm, double dIncrement) {
-    m_arm = arm;
-    m_dIncrement = dIncrement;
-    addRequirements(m_arm);
-  }
+    public cmd_MoveArmDown(Arm arm, double dIncrement) {
+        m_arm = arm;
+        m_dIncrement = dIncrement;
+        addRequirements(m_arm);
+    }
 
-  @Override
-  public void initialize() {
-    
-  }
+    @Override
+    public void initialize() {
 
-  @Override
-  public void execute() {
-    m_arm.moveArmDown(m_dIncrement);
-  }
+    }
 
-  @Override
-  public void end(boolean interrupted) {
-    if (General.LOGGING)
-      System.out.println("End Move Arm Down");
-  }
+    @Override
+    public void execute() {
+        m_arm.moveArmDown(m_dIncrement);
+    }
 
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    @Override
+    public void end(boolean interrupted) {
+        if (General.LOGGING)
+            System.out.println("End Move Arm Down");
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }
