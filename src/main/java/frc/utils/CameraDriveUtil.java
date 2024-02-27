@@ -1,5 +1,9 @@
 package frc.utils;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+
 import java.lang.Math;
 
 public class CameraDriveUtil {
@@ -89,6 +93,52 @@ public class CameraDriveUtil {
         } else if (thetaVelocity < -maxTurnVelocity) {
             thetaVelocity = -maxTurnVelocity;
         }
+        return thetaVelocity;
+    }
+
+    public static double getDriveRotWithFeedForward(double theta, double DesiredTheta, Pose2d previousPose, Pose2d currentPose) {
+        // These numbers must be tuned for your Robot!  Be careful!
+        final double turnSpeed = 0.05;                  // How hard to turn toward the target
+        final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
+
+        //TODO: Get actual speaker pose
+        Pose2d speakerPose = new Pose2d(0, 0, new Rotation2d(10));
+
+        // if angle within 2 degrees of desired angle set error to 0
+        theta = 360 - theta;
+
+        if (theta > 180) {
+            theta -= 360;
+        }
+
+        double thetaError = DesiredTheta - theta;
+        if (Math.abs(thetaError) < 1) {
+            thetaError = 0;
+        }
+
+        // calculates theoretical rotational velocity
+        double thetaVelocity = (thetaError * turnSpeed);
+        // caps the rotaional velocity to the maximum allowed velocity
+        if (thetaVelocity > maxTurnVelocity) {
+            thetaVelocity = maxTurnVelocity;
+        } else if (thetaVelocity < -maxTurnVelocity) {
+            thetaVelocity = -maxTurnVelocity;
+        }
+
+        //Calculating feed forward
+        Transform2d currentTransform = new Transform2d(currentPose, speakerPose);
+        Transform2d priorTransform = new Transform2d(previousPose, speakerPose);
+        Transform2d deltaTransform = new Transform2d(
+                currentTransform.getX() - priorTransform.getX(),
+                currentTransform.getY() - priorTransform.getY(),
+                new Rotation2d(currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians())
+        );
+
+        double feedForward = deltaTransform.getRotation().getRadians(); //radians/20ms cycle
+        feedForward = feedForward * 50; // radians/sec
+
+        //Adding feedforward to velocity
+        thetaVelocity += feedForward;
         return thetaVelocity;
     }
 

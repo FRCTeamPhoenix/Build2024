@@ -14,12 +14,12 @@ forward control that will turn the robot at the rate the target azimuth is chang
 when the yaw error is 0.  
 
 Note that in relation to the basic 50Hz control, vision updates are asynchronous.  Trying to do 
-D calculations on asynchronous data is likey problematical.
+D calculations on asynchronous data is likely problematical.
 
 The control then looks something like this.  Turning speeds appear to be radians/sec.  Camera 
 yaw angle appears to be degrees.  
 
-Using the pigeon for feeed forward will not work - we need the bearing change caused by the 
+Using the pigeon for feed forward will not work - we need the bearing change caused by the
 motion of the robot.  The pigeon will reflect our control actions.
 */
 
@@ -38,7 +38,7 @@ currentRobotPose = getRobotPose();
 Transform2d currentTransform = Transform2d(currentRobotPose, speakerPose);
 Transform2d priorTransform = Transform2d(priorRobotPose, speakerPose);
 Transform2d deltaTransform = currentTransform - priorTransform;
-priorTransform = curentTransform;
+priorTransform = currentTransform;
 double feedForward = deltaTransform.getRotation().getRadians(); //radians/20ms cycle
 // if the units are radians/sec we will need
 feedForward = feedForward * 50; // radians/sec
