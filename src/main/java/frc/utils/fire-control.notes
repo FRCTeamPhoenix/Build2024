@@ -1,0 +1,86 @@
+/* fire control - how to hit the speaker on the fly
+There are two components: azimuth, rotating the robot to aim the shooter at the speaker, 
+and elevation, the arm angle determined by the distance to the target.  If the robot 
+is not moving azimuth is established by controlling the AprilTag yaw value to 0, and 
+computing the azimuth from the AprilTag X value using the table.  We currently have 
+code that does this.  With proper tuning elevation may work.  Elevation changes relatively 
+slowly over much of the favorable shooting area.  It is also a position control. We can add 
+some D action or a variant of the feedforward discussed below.
+
+Azimuth can change very fast.  In addition we are driving a velocity control so D action on 
+the error will not work well.  If the robot is moing across the field, the robot must 
+continue to rotate even when the azimuth error is 0.  What we will need here is a feed 
+forward control that will turn the robot at the rate the target azimuth is changing even 
+when the yaw error is 0.  
+
+Note that in relation to the basic 50Hz control, vision updates are asynchronous.  Trying to do 
+D calculations on asynchronous data is likey problematical.
+
+The control then looks something like this.  Turning speeds appear to be radians/sec.  Camera 
+yaw angle appears to be degrees.  
+
+Using the pigeon for feeed forward will not work - we need the bearing change caused by the 
+motion of the robot.  The pigeon will reflect our control actions.
+*/
+
+// the code 
+// this probably goes in robot.java
+
+// in init
+Pose2d currentRobotPose = getRobotPose();
+Pose2d priorRobotPose = currentRobotPose;
+// in periodic  - prbably make these global or provide getters
+priorRobotPose = currentRobotPose;
+//there is probably no reason to call getRobotPose() more than once per cycle
+currentRobotPose = getRobotPose();  
+
+// the code to compute the feedforward looks something like this:
+Transform2d currentTransform = Transform2d(currentRobotPose, speakerPose);
+Transform2d priorTransform = Transform2d(priorRobotPose, speakerPose);
+Transform2d deltaTransform = currentTransform - priorTransform;
+priorTransform = curentTransform;
+double feedForward = deltaTransform.getRotation().getRadians(); //radians/20ms cycle
+// if the units are radians/sec we will need
+feedForward = feedForward * 50; // radians/sec
+// this value is added directly to the output of the P control so
+thetaVelocity += feedForward;
+
+// Note that we can use the deltaTransform computed above to also compute a distance feedforward 
+// for the arm angle.
+
+
+
+public static double getDriveRot(double theta, double DesiredTheta) {
+        // These numbers must be tuned for your Robot!  Be careful!
+        final double turnSpeed = 0.05;                  // How hard to turn toward the target
+        final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
+         
+        /* This is a P control with a deadband output limits
+        turnSpeed is the P value  assuming output is radians/sec 
+        a Pgain of 1 is pi/180 son turnSpeed probably about 0.017 
+        maxTurnVelocity is the output limit abs value
+        This probably wants to be order of 2*pi (1 RPS)
+        The deadband probably wants to be order of +/- 1.0 degrees
+        */
+        // if angle within 2 degrees of desired angle set error to 0
+        theta = 360 - theta;
+
+        if (theta > 180) {
+            theta -= 360;
+        }
+
+        double thetaError = DesiredTheta - theta;
+        if (Math.abs(thetaError) < 5) {
+            thetaError = 0;
+        }
+
+        // calculates theoretical rotational velocity
+        double thetaVelocity = (thetaError * turnSpeed);
+        // caps the rotaional velocity to the maximum allowed velocity
+        if (thetaVelocity > maxTurnVelocity) {
+            thetaVelocity = maxTurnVelocity;
+        } else if (thetaVelocity < -maxTurnVelocity) {
+            thetaVelocity = -maxTurnVelocity;
+        }
+        return thetaVelocity;
+    }
