@@ -60,6 +60,8 @@ public class RobotContainer {
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
+    private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
+
     public RobotContainer() {
         configureShooterInterpolation();
 
@@ -74,7 +76,7 @@ public class RobotContainer {
         //Add Autos
         //SmartDashboard.putData("Auto", autoChooser);
 
-        if (m_robotDrive.isAllianceRed()) speakerTagID = 4;
+        if (isAllianceRed) speakerTagID = 4;
         else speakerTagID = 7;
 
         // Configure default commands
@@ -185,5 +187,9 @@ public class RobotContainer {
 
     public Intake getIntake() {
         return m_intake;
+    }
+
+    public boolean isAllianceRed() {
+        return isAllianceRed;
     }
 }

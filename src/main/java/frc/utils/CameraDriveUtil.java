@@ -68,7 +68,7 @@ public class CameraDriveUtil {
         return xVelocity;
     }
 
-    public static double getDriveRot(double theta, double DesiredTheta) {
+    public static double getDriveRot(double theta, double desiredTheta) {
         // These numbers must be tuned for your Robot!  Be careful!
         final double turnSpeed = 0.05;                  // How hard to turn toward the target
         final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
@@ -80,8 +80,8 @@ public class CameraDriveUtil {
             theta -= 360;
         }
 
-        double thetaError = DesiredTheta - theta;
-        if (Math.abs(thetaError) < 5) {
+        double thetaError = desiredTheta - theta;
+        if (Math.abs(thetaError) < 5) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
             thetaError = 0;
         }
 
@@ -96,34 +96,13 @@ public class CameraDriveUtil {
         return thetaVelocity;
     }
 
-    public static double getDriveRotWithFeedForward(double theta, double DesiredTheta, Pose2d previousPose, Pose2d currentPose) {
-        // These numbers must be tuned for your Robot!  Be careful!
-        final double turnSpeed = 0.05;                  // How hard to turn toward the target
-        final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
+    public static double getDriveRotWithFeedForward(double theta, double desiredTheta, Pose2d previousPose, Pose2d currentPose, boolean isAllianceRed) {
+        double thetaVelocity = getDriveRot(theta, desiredTheta);
 
-        //TODO: Get actual speaker pose
-        Pose2d speakerPose = new Pose2d(0, 0, new Rotation2d(10));
-
-        // if angle within 2 degrees of desired angle set error to 0
-        theta = 360 - theta;
-
-        if (theta > 180) {
-            theta -= 360;
-        }
-
-        double thetaError = DesiredTheta - theta;
-        if (Math.abs(thetaError) < 1) {
-            thetaError = 0;
-        }
-
-        // calculates theoretical rotational velocity
-        double thetaVelocity = (thetaError * turnSpeed);
-        // caps the rotaional velocity to the maximum allowed velocity
-        if (thetaVelocity > maxTurnVelocity) {
-            thetaVelocity = maxTurnVelocity;
-        } else if (thetaVelocity < -maxTurnVelocity) {
-            thetaVelocity = -maxTurnVelocity;
-        }
+        // TODO: Alter Mr. Galpin's estimated values with data from PhotonVision tables if needed
+        Pose2d speakerPose;
+        if (isAllianceRed) speakerPose = new Pose2d(16.58, 5.55, new Rotation2d(Math.toRadians(0)));
+        else speakerPose = new Pose2d(0.04, 5.55, new Rotation2d(Math.toRadians(180)));
 
         //Calculating feed forward
         Transform2d currentTransform = new Transform2d(currentPose, speakerPose);
@@ -134,12 +113,10 @@ public class CameraDriveUtil {
                 new Rotation2d(currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians())
         );
 
-        double feedForward = deltaTransform.getRotation().getRadians(); //radians/20ms cycle
-        feedForward = feedForward * 50; // radians/sec
+        double feedForward = deltaTransform.getRotation().getRadians() * 50; // radians/20ms cycle * 50 = rad/sec
 
         //Adding feedforward to velocity
         thetaVelocity += feedForward;
         return thetaVelocity;
     }
-
 }
