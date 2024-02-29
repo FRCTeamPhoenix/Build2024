@@ -68,14 +68,15 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureShooterInterpolation();
-
+    NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
+    NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(m_intake,m_shooter,m_arm,shooterInterpolate,photonCamera,isAllianceRed));
         // Configure the button bindings
         configureButtonBindings();
 
         //NamedCommands.registerCommand("cg_ShootNote", new cg_ShootNote(m_intake, m_shooter));
         //NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake, m_shooter));
 
-        autoChooser = AutoBuilder.buildAutoChooser("week zero");
+        autoChooser = AutoBuilder.buildAutoChooser("test_auto");
 
         //Add Autos
         //SmartDashboard.putData("Auto", autoChooser);

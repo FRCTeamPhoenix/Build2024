@@ -18,15 +18,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "pick_note_home_center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "shoot_note_home_center"
+            "name": "cg_ShootAndMoveArm"
           }
         },
         {
@@ -42,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "pickup_central(topmost)_note"
@@ -51,6 +51,12 @@
           "type": "path",
           "data": {
             "pathName": "shoot_central(topmost)_note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
           }
         }
       ]
