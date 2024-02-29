@@ -21,6 +21,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class TalonSwerveModule {
@@ -32,6 +33,8 @@ public class TalonSwerveModule {
     private final AbsoluteEncoder m_turningEncoder;
 
     private final SparkPIDController m_turningPIDController;
+
+    private final double m_EncoderFactor;
 
     private double m_chassisAngularOffset = 0;
     private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -53,6 +56,12 @@ public class TalonSwerveModule {
         // them. This is useful in case a SPARK MAX is swapped out.
         m_turningSparkMax.restoreFactoryDefaults();
 
+        if (DriveConstants.motorType == 2){
+            m_EncoderFactor = ModuleConstants.kFalconEncoderFactor;
+        }
+        else{
+            m_EncoderFactor = ModuleConstants.kKrakenEncoderFactor;
+        }
         // Configuring TalonFX
         TalonFXConfiguration configs = new TalonFXConfiguration();
 
@@ -129,7 +138,7 @@ public class TalonSwerveModule {
     public SwerveModuleState getState() {
         // Apply chassis angular offset to the encoder position to get the position
         // relative to the chassis.
-        return new SwerveModuleState(m_drivingTalon.getVelocity().getValueAsDouble() * Constants.ModuleConstants.kTalonEncoderFactor,
+        return new SwerveModuleState(m_drivingTalon.getVelocity().getValueAsDouble() * m_EncoderFactor,
                 new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
     }
 
@@ -142,7 +151,7 @@ public class TalonSwerveModule {
         // Apply chassis angular offset to the encoder position to get the position
         // relative to the chassis.
         return new SwerveModulePosition(
-                m_drivingTalon.getPosition().getValueAsDouble() * Constants.ModuleConstants.kTalonEncoderFactor,
+                m_drivingTalon.getPosition().getValueAsDouble() * m_EncoderFactor,
                 new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
     }
 
@@ -162,7 +171,7 @@ public class TalonSwerveModule {
                 new Rotation2d(m_turningEncoder.getPosition()));
 
         // Command driving and turning motors towards their respective setpoints.
-        m_drivingTalon.setControl(m_voltageVelocity.withVelocity(optimizedDesiredState.speedMetersPerSecond / Constants.ModuleConstants.kTalonEncoderFactor));
+        m_drivingTalon.setControl(m_voltageVelocity.withVelocity(optimizedDesiredState.speedMetersPerSecond / m_EncoderFactor));
         m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 
         m_desiredState = desiredState;

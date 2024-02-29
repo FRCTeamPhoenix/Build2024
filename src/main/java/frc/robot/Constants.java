@@ -59,8 +59,8 @@ public final class Constants {
 
 
         //VERY IMPORTANT!!!!!!
-        //Are we using TalonFX or are we using SPARK MAX?
-        public static final boolean usingTalons = true;
+        //Neos = 1, Falcons = 2, Krakens = 3
+        public static final int motorType = 3;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
 
@@ -111,7 +111,8 @@ public final class Constants {
         // This changes the drive speed of the module (a pinion gear with more teeth will result in a
         // robot that drives faster).
         public static final int kNeoDrivingMotorPinionTeeth = 12;
-        public static final int kTalonDrivingMotorPinionTeeth = 14;
+        public static final int kFalconDrivingMotorPinionTeeth = 16;
+        public static final int kKrakenDrivingMotorPinionTeeth = 16;
 
         // Invert the turning encoder, since the output shaft rotates in the opposite direction of
         // the steering motor in the MAXSwerve Module.
@@ -127,19 +128,28 @@ public final class Constants {
                 / kNeoDrivingMotorReduction;
 
         // Calculations required for driving motor conversion factors and feed forward
-        public static final double kTalonDrivingMotorFreeSpeedRps = 6380;
+        public static final double kFalconDrivingMotorFreeSpeedRps = 6380;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-        public static final double kTalonDrivingMotorReduction = (45.0 * 22) / (kTalonDrivingMotorPinionTeeth * 15);
-        public static final double kTalonDriveWheelFreeSpeedRps = (kTalonDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
-                / kTalonDrivingMotorReduction;
+        public static final double kFalconDrivingMotorReduction = (45.0 * 19) / (kFalconDrivingMotorPinionTeeth * 15);
+        public static final double kFalconDriveWheelFreeSpeedRps = (kFalconDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+                / kFalconDrivingMotorReduction;
+
+        public static final double kKrakenDrivingMotorFreeSpeedRps = 6000;
+        // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
+        public static final double kKrakenDrivingMotorReduction = (45.0 * 19) / (kKrakenDrivingMotorPinionTeeth * 15);
+        public static final double kKrakenDriveWheelFreeSpeedRps = (kKrakenDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+                / kKrakenDrivingMotorReduction;
 
         public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
                 / kNeoDrivingMotorReduction; // meters
         public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
                 / kNeoDrivingMotorReduction) / 60.0; // meters per second
 
-        public static final double kTalonEncoderFactor = ((kWheelDiameterMeters * Math.PI)
-                / kTalonDrivingMotorReduction);
+        public static final double kFalconEncoderFactor = ((kWheelDiameterMeters * Math.PI)
+                / kFalconDrivingMotorReduction);
+        
+        public static final double kKrakenEncoderFactor = ((kWheelDiameterMeters * Math.PI)
+                / kKrakenDrivingMotorReduction);
 
         public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians
         public static final double kTurningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
