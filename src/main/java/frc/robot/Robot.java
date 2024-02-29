@@ -29,12 +29,13 @@ public class Robot extends TimedRobot {
         //Startup the Camera Server for the driver
         CameraServer.startAutomaticCapture(0);
 
+        m_robotContainer.initPose();
+
         SmartDashboard.putNumber("ShooterV", 30.0);
         SmartDashboard.putNumber("PercentSpin", 0.7);
         SmartDashboard.putNumber("ShooterP", 0.0);
         SmartDashboard.putNumber("ShooterI", 0.0);
         SmartDashboard.putNumber("ShooterD", 0.0);
-
     }
 
     /**
@@ -51,6 +52,8 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        m_robotContainer.updatePose();
 
         Arm m_arm = m_robotContainer.getArm();
 

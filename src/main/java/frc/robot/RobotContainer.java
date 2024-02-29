@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.*;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
@@ -61,6 +62,9 @@ public class RobotContainer {
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
     private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
+
+    private Pose2d currentPose2d;
+    private Pose2d priorPose2d;
 
     public RobotContainer() {
         configureShooterInterpolation();
@@ -185,11 +189,27 @@ public class RobotContainer {
         else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
     }
 
+    public double getRobotRotationFeedForward(boolean alignToSpeaker) {
+        PhotonTrackedTarget target = photonCamera.getAprilTag(speakerTagID);
+        if (target != null && alignToSpeaker) return -CameraDriveUtil.getDriveRotWithFeedForward(target.getYaw(), 0, priorPose2d, currentPose2d, isAllianceRed);
+        else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+    }
+
     public Intake getIntake() {
         return m_intake;
     }
 
     public boolean isAllianceRed() {
         return isAllianceRed;
+    }
+
+    public void updatePose() {
+        priorPose2d = currentPose2d;
+        currentPose2d = m_robotDrive.getPose();
+    }
+
+    public void initPose() {
+        currentPose2d = m_robotDrive.getPose();
+        priorPose2d = currentPose2d;
     }
 }
