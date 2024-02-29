@@ -21,6 +21,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -58,11 +60,15 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_currentTranslationDir = 0.0;
     private double m_currentTranslationMag = 0.0;
 
+    private SwerveModuleState[] commandedStates;
+
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     private PhotonPose poseEst;
+
+    public Orchestra orchestra;
 
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -83,6 +89,14 @@ public class DriveSubsystem extends SubsystemBase {
             m_gyro = new IMU_Pigeon2();
         }
 
+        orchestra = new Orchestra();
+
+        orchestra.addInstrument(m_frontLeft.getTalon());
+        orchestra.addInstrument(m_frontRight.getTalon());
+        orchestra.addInstrument(m_rearLeft.getTalon());
+        orchestra.addInstrument(m_rearRight.getTalon());
+
+        orchestra.loadMusic("music.chrp");
 
         poseEst = new PhotonPose(this, camera);
 
@@ -238,6 +252,7 @@ public class DriveSubsystem extends SubsystemBase {
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        commandedStates = swerveModuleStates;
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
         m_frontRight.setDesiredState(swerveModuleStates[1]);
         m_rearLeft.setDesiredState(swerveModuleStates[2]);
@@ -252,6 +267,9 @@ public class DriveSubsystem extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(), m_frontRight.getState(), m_rearLeft.getState(), m_rearRight.getState());
     }
 
+    public SwerveModuleState[] getCommandedModuleStates(){
+        return commandedStates;
+    }
     /**
      * Sets the wheels into an X formation to prevent movement.
      */
@@ -317,6 +335,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] s = {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_rearLeft.getPosition(), m_rearRight.getPosition()};
+        return s;
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState[] s = {m_frontLeft.getState(), m_frontRight.getState(), m_rearLeft.getState(), m_rearRight.getState()};
         return s;
     }
 

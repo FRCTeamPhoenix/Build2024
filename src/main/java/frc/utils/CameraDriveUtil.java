@@ -3,6 +3,8 @@ package frc.utils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.VisionConstants;
 
 import java.lang.Math;
 
@@ -70,7 +72,7 @@ public class CameraDriveUtil {
 
     public static double getDriveRot(double theta, double desiredTheta) {
         // These numbers must be tuned for your Robot!  Be careful!
-        final double turnSpeed = 0.05;                  // How hard to turn toward the target
+        final double turnSpeed = 0.025;                  // How hard to turn toward the target
         final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
 
         // if angle within 2 degrees of desired angle set error to 0
@@ -81,7 +83,7 @@ public class CameraDriveUtil {
         }
 
         double thetaError = desiredTheta - theta;
-        if (Math.abs(thetaError) < 5) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
+        if (Math.abs(thetaError) < 1) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
             thetaError = 0;
         }
 
@@ -96,27 +98,37 @@ public class CameraDriveUtil {
         return thetaVelocity;
     }
 
-    public static double getDriveRotWithFeedForward(double theta, double desiredTheta, Pose2d previousPose, Pose2d currentPose, boolean isAllianceRed) {
+    public static double getDriveRotWithFeedForward(double theta, double desiredTheta, Pose2d priorPose, Pose2d currentPose, boolean isAllianceRed) {
         double thetaVelocity = getDriveRot(theta, desiredTheta);
 
         // TODO: Alter Mr. Galpin's estimated values with data from PhotonVision tables if needed
         Pose2d speakerPose;
-        if (isAllianceRed) speakerPose = new Pose2d(16.58, 5.55, new Rotation2d(Math.toRadians(0)));
-        else speakerPose = new Pose2d(0.04, 5.55, new Rotation2d(Math.toRadians(180)));
+        if (isAllianceRed) speakerPose = VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
+        else speakerPose = VisionConstants.kTagLayout.getTagPose(7).get().toPose2d();
+
+        SmartDashboard.putNumberArray("Speaker Pose", new double[]{speakerPose.getX(), speakerPose.getY(), speakerPose.getRotation().getRadians()});
 
         //Calculating feed forward
         Transform2d currentTransform = new Transform2d(currentPose, speakerPose);
-        Transform2d priorTransform = new Transform2d(previousPose, speakerPose);
+        Transform2d priorTransform = new Transform2d(priorPose, speakerPose);
         Transform2d deltaTransform = new Transform2d(
                 currentTransform.getX() - priorTransform.getX(),
                 currentTransform.getY() - priorTransform.getY(),
                 new Rotation2d(currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians())
         );
 
-        double feedForward = deltaTransform.getRotation().getRadians() * 50; // radians/20ms cycle * 50 = rad/sec
+        SmartDashboard.putNumberArray("Current Transform", new double[]{currentTransform.getX(), currentTransform.getY(), currentTransform.getRotation().getRadians()});
+        SmartDashboard.putNumberArray("Prior Transform", new double[]{priorTransform.getX(), priorTransform.getY(), priorTransform.getRotation().getRadians()});
+        SmartDashboard.putNumberArray("Delta Transform", new double[]{deltaTransform.getX(), deltaTransform.getY(), deltaTransform.getRotation().getRadians()});
 
+        double deltaTheta = currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians();
+
+        double feedForward = -deltaTheta; // -deltaTransform.getRotation().getRadians() * 50; // radians/20ms cycle * 50 = rad/sec
+        
+        SmartDashboard.putNumber("FeedForward", feedForward);
+        
         //Adding feedforward to velocity
-        thetaVelocity += feedForward;
+        thetaVelocity = feedForward;
         return thetaVelocity;
     }
 }

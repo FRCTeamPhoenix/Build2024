@@ -5,16 +5,26 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private StructArrayPublisher<SwerveModuleState> currentStatePublisher;
+
+    private StructArrayPublisher<SwerveModuleState> commandedStatePublisher;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -27,7 +37,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         //Startup the Camera Server for the driver
-        CameraServer.startAutomaticCapture(0);
+        //CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
 
@@ -36,6 +46,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("ShooterP", 0.0);
         SmartDashboard.putNumber("ShooterI", 0.0);
         SmartDashboard.putNumber("ShooterD", 0.0);
+
+        currentStatePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
     }
 
     /**
@@ -55,21 +68,51 @@ public class Robot extends TimedRobot {
 
         m_robotContainer.updatePose();
 
-        Arm m_arm = m_robotContainer.getArm();
+        DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
+       // Arm m_arm = m_robotContainer.getArm();
 
-        if (m_robotContainer.getShooter().getVelocity() != 0.0) {
-            SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
-        }
+       // if (m_robotContainer.getShooter().getVelocity() != 0.0) {
+      //      SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
+     //   }
 
-        SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+       // SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
         if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
             SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
         }
 
-        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
+        //boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
 
-        SmartDashboard.putBoolean("hasNote", hasNote);
+        //SmartDashboard.putBoolean("hasNote", hasNote);
+
+        if (m_robotContainer.m_driverController.getHID().getAButton()){
+            m_drive.orchestra.play();
+        }
+        else{
+            m_drive.orchestra.pause();
+        }
+
+        SwerveModuleState[] cS = m_drive.getModuleStates();
+        double[] currentStates = {
+            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
+            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
+            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
+            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
+        };
+
+        SmartDashboard.putNumberArray("Current State", currentStates);
+        
+        currentStatePublisher.set(m_drive.getModuleStates());
+        
+        cS = m_drive.getModuleStates();
+        double[] commandedStates = {
+            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
+            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
+            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
+            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
+        };
+
+        SmartDashboard.putNumberArray("Commanded State", commandedStates);
     }
 
     /**

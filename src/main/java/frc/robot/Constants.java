@@ -5,6 +5,9 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import javax.management.modelmbean.ModelMBeanConstructorInfo;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -44,7 +47,7 @@ public final class Constants {
         public static final String kCameraName = "Arducam_OV9281_USB_Camera";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.3302, 0.0, 0.10795), new Rotation3d(0, 25.0, 0));
+                new Transform3d(new Translation3d(-0.3302, 0.0, 0.10795), new Rotation3d(0, Math.toRadians(25), Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -66,7 +69,7 @@ public final class Constants {
 
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 5.4;
+        public static final double kMaxSpeedMetersPerSecond = 4.8;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
