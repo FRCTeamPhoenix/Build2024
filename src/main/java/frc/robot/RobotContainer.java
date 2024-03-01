@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -79,7 +80,7 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser("test_auto");
 
         //Add Autos
-        //SmartDashboard.putData("Auto", autoChooser);
+        SmartDashboard.putData("Auto", autoChooser);
 
         if (isAllianceRed) speakerTagID = 4;
         else speakerTagID = 7;

@@ -16,10 +16,10 @@ public class cg_ShootAndMoveArm extends ParallelCommandGroup {
                 
                 new SequentialCommandGroup(
                         new WaitCommand(1.0),
-                        new cmd_LoadNote(intake),
+                        new cmd_LoadNote(intake).withTimeout(.5),
                         new cmd_TargetShooterToSpeaker(interpolator, photonCam, arm, isAllianceRed)
                 ),
-                new cmd_Shoot(shooter)
+                new cmd_Shoot(shooter).withTimeout(2)
         );
     }
 }
