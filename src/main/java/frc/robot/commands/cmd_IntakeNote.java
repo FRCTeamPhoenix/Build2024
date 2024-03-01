@@ -39,7 +39,9 @@ public class cmd_IntakeNote extends Command {
     @Override
     public boolean isFinished() {
         String status = SmartDashboard.getString("FRC-Note", "Not Found");
-        if (status.equals("Found")) return true;
+        if (status.equals("Found")) {
+            return true;
+        }
         return false;
     }
 }

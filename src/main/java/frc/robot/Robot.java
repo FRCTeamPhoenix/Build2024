@@ -69,21 +69,21 @@ public class Robot extends TimedRobot {
         m_robotContainer.updatePose();
 
         DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
-       // Arm m_arm = m_robotContainer.getArm();
+        Arm m_arm = m_robotContainer.getArm();
 
-       // if (m_robotContainer.getShooter().getVelocity() != 0.0) {
-      //      SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
-     //   }
-
-       // SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
-        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
-            SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
+        if (m_robotContainer.getShooter().getVelocity() != 0.0) {
+            SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
         }
 
-        //boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
+        SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
-        //SmartDashboard.putBoolean("hasNote", hasNote);
+//        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
+//            SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
+//        }
+
+        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
+
+        SmartDashboard.putBoolean("hasNote", hasNote);
 
         if (m_robotContainer.m_driverController.getHID().getAButton()){
             m_drive.orchestra.play();

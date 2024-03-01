@@ -266,7 +266,7 @@ public final class Constants {
     }
 
     public static final class ArmConstants {
-        public static final double ARM_MIN_ANGLE = 0.08;
+        public static final double ARM_MIN_ANGLE = 0.0;
         public static final double ARM_MAX_ANGLE = Math.PI;
         public static final double kArmP = 1;
         public static final double kArmI = 0;
