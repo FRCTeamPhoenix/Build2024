@@ -7,80 +7,46 @@ code that does this.  With proper tuning elevation may work.  Elevation changes 
 slowly over much of the favorable shooting area.  It is also a position control. We can add 
 some D action or a variant of the feedforward discussed below.
 
-Azimuth can change very fast.  In addition we are driving a velocity control so D action on 
-the error will not work well.  If the robot is moing across the field, the robot must 
+Azimuth can change very fast. If the robot is moing across the field, the robot must 
 continue to rotate even when the azimuth error is 0.  What we will need here is a feed 
 forward control that will turn the robot at the rate the target azimuth is changing even 
 when the yaw error is 0.  
 
 Note that in relation to the basic 50Hz control, vision updates are asynchronous.  Trying to do 
-D calculations on asynchronous data is likely problematical.
+D calculations on asynchronous data is likely problematical.  This is a reason to consider 
+using the direction of the target computed from the robot pose and target instead of just the 
+camera yaw. The camera is already updating the pose so we may not lose much accuracy.  
+We can read the yaw and see how it looks.
 
-The control then looks something like this.  Turning speeds appear to be radians/sec.  Camera 
-yaw angle appears to be degrees.  
+The output of the rotation control is -1, 0, +1 where +/_ 1 is the maximum rotation speed.  
+That value will depend on whether contstraints are enabled or not.  100% out for the PID is 
+therefore 1.0.
 
-Using the pigeon for feed forward will not work - we need the bearing change caused by the
-motion of the robot.  The pigeon will reflect our control actions.
-*/
+Our "activate fire control" command looks like this:
 
-// the code 
-// this probably goes in robot.java
+inititale {
+    deternmine if we are blue or red and initialize tags number speaker pose (same as tag)
+    instantiate our PID controller 
+}
 
-// in init
-Pose2d currentRobotPose = getRobotPose();
-Pose2d priorRobotPose = currentRobotPose;
-// in periodic  - prbably make these global or provide getters
-priorRobotPose = currentRobotPose;
-//there is probably no reason to call getRobotPose() more than once per cycle
-currentRobotPose = getRobotPose();  
+execute {
+    compute bearing and range to speaker(
+        either use tag.yaw and tag.X from speaker
+            or
+        Transform2d(robotPose, speakerPose) 
+    )
+    compute setpoint( 
+        will be 0 if using tag.yaw as measurement
+        will be direction to speaker is pigeon.yaw is measurement
+        )
+    rotation_speed = PID (setpoint, measurement);
+    compute arm angle from either (tag.X, tag.Y) or (transform.X, trnasform.Y)
+    using pythagorean theorem
+    set arm angle
+    set shooter speed
+}
 
-// the code to compute the feedforward looks something like this:
-Transform2d currentTransform = Transform2d(currentRobotPose, speakerPose);
-Transform2d priorTransform = Transform2d(priorRobotPose, speakerPose);
-Transform2d deltaTransform = currentTransform - priorTransform;
-priorTransform = currentTransform;
-double feedForward = deltaTransform.getRotation().getRadians(); //radians/20ms cycle
-// if the units are radians/sec we will need
-feedForward = feedForward * 50; // radians/sec
-// this value is added directly to the output of the P control so
-thetaVelocity += feedForward;
-
-// Note that we can use the deltaTransform computed above to also compute a distance feedforward 
-// for the arm angle.
-
-
-
-public static double getDriveRot(double theta, double DesiredTheta) {
-        // These numbers must be tuned for your Robot!  Be careful!
-        final double turnSpeed = 0.05;                  // How hard to turn toward the target
-        final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
-         
-        /* This is a P control with a deadband output limits
-        turnSpeed is the P value  assuming output is radians/sec 
-        a Pgain of 1 is pi/180 son turnSpeed probably about 0.017 
-        maxTurnVelocity is the output limit abs value
-        This probably wants to be order of 2*pi (1 RPS)
-        The deadband probably wants to be order of +/- 1.0 degrees
-        */
-        // if angle within 2 degrees of desired angle set error to 0
-        theta = 360 - theta;
-
-        if (theta > 180) {
-            theta -= 360;
-        }
-
-        double thetaError = DesiredTheta - theta;
-        if (Math.abs(thetaError) < 5) {
-            thetaError = 0;
-        }
-
-        // calculates theoretical rotational velocity
-        double thetaVelocity = (thetaError * turnSpeed);
-        // caps the rotaional velocity to the maximum allowed velocity
-        if (thetaVelocity > maxTurnVelocity) {
-            thetaVelocity = maxTurnVelocity;
-        } else if (thetaVelocity < -maxTurnVelocity) {
-            thetaVelocity = -maxTurnVelocity;
-        }
-        return thetaVelocity;
-    }
+is finihed {
+    false if note in intake
+    true 100ms? after note gone
+}
