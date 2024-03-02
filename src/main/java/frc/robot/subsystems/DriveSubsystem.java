@@ -53,7 +53,6 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private PigeonBase m_gyro = new IMU_Pigeon();
   
-  private PhotonPose poseEst;
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
@@ -76,18 +75,17 @@ public class DriveSubsystem extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(PhotonClass camera) {
+  public DriveSubsystem() {
     if (Constants.DriveConstants.usingPigeon2){
         m_gyro = new IMU_Pigeon2();
     }
 
 
 
-    poseEst = new PhotonPose(this, camera);
     
     m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
     AutoBuilder.configureHolonomic(
-      poseEst::getPose, // Robot pose supplier
+      this::getPose, // Robot pose supplier
       this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
       this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -144,11 +142,7 @@ public class DriveSubsystem extends SubsystemBase {
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
-
   
-  public PhotonPose getPhotonPose(){
-    return this.poseEst;
-  }
 
   /**
    * Resets the odometry to the specified pose.

@@ -11,14 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.OakCamera;
 import frc.utils.CameraDriveUtil;
 import frc.utils.OakCameraObject;
-import frc.robot.subsystems.Shooter;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 
@@ -27,9 +22,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private LimeLight frontLimeLight;
-  private LimeLight rearLimeLight;
-  private LimeLight currentLimeLight;
   private double driveFlip = -1;
   private double angle;
   private double joystickDeadzone = 0.5;
@@ -60,7 +52,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    OakCamera oakCamera = m_robotContainer.m_OakCamera;
     /*
     frontLimeLight = m_robotContainer.getm_frontLimeLight();
     rearLimeLight = m_robotContainer.getm_rearLimeLight();
@@ -98,31 +89,15 @@ public class Robot extends TimedRobot {
     DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
     double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
 
-    Arm m_arm = m_robotContainer.getArm();
-
-    //Intake m_intake = m_robotContainer.getIntake();
-    Shooter m_shooter = m_robotContainer.getShooter();
-
-    if (m_robotContainer.getXboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getXboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      driveFlip = 1;
-    }
 
     if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
       
     }
 
-    currentLimeLight.Update_Limelight_Tracking();
 
     //Update all of our Shuffleboard data
-    SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
     SmartDashboard.putNumberArray("RobotPose", pose);
     SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
 
     //If we push the A Button we attempt to "track" a target with the current limelight (back or front)

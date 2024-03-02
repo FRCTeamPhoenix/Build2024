@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.commands.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -12,8 +11,6 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.OakCamera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -23,11 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.subsystems.PhotonPose;
-import frc.robot.subsystems.PhotonClass;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Shooter;
 
 
 
@@ -41,19 +33,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
   // The robot's subsystems
-  public final OakCamera m_OakCamera = new OakCamera();
-  public final LimeLight m_frontLimeLight = new LimeLight("limelight-front");
-
-  public final LimeLight m_rearLimeLight = new LimeLight("limelight-rear");
-
-  public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
-  private final Shooter m_shooter = new Shooter(10, 11);
-  private final Intake m_intake = new Intake(12);
-  private final Arm m_arm = new Arm(13, 14);
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   //Vision Subsystems
-  public final PhotonPose vision = m_robotDrive.getPhotonPose();
   
   //Auto From PathPlanner
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("path1");
@@ -99,30 +81,6 @@ public class RobotContainer {
             m_robotDrive));
 
     //Move Arm To Speaker shoot
-    final JoystickButton btn_op_X = new JoystickButton(m_operatorController, XboxController.Button.kX.value);        
-    btn_op_X.onTrue(new cmd_MoveArmToPosition(.7,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
-
-    //Move Arm To Amp shoot
-    final JoystickButton btn_op_B = new JoystickButton(m_operatorController, XboxController.Button.kB.value);        
-    btn_op_B.onTrue(new cmd_MoveArmToPosition(3.11,1,m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));    
-
-    //Move Arm Up
-    final JoystickButton btn_op_Y = new JoystickButton(m_operatorController, XboxController.Button.kY.value);        
-    btn_op_Y.whileTrue(new cmd_MoveArmUp(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
-
-    //Move Arm Down
-    final JoystickButton btn_op_A = new JoystickButton(m_operatorController, XboxController.Button.kA.value);        
-    btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm,ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));    
-
-    POVButton povUpPressed = new POVButton(m_operatorController, 0);
-    povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
-
-    POVButton povDownPressed = new POVButton(m_operatorController, 180);
-    povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm,.05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
-
-    m_op_command.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake,m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
-    m_op_command.leftBumper().whileTrue(new cmd_LoadNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
-    m_op_command.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
   }
 
@@ -134,13 +92,6 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public LimeLight getFrontLimeLight() {
-    return m_frontLimeLight;
-  }
-
-  public LimeLight getRearLimeLight() {
-    return m_rearLimeLight;
-  }
 
   public XboxController getXboxDriver() {
     return m_driverController;
@@ -152,20 +103,5 @@ public class RobotContainer {
 
   public DriveSubsystem getDrivetrain(){
     return m_robotDrive;
-  }
-
-  public Arm getArm(){
-    return m_arm;
-  }
-
-  public Shooter getShooter(){
-    return m_shooter;
-  }
-
-  public Intake getIntake(){
-    return m_intake;
-  }
-  public PhotonPose getPhotonPose(){
-    return vision;
   }
 }
