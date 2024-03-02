@@ -83,8 +83,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setDesiredVelocity(double desiredVelocity) {
-        // Command intake motors towards their respective setpoints, with one motor being flipped
-        // TODO: Note: CAD believes that both motors will run counter-clockwise. We may need to change these values later.
+        // Command shooter motors towards their respective setpoints, with one motor being flipped
         m_PIDControllerLeft.setReference(desiredVelocity, ControlType.kVelocity);
         m_PIDControllerRight.setReference(desiredVelocity * SmartDashboard.getNumber("PercentSpin", 0.7), ControlType.kVelocity);
     }

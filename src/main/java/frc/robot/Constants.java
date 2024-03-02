@@ -61,8 +61,8 @@ public final class Constants {
     public static final class DriveConstants {
 
 
-        //VERY IMPORTANT!!!!!!
-        //Neos = 1, Falcons = 2, Krakens = 3
+        // VERY IMPORTANT!!!!!!
+        // Neos = 1, Falcons = 2, Krakens = 3
         public static final int motorType = 3;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
@@ -242,7 +242,7 @@ public final class Constants {
 
         public static final int kShooterMotorCurrentLimit = 40; // amps
 
-        public static final IdleMode kShooterMotorIdleMode = IdleMode.kCoast;
+        public static final IdleMode kShooterMotorIdleMode = IdleMode.kBrake;
     }
 
     public static final class AutoConstants {
