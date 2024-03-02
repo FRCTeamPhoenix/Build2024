@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
-import javax.management.modelmbean.ModelMBeanConstructorInfo;
-
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -44,10 +42,14 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final String kCameraName = "Arducam_OV9281_USB_Camera";
+        public static final String kFrontCameraName = "Front_Arducam";
+        public static final String kRearCameraName = "Rear_Arducam";
+        public static final String kLeftCameraName = "Left_Arducam";
+
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(-0.3302, 0.0, 0.10795), new Rotation3d(0, Math.toRadians(25), Math.PI));
+        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), 0.0));
+        public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), Math.PI));
+        // TODO: Add left when necessary
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -63,7 +65,7 @@ public final class Constants {
 
         // VERY IMPORTANT!!!!!!
         // Neos = 1, Falcons = 2, Krakens = 3
-        public static final int motorType = 3;
+        public static final int motorType = 2;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
 
