@@ -32,6 +32,7 @@ public class cmd_DriveNearestNote extends Command {
   @Override
   public void initialize() {
     OakCameraObject nearestNote = OakCamera.findClosestNote();
+    if (nearestNote == null) return;
     if ( (nearestNote.getXAngle() >= 30) && (nearestNote.getXAngle() <= 330) ) {
       noteInCam1 = false;
       initialTurn = nearestNote.getXAngle() >= 180 ? nearestNote.getXAngle() : - ( 360 - nearestNote.getXAngle() );
@@ -44,6 +45,7 @@ public class cmd_DriveNearestNote extends Command {
   @Override
   public void execute() {
     OakCameraObject nearestNote = OakCamera.findClosestNote();
+    if (nearestNote == null) return;
     if (noteInCam1 == false) {
       m_robotDrive.drive(0, 0, CameraDriveUtil.getDriveRot(initialTurn, 0), false, false);
       if ( (nearestNote.getXAngle() <= 30) || (nearestNote.getXAngle() >= 330) ) {
@@ -52,10 +54,10 @@ public class cmd_DriveNearestNote extends Command {
     }
     xAngle = nearestNote.getXAngle();
     distance = nearestNote.getHorizontalDistance();
-    xVelocity = CameraDriveUtil.getDriveX(xAngle, distance, 100);
-    yVelocity = CameraDriveUtil.getDriveY(xAngle, distance, 100);
+    xVelocity = CameraDriveUtil.getDriveX(xAngle, distance, 250);
+    yVelocity = CameraDriveUtil.getDriveY(xAngle, distance, 250);
     thetaVelocity = CameraDriveUtil.getDriveRot(xAngle, 0);
-    m_robotDrive.drive( xVelocity, yVelocity, thetaVelocity, false, false);
+    m_robotDrive.drive( -xVelocity, -yVelocity, -thetaVelocity, false, false);
   }
 
   @Override
