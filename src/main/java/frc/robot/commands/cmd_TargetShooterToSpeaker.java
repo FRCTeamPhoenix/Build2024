@@ -5,8 +5,10 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonClass;
 
+import frc.utils.FireControlUtil;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -15,25 +17,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_TargetShooterToSpeaker extends Command {
     private final Arm m_arm;
-    private final InterpolatingDoubleTreeMap m_interpolator;
+    private final FireControlUtil m_util;
+    private final DriveSubsystem m_drive;
+
     private double calculatedSetPoint;
 
-    private double range = 0.0;
-
-    private PhotonTrackedTarget result;
-
-    /**
-     * Command the arm to move to a setpoint.
-     *
-     * @param interpolator Interpolating Tree Map for shooter vaules
-     * @param arm          The Arm Subsystem
-     */
-    public cmd_TargetShooterToSpeaker(InterpolatingDoubleTreeMap interpolator, PhotonClass photonCam, Arm arm, boolean isAllianceRed) {
-        m_interpolator = interpolator;
+    private final double armStartpoint;
+    public cmd_TargetShooterToSpeaker(FireControlUtil util, Arm arm, DriveSubsystem drive) {
+        m_util = util;
         m_arm = arm;
+        m_drive = drive;
+        armStartpoint = m_arm.getArmPosition();
 
-        if (isAllianceRed) result = photonCam.getAprilTag(4);
-        else result = photonCam.getAprilTag(7);
+        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), armStartpoint);
+        m_arm.setArmPosition(calculatedSetPoint);
+
         addRequirements(m_arm);
     }
 
@@ -44,18 +42,8 @@ public class cmd_TargetShooterToSpeaker extends Command {
 
     @Override
     public void execute() {
-        if (result != null) {
-            range = result.getBestCameraToTarget().getX();
-        }
-
-        if (range <= 3.821 && range >= 1.735) {
-            calculatedSetPoint = m_interpolator.get(range);
-        } else {
-            calculatedSetPoint = m_arm.getArmPosition();
-        }
-
+        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), armStartpoint);
         m_arm.setArmPosition(calculatedSetPoint);
-        SmartDashboard.putNumber("Range", range);
     }
 
     @Override

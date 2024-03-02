@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -106,6 +108,12 @@ public class Robot extends TimedRobot {
         };
 
         SmartDashboard.putNumberArray("Commanded State", commandedStates);
+
+        Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
+        Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
+        double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
+        SmartDashboard.putNumber("Distance To Speaker", distance);
+
     }
 
     /**

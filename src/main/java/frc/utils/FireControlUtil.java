@@ -22,15 +22,26 @@ public class FireControlUtil {
         else speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(7).get().toPose2d(); // Default to blue alliance
 
         //TODO: Put the new values from the arm here
-        interpolator.put(0.0, 0.0);
+        interpolator.put(0.60652, 0.3497);
+        interpolator.put(1.6333, 0.4969);
+        interpolator.put(2.3544, 0.6624);
+        interpolator.put(2.8532, 0.7114);
+        interpolator.put(3.3961, 0.7788);
+        interpolator.put(3.9187, 0.7791);
+        interpolator.put(4.5754, 0.8218);
+
 
         //TODO: Get actual values for the PID controller
         pidController = new PIDController(0.00015, 0.0, 0.0);
     }
-    public double getShooterAngle(Pose2d robotPose) {
+    public double getShooterAngle(Pose2d robotPose, double currentArmPosition) {
         Transform2d transformToSpeaker = robotPose.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
-        return interpolator.get(distance);
+        if (distance <= 4.5754 && distance >= 0.60652) {
+            SmartDashboard.putNumber("InterpolatorDistance", interpolator.get(distance));
+            return interpolator.get(distance);
+        }
+        else return currentArmPosition;
     }
 
     public double getPIDValue(Pose2d robotPose, Rotation2d currentHeading) {

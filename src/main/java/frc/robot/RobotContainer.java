@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
@@ -59,7 +60,7 @@ public class RobotContainer {
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
 
-    private final InterpolatingDoubleTreeMap shooterInterpolate = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
     private final int speakerTagID;
 
@@ -74,14 +75,14 @@ public class RobotContainer {
 
     private final FireControlUtil fireControlUtil = new FireControlUtil(isAllianceRed);
 
-    private Pose2d currentPose2d;
+    public Pose2d currentPose2d = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
     private Pose2d priorPose2d;
 
     public RobotContainer() {
         configureShooterInterpolation();
 
         NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
-        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(m_intake,m_shooter,m_arm,shooterInterpolate, rearPhotonCamera,isAllianceRed));
+
         // Configure the button bindings
         configureButtonBindings();
 
@@ -141,7 +142,7 @@ public class RobotContainer {
 
         //Move Arm To speaker shooting based on distance
         final Trigger btn_drv_Y = new Trigger(m_driverController.y());
-        btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(shooterInterpolate, rearPhotonCamera, m_arm, m_robotDrive.isAllianceRed()).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+        btn_drv_Y.onTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
 
         Trigger povUpPressed = m_operatorController.povUp();
@@ -157,21 +158,20 @@ public class RobotContainer {
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
         Trigger povRightPressed = m_operatorController.povRight();
-        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(0.0, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
     }
 
     public void configureShooterInterpolation() {
         //Put values for shooter angles into interpolation tree
-        shooterInterpolate.put(1.735, 0.7110);
-        shooterInterpolate.put(2.030, 0.7422);
-        shooterInterpolate.put(2.326, 0.7851);
-        shooterInterpolate.put(2.618, 0.8587);
-        shooterInterpolate.put(2.909, 0.8951);
-        shooterInterpolate.put(3.251, 0.9197);
-        shooterInterpolate.put(3.549, 0.9565);
-        shooterInterpolate.put(3.821, 0.9445);
+        interpolator.put(0.60652, 0.3497);
+        interpolator.put(1.6333, 0.4969);
+        interpolator.put(2.3544, 0.6624);
+        interpolator.put(2.8532, 0.7114);
+        interpolator.put(3.3961, 0.7788);
+        interpolator.put(3.9187, 0.7791);
+        interpolator.put(4.5754, 0.8218);
     }
 
     //All Getters/Setters for the robot objects.
