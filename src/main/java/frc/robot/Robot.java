@@ -85,13 +85,6 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putBoolean("hasNote", hasNote);
 
-        if (m_robotContainer.m_driverController.getHID().getAButton()){
-            m_drive.orchestra.play();
-        }
-        else{
-            m_drive.orchestra.pause();
-        }
-
         SwerveModuleState[] cS = m_drive.getModuleStates();
         double[] currentStates = {
             cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),

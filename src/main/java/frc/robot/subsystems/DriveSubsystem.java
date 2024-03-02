@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
@@ -60,15 +62,22 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_currentTranslationDir = 0.0;
     private double m_currentTranslationMag = 0.0;
 
+    //Pose estimator for vision and odometry combination
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            getRotation(),
+            getModulePositions(),
+            new Pose2d());
+
+    Field2d field2d = new Field2d();
+
     private SwerveModuleState[] commandedStates;
 
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-    private PhotonPose poseEst;
-
-    public Orchestra orchestra;
+    private PhotonPose[] poseEsts;
 
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -84,21 +93,12 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Creates a new DriveSubsystem.
      */
-    public DriveSubsystem(PhotonClass camera) {
+    public DriveSubsystem(PhotonPose[] photonPoses) {
         if (Constants.DriveConstants.usingPigeon2) {
             m_gyro = new IMU_Pigeon2();
         }
 
-        orchestra = new Orchestra();
-
-        orchestra.addInstrument(m_frontLeft.getTalon());
-        orchestra.addInstrument(m_frontRight.getTalon());
-        orchestra.addInstrument(m_rearLeft.getTalon());
-        orchestra.addInstrument(m_rearRight.getTalon());
-
-        orchestra.loadMusic("music.chrp");
-
-        poseEst = new PhotonPose(this, camera);
+        poseEsts = photonPoses;
 
         m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
         AutoBuilder.configureHolonomic(
@@ -148,6 +148,24 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
                 });
+
+        for (PhotonPose poseEst : poseEsts) {
+            var visionEst = poseEst.getEstimatedGlobalPose();
+
+            visionEst.ifPresent(
+                    est -> {
+                        var estPose = est.estimatedPose.toPose2d();
+                        // Change our trust in the measurement based on the tags we can see
+                        var estStdDevs = poseEst.getEstimationStdDevs(estPose);
+
+                        poseEstimator.addVisionMeasurement(
+                                est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                    });
+        }
+
+        poseEstimator.update(getRotation(), getModulePositions());
+        field2d.setRobotPose(poseEstimator.getEstimatedPosition());
+        SmartDashboard.putData("Field", field2d);
     }
 
     /**
@@ -157,11 +175,6 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public Pose2d getPose() {
         return m_odometry.getPoseMeters();
-    }
-
-
-    public PhotonPose getPhotonPose() {
-        return this.poseEst;
     }
 
     /**

@@ -29,24 +29,11 @@ public class PhotonPose extends SubsystemBase {
     // Supplies poses to the SwerveDrivePoseEstimator
     private final PhotonPoseEstimator photonEstimator;
 
-    // Does the actual pose estimation using vision and odometry
-    private final SwerveDrivePoseEstimator poseEstimator;
-
-    private final DriveSubsystem drive;
-
-    Field2d field2d = new Field2d();
-
-    public PhotonPose(DriveSubsystem drive, PhotonClass cameraClass) {
+    public PhotonPose(PhotonClass cameraClass) {
         // Sets up the camera, and determines which AprilTags will be used for estimation
         camera = cameraClass;
         photonEstimator = new PhotonPoseEstimator(VisionConstants.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera.getCamera(), camera.getRobotToCam());
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        this.drive = drive;
-        poseEstimator = new SwerveDrivePoseEstimator(
-                DriveConstants.kDriveKinematics,
-                drive.getRotation(),
-                drive.getModulePositions(),
-                new Pose2d());
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -81,47 +68,4 @@ public class PhotonPose extends SubsystemBase {
 
         return estStdDevs;
     }
-
-    public Pose2d getPose() {
-        var visionEst = getEstimatedGlobalPose();
-
-        visionEst.ifPresent(
-                est -> {
-                    var estPose = est.estimatedPose.toPose2d();
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = getEstimationStdDevs(estPose);
-
-                    poseEstimator.addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-
-                });
-        poseEstimator.update(drive.getRotation(), drive.getModulePositions());
-        return poseEstimator.getEstimatedPosition();
-    }
-
-    @Override
-
-    public void periodic() {
-        // TODO Auto-generated method stub
-        super.periodic();
-        // Correct pose estimate with vision measurements
-        var visionEst = getEstimatedGlobalPose();
-
-        visionEst.ifPresent(
-                est -> {
-                    var estPose = est.estimatedPose.toPose2d();
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = getEstimationStdDevs(estPose);
-
-                    poseEstimator.addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-
-                });
-        poseEstimator.update(drive.getRotation(), drive.getModulePositions());
-        field2d.setRobotPose(poseEstimator.getEstimatedPosition());
-        SmartDashboard.putData("Field", field2d);
-        double[] pose = {poseEstimator.getEstimatedPosition().getX(), poseEstimator.getEstimatedPosition().getY(), poseEstimator.getEstimatedPosition().getRotation().getRadians()};
-        SmartDashboard.putNumberArray("EstimatedPose", pose);
-    }
-
 }

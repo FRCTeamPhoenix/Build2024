@@ -41,19 +41,20 @@ import frc.utils.CameraDriveUtil;
 
 public class RobotContainer {
     // The robot's subsystems
-    public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
 
-    private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCamera);
+    //Vision Subsystems
+    public final PhotonClass photonCamera = new PhotonClass(VisionConstants.kCameraName, VisionConstants.kRobotToCam);
+    public final PhotonPose photonPose = new PhotonPose(photonCamera);
+    public final PhotonPose[] photonPoses = {photonPose};
+
+    private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
 
     private final InterpolatingDoubleTreeMap shooterInterpolate = new InterpolatingDoubleTreeMap();
 
-    private int speakerTagID;
-
-    //Vision Subsystems
-    public final PhotonPose vision = m_robotDrive.getPhotonPose();
+    private final int speakerTagID;
 
     //Auto From PathPlanner
     private final SendableChooser<Command> autoChooser;
@@ -69,8 +70,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureShooterInterpolation();
-    NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
-    NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(m_intake,m_shooter,m_arm,shooterInterpolate,photonCamera,isAllianceRed));
+
+        NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
+        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(m_intake,m_shooter,m_arm,shooterInterpolate,photonCamera,isAllianceRed));
         // Configure the button bindings
         configureButtonBindings();
 
