@@ -42,13 +42,15 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final String kFrontCameraName = "Front_Arducam";
-        public static final String kRearCameraName = "Rear_Arducam";
-        public static final String kLeftCameraName = "Left_Arducam";
+        public static final String kRearCameraName = "Arducam_OV9281_USB_Camera";
+
+//        public static final String kFrontCameraName = "Front_Arducam";
+//        public static final String kRearCameraName = "Rear_Arducam";
+//        public static final String kLeftCameraName = "Left_Arducam";
 
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), 0.0));
-        public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), Math.PI));
+//        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), 0.0));
+        public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), Math.PI));
         // TODO: Add left when necessary
 
         // The layout of the AprilTags on the field
@@ -268,7 +270,7 @@ public final class Constants {
     }
 
     public static final class ArmConstants {
-        public static final double ARM_MIN_ANGLE = 0.0;
+        public static final double ARM_MIN_ANGLE = 0.125;
         public static final double ARM_MAX_ANGLE = Math.PI;
         public static final double kArmP = 1;
         public static final double kArmI = 0;

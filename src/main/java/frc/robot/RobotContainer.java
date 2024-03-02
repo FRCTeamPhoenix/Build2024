@@ -44,15 +44,15 @@ public class RobotContainer {
     // The robot's subsystems
 
     //Vision Subsystems
-    public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
+//    public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
 //    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants., VisionConstants.);
 
-    public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
+//    public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
 //    public final PhotonPose leftPhotonPose = new PhotonPose();
 
-    public final PhotonPose[] photonPoses = {rearPhotonPose, frontPhotonPose};
+    public final PhotonPose[] photonPoses = {rearPhotonPose}; // {rearPhotonPose, frontPhotonPose};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
@@ -104,7 +104,7 @@ public class RobotContainer {
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                                getRobotRotationFireControl(m_driverController.getHID().getYButton()),
+                                getRobotRotation(m_driverController.getHID().getYButton()),
                                 true, m_driverController.getHID().getRightBumper()),
                         m_robotDrive));
     }
@@ -213,7 +213,7 @@ public class RobotContainer {
     }
 
     public double getRobotRotationFireControl(boolean alignToSpeaker) {
-        if (alignToSpeaker) return -fireControlUtil.getPIDValue(currentPose2d, currentPose2d.getRotation());
+        if (alignToSpeaker) return -fireControlUtil.getPIDValue(currentPose2d, m_robotDrive.getRotation());
         else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
     }
 
