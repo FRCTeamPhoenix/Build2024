@@ -35,7 +35,6 @@ public class cmd_DriveNearestNote extends Command {
     if ( (nearestNote.getXAngle() >= 30) && (nearestNote.getXAngle() <= 330) ) {
       noteInCam1 = false;
       initialTurn = nearestNote.getXAngle() >= 180 ? nearestNote.getXAngle() : - ( 360 - nearestNote.getXAngle() );
-
     }
     else{
       noteInCam1 = true;
