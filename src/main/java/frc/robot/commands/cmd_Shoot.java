@@ -6,36 +6,34 @@ package frc.robot.commands;
 
 import frc.robot.Constants.General;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_Shoot extends Command {
-  private final Shooter m_shooter;
+    private final Shooter m_shooter;
 
-  private double m_dIncrement;
+    public cmd_Shoot(Shooter shooter) {
+        m_shooter = shooter;
+        addRequirements(m_shooter);
+    }
 
-  public cmd_Shoot(Shooter shooter) {
-    m_shooter = shooter;
-    addRequirements(m_shooter);
-  }
+    @Override
+    public void initialize() {
+    }
 
-  @Override
-  public void initialize() {
-    
-  }
+    @Override
+    public void execute() {
+        m_shooter.setDesiredVelocity(25.0);
+    }
 
-  @Override
-  public void execute() {
-    m_shooter.setDesiredVelocity(15.0);
-  }
+    @Override
+    public void end(boolean interrupted) {
+        if (General.LOGGING)
+            System.out.println("End Move Arm Down");
+    }
 
-  @Override
-  public void end(boolean interrupted) {
-    if (General.LOGGING)
-      System.out.println("End Move Arm Down");
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

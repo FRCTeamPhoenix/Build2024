@@ -4,220 +4,184 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.OakCamera;
-import frc.utils.CameraDriveUtil;
-import frc.utils.OakCameraObject;
-import frc.robot.subsystems.Shooter;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+    private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+    private RobotContainer m_robotContainer;
 
-  private LimeLight frontLimeLight;
-  private LimeLight rearLimeLight;
-  private LimeLight currentLimeLight;
-  private double driveFlip = -1;
-  private double angle;
-  private double joystickDeadzone = 0.5;
+    private StructArrayPublisher<SwerveModuleState> currentStatePublisher;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  @Override
-  public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    //frontLimeLight = m_robotContainer.getFrontLimeLight();
-    //rearLimeLight = m_robotContainer.getRearLimeLight();
-    //urrentLimeLight = frontLimeLight;
+    private StructArrayPublisher<SwerveModuleState> commandedStatePublisher;
 
-    //Startup the Camera Server for the driver
-    CameraServer.startAutomaticCapture(0);
-  }
-
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-    OakCamera oakCamera = m_robotContainer.m_OakCamera;
-    /*
-    frontLimeLight = m_robotContainer.getm_frontLimeLight();
-    rearLimeLight = m_robotContainer.getm_rearLimeLight();
-    DriveSubsystem m_drive = m_robotContainer.getm_driveTrain();
-    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
-
-    if (m_robotContainer.getxboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      currentLimeLightString = "Front";
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getxboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      currentLimeLightString = "Rear";
-      driveFlip = 1;
-    }
-    */
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();  
-
-    //Get controller buttons
-    //double spinShooter = m_robotContainer.getXboxOperator().getRightTriggerAxis();
-    //boolean intakeNote = m_robotContainer.getXboxOperator().getRightBumper();
-    //boolean loadNote = m_robotContainer.getXboxOperator().getLeftBumper();
-    //double spitNote = m_robotContainer.getXboxOperator().getLeftTriggerAxis();
-    boolean trackTarget = false; //m_robotContainer.getXboxDriver().getAButton();
-
-    boolean isNote = true; //NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("FRC-Note").getBoolean(false);
-
-    
-
-    DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
-    double[] pose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getDegrees()};
-
-    Arm m_arm = m_robotContainer.getArm();
-
-    //Intake m_intake = m_robotContainer.getIntake();
-    Shooter m_shooter = m_robotContainer.getShooter();
-
-    if (m_robotContainer.getXboxDriver().getPOV() == 0){
-      currentLimeLight = frontLimeLight;
-      driveFlip = -1;
-    }
-    else if (m_robotContainer.getXboxDriver().getPOV() == 180){
-      currentLimeLight = rearLimeLight;
-      driveFlip = 1;
-    }
-
-    if(m_robotContainer.getXboxOperator().getPOV() == 0 ) {
-      
-    }
-
-    currentLimeLight.Update_Limelight_Tracking();
-
-    //Update all of our Shuffleboard data
-    SmartDashboard.putNumber("DistanceToTarget", currentLimeLight.getLLTargetDistance());
-    SmartDashboard.putNumberArray("RobotPose", pose);
-    SmartDashboard.putNumber("DesiredAngle", angle);
-    SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
-
-    //If we push the A Button we attempt to "track" a target with the current limelight (back or front)
-    /* 
-    if (trackTarget) {
-          //hasValidTarget will return True if we see ANY target that we can identify.  so this would be any apriltag
-          if (currentLimeLight.hasValidTarget()) {
-            //Here we drive twoard the apriltag.  Not something we will do in a competition but great for Note Tracking
-            m_drive.drive(currentLimeLight.getLLDriveY() * driveFlip, currentLimeLight.getLLDriveX() * driveFlip, currentLimeLight.getLLDriveRotation(), false, false);
-          }
-          else {
-            //If we have no valid target we will keep the robot stationary
-            m_drive.drive(0.0, 0.0, 0.0, false, false);
-          }
-    }
-    */
-
-    // Runs the intake motors only when a note is not in the intake (intakes a note but stops before loading it into the shooter)
-    /*if (intakeNote) {
-      m_intake.intakeNote(false);
-    }
-    else if (loadNote) {
-      m_intake.loadNote(isNote); // TODO: Replace this boolean with the proximity sensor data, and write a proper intake function
-    }
-    else if (spitNote >= joystickDeadzone) {
-      m_intake.spitNote(isNote);
-    }
-    else {
-      m_intake.setDesiredVelocity(0.0);
-    } */
-
-    // Spins the shooters up to the specified speed to fire a note.
-    /*if (spinShooter >= joystickDeadzone) {
-      // DLL: Here we will need some maths to determine the velocity based on angle and distance.  It may be better for us to 
-      //      create a "shootAmp()" and "shootSpeaker()" functions for the shooter.  It can do the math and angle calculations in the 
-      //      subsystem rather than in the robot periodic
-      m_shooter.setDesiredVelocity(15);
-    }
-    else {
-      m_shooter.setDesiredVelocity(0.0);
-    }*/
-
-  }
-
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
+    /**
+     * This function is run when the robot is first started up and should be used for any
+     * initialization code.
      */
+    @Override
+    public void robotInit() {
+        // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+        // autonomous chooser on the dashboard.
+        m_robotContainer = new RobotContainer();
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+        //Startup the Camera Server for the driver
+        //CameraServer.startAutomaticCapture(0);
+
+        m_robotContainer.initPose();
+
+        SmartDashboard.putNumber("ShooterV", 30.0);
+        SmartDashboard.putNumber("PercentSpin", 0.7);
+        SmartDashboard.putNumber("ShooterP", 0.0);
+        SmartDashboard.putNumber("ShooterI", 0.0);
+        SmartDashboard.putNumber("ShooterD", 0.0);
+
+        currentStatePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
     }
-  }
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {}
+    /**
+     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+     * that you want ran during disabled, autonomous, teleoperated and test.
+     *
+     * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+     * SmartDashboard integrated updating.
+     */
+    @Override
+    public void robotPeriodic() {
+        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+        // commands, running already-scheduled commands, removing finished or interrupted commands,
+        // and running subsystem periodic() methods.  This must be called from the robot's periodic
+        // block in order for anything in the Command-based framework to work.
+        CommandScheduler.getInstance().run();
 
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+        m_robotContainer.updatePose();
+
+        DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
+        Arm m_arm = m_robotContainer.getArm();
+
+        if (m_robotContainer.getShooter().getVelocity() != 0.0) {
+            SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
+        }
+
+        SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
+
+//        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
+//            SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
+//        }
+
+        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
+
+        SmartDashboard.putBoolean("hasNote", hasNote);
+
+        SwerveModuleState[] cS = m_drive.getModuleStates();
+        double[] currentStates = {
+            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
+            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
+            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
+            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
+        };
+
+        SmartDashboard.putNumberArray("Current State", currentStates);
+        
+        currentStatePublisher.set(m_drive.getModuleStates());
+        
+        cS = m_drive.getModuleStates();
+        double[] commandedStates = {
+            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
+            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
+            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
+            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
+        };
+
+        SmartDashboard.putNumberArray("Commanded State", commandedStates);
+
+        Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
+        Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
+        double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
+        SmartDashboard.putNumber("Distance To Speaker", distance);
+
     }
-  }
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {}
+    /**
+     * This function is called once each time the robot enters Disabled mode.
+     */
+    @Override
+    public void disabledInit() {
+    }
 
-  @Override
-  public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
-  }
+    @Override
+    public void disabledPeriodic() {
+    }
 
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
+    /**
+     * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
+     */
+    @Override
+    public void autonomousInit() {
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+        /*
+         * String autoSelected = SmartDashboard.getString("Auto Selector",
+         * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
+         * = new MyAutoCommand(); break; case "Default Auto": default:
+         * autonomousCommand = new ExampleCommand(); break; }
+         */
+
+        // schedule the autonomous command (example)
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.schedule();
+        }
+    }
+
+    /**
+     * This function is called periodically during autonomous.
+     */
+    @Override
+    public void autonomousPeriodic() {
+    }
+
+    @Override
+    public void teleopInit() {
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.cancel();
+        }
+    }
+
+    /**
+     * This function is called periodically during operator control.
+     */
+    @Override
+    public void teleopPeriodic() {
+    }
+
+    @Override
+    public void testInit() {
+        // Cancels all running commands at the start of test mode.
+        CommandScheduler.getInstance().cancelAll();
+    }
+
+    /**
+     * This function is called periodically during test mode.
+     */
+    @Override
+    public void testPeriodic() {
+    }
 }

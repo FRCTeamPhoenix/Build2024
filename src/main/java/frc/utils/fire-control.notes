@@ -1,0 +1,52 @@
+/* fire control - how to hit the speaker on the fly
+There are two components: azimuth, rotating the robot to aim the shooter at the speaker, 
+and elevation, the arm angle determined by the distance to the target.  If the robot 
+is not moving azimuth is established by controlling the AprilTag yaw value to 0, and 
+computing the azimuth from the AprilTag X value using the table.  We currently have 
+code that does this.  With proper tuning elevation may work.  Elevation changes relatively 
+slowly over much of the favorable shooting area.  It is also a position control. We can add 
+some D action or a variant of the feedforward discussed below.
+
+Azimuth can change very fast. If the robot is moing across the field, the robot must 
+continue to rotate even when the azimuth error is 0.  What we will need here is a feed 
+forward control that will turn the robot at the rate the target azimuth is changing even 
+when the yaw error is 0.  
+
+Note that in relation to the basic 50Hz control, vision updates are asynchronous.  Trying to do 
+D calculations on asynchronous data is likely problematical.  This is a reason to consider 
+using the direction of the target computed from the robot pose and target instead of just the 
+camera yaw. The camera is already updating the pose so we may not lose much accuracy.  
+We can read the yaw and see how it looks.
+
+The output of the rotation control is -1, 0, +1 where +/_ 1 is the maximum rotation speed.  
+That value will depend on whether contstraints are enabled or not.  100% out for the PID is 
+therefore 1.0.
+
+Our "activate fire control" command looks like this:
+
+inititale {
+    deternmine if we are blue or red and initialize tags number speaker pose (same as tag)
+    instantiate our PID controller 
+}
+
+execute {
+    compute bearing and range to speaker(
+        either use tag.yaw and tag.X from speaker
+            or
+        Transform2d(robotPose, speakerPose) 
+    )
+    compute setpoint( 
+        will be 0 if using tag.yaw as measurement
+        will be direction to speaker is pigeon.yaw is measurement
+        )
+    rotation_speed = PID (setpoint, measurement);
+    compute arm angle from either (tag.X, tag.Y) or (transform.X, trnasform.Y)
+    using pythagorean theorem
+    set arm angle
+    set shooter speed
+}
+
+is finihed {
+    false if note in intake
+    true 100ms? after note gone
+}

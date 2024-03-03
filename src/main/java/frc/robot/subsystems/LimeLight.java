@@ -2,19 +2,20 @@ package frc.robot.subsystems;
 
 
 //import frc.robot.commands.*;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 //import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimeLight extends SubsystemBase {
 
-private String deviceID;
-private boolean m_LimelightHasValidTarget = false;
-private double m_LimelightDriveX = 0.0;
-private double m_LimelightDriveY = 0.0;
-private double m_LimelightDriveRot = 0.0;
-private double m_targetArea = 0.0;
-private double m_distanceToTarget;
+    private String deviceID;
+    private boolean m_LimelightHasValidTarget = false;
+    private double m_LimelightDriveX = 0.0;
+    private double m_LimelightDriveY = 0.0;
+    private double m_LimelightDriveRot = 0.0;
+    private double m_targetArea = 0.0;
+    private double m_distanceToTarget;
 
     public LimeLight(String deviceID) {
         this.deviceID = deviceID;
@@ -27,7 +28,7 @@ private double m_distanceToTarget;
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        
+
     }
 
     @Override
@@ -36,7 +37,7 @@ private double m_distanceToTarget;
 
     }
 
-    public void Update_Limelight_Tracking(){
+    public void Update_Limelight_Tracking() {
         // These numbers must be tuned for your Robot!  Be careful!
         final double STEER_K = 0.01;                  // How hard to turn toward the target
         final double DRIVE_K = 0.4;                    // How hard to drive fwd toward the target
@@ -56,31 +57,29 @@ private double m_distanceToTarget;
 
         double errDistance = distance - DESIRED_TARGET_DISTANCE;
         if (Math.abs(errDistance) < 0.15) {
-          errDistance = 0;
+            errDistance = 0;
         }
         m_distanceToTarget = distance;
 
         double errAngle = DESIRED_HEADING - tx;
         if (Math.abs(errAngle) < 2) {
-          errAngle = 0;
+            errAngle = 0;
         }
 
         double speed = Math.abs(DRIVE_K * errDistance);
         double x = (errDistance * Math.cos(errAngle * (Math.PI / 180))) * speed;
         if (x > MAX_DRIVE) {
-          x = MAX_DRIVE;
-        }
-        else if (x < -MAX_DRIVE) {
-          x = -MAX_DRIVE;
+            x = MAX_DRIVE;
+        } else if (x < -MAX_DRIVE) {
+            x = -MAX_DRIVE;
         }
         m_LimelightDriveX = x;
 
         double y = (errDistance * Math.sin(errAngle * (Math.PI / 180))) * speed;
         if (y > MAX_DRIVE) {
-          y = MAX_DRIVE;
-        }
-        else if (y < -MAX_DRIVE) {
-          y = -MAX_DRIVE;
+            y = MAX_DRIVE;
+        } else if (y < -MAX_DRIVE) {
+            y = -MAX_DRIVE;
         }
         m_LimelightDriveY = y;
 
@@ -88,31 +87,31 @@ private double m_distanceToTarget;
         if (rotate > MAX_STEER) rotate = MAX_STEER;
         else if (rotate < -MAX_STEER) rotate = -MAX_STEER;
         m_LimelightDriveRot = rotate;
-  }
+    }
 
-  public boolean hasValidTarget() {
-      return m_LimelightHasValidTarget;
-  }
+    public boolean hasValidTarget() {
+        return m_LimelightHasValidTarget;
+    }
 
-  public double getLLDriveX() {
-    return m_LimelightDriveX;
-  }
+    public double getLLDriveX() {
+        return m_LimelightDriveX;
+    }
 
-  public double getLLDriveY() {
-    return m_LimelightDriveY;
-  }
+    public double getLLDriveY() {
+        return m_LimelightDriveY;
+    }
 
 
-  public double getLLDriveRotation() {
-    return m_LimelightDriveRot;
-  }
+    public double getLLDriveRotation() {
+        return m_LimelightDriveRot;
+    }
 
-  public double getLLTargetArea() {
-    return m_targetArea;
-  }
+    public double getLLTargetArea() {
+        return m_targetArea;
+    }
 
-  public double getLLTargetDistance() {
-    return m_distanceToTarget;
-  }
+    public double getLLTargetDistance() {
+        return m_distanceToTarget;
+    }
 }
 

@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.532923156438648,
+      "y": 7.1271185515657915
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "cmd_LowerArm"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Simple Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_StopShootNote"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

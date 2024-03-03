@@ -1,4 +1,5 @@
 package frc.utils;
+
 import java.lang.Math;
 
 public class OakCameraObject {
@@ -25,25 +26,30 @@ public class OakCameraObject {
     public double getXAngle() {
         return this.xAngle;
     }
+
     public double getYAngle() {
         return this.yAngle;
     }
+
     public double getArea() {
-        return this.area;    
+        return this.area;
     }
+
     public double getCameraDistance() {
-        return this.cameraDistance;    
+        return this.cameraDistance;
     }
+
     public Double getConfedence() {
-        return this.confedence;  
+        return this.confedence;
     }
+
     public String getType() {
-        return this.type;   
+        return this.type;
     }
+
     public Double getHorizontalDistance() {
-        return this.horizontalDistance;  
+        return this.horizontalDistance;
     }
 
 
-    
 }

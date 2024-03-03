@@ -1,0 +1,38 @@
+{
+    "camera": "Microsoft® LifeCam HD-3000 (045e:0810)",
+    "platform": "Macintosh; Intel Mac OS X 10_15_7",
+    "avg_reprojection_error": 0.31356930929847604,
+    "camera_matrix": [
+        [
+            921.2956540470665,
+            0,
+            433.4065179994354
+        ],
+        [
+            0,
+            921.2309915874541,
+            280.2822755377232
+        ],
+        [
+            0,
+            0,
+            1
+        ]
+    ],
+    "distortion_coefficients": [
+        0.08524174127496797,
+        -0.6660465728638345,
+        0.002236664167084319,
+        0.0006437034986273961,
+        1.1289651888761056
+    ],
+    "distortion_model": "rectilinear",
+    "img_size": [
+        800,
+        600
+    ],
+    "calibration_time": "Mon, 27 Nov 2023 23:40:47 GMT",
+    "caveats": [
+        "cropped"
+    ]
+}

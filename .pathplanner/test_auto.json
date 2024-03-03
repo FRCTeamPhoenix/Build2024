@@ -1,0 +1,53 @@
+{
+    "version": 1.0,
+    "startingPose": {
+        "position": {
+            "x": 1.69697649003839,
+            "y": 5.385220545055563
+           
+        },
+        "rotation": 0
+    },
+    "command": {
+        "type": "sequential",
+        "data": {
+            "commands": [
+                {
+                    "type": "path",
+                    "data": {
+                        "pathName": "exit_shoot_preloaded"
+                    }
+                },
+                {
+                    "type": "path",
+                    "data": {
+                        "pathName": "pickup_centeral_note"
+                    }
+                },
+                {
+                    "type": "path",
+                    "data": {
+                        "pathName": "central_shoot"
+                    }
+                },
+                {
+                    "type": "path",
+                    "data": {
+                        "pathName": "pickup_front_note",
+                        "data": {
+                            "pathName": "test_cmd"
+                        }
+                    }
+                },
+                {
+                    "type": "named",
+                    "data": {
+                        "name": "cg_ShootAndMoveArm"
+                    }
+                }
+            ]
+        }
+    },
+    "folder": null,
+    "choreoAuto": false
+}
