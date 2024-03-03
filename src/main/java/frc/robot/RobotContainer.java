@@ -45,15 +45,19 @@ public class RobotContainer {
     // The robot's subsystems
 
     //Vision Subsystems
-//    public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
+    public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
-//    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants., VisionConstants.);
+//    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
+//    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
-//    public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
+
+    public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
-//    public final PhotonPose leftPhotonPose = new PhotonPose();
+//    public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
+//    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
 
-    public final PhotonPose[] photonPoses = {rearPhotonPose}; // {rearPhotonPose, frontPhotonPose};
+
+    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
@@ -81,15 +85,23 @@ public class RobotContainer {
     public RobotContainer() {
         configureShooterInterpolation();
 
+        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(fireControlUtil, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake));
         NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
+        NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
+        NamedCommands.registerCommand("align", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera));
+        NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
+
+
+        SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
+        SmartDashboard.putData("cg stop shoot", NamedCommands.getCommand("cg_StopShootNote"));
+        SmartDashboard.putData("cmd_lowerarm", NamedCommands.getCommand("cmd_LowerArm"));
+        SmartDashboard.putData("align", NamedCommands.getCommand("align"));
+        SmartDashboard.putData("Shoot", NamedCommands.getCommand("shoot"));
 
         // Configure the button bindings
         configureButtonBindings();
 
-        //NamedCommands.registerCommand("cg_ShootNote", new cg_ShootNote(m_intake, m_shooter));
-        //NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake, m_shooter));
-
-        autoChooser = AutoBuilder.buildAutoChooser("test_auto");
+        autoChooser = AutoBuilder.buildAutoChooser("praise chris");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);

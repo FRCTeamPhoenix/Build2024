@@ -42,15 +42,20 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final String kRearCameraName = "Arducam_OV9281_USB_Camera";
+//        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
 
-//        public static final String kFrontCameraName = "Front_Arducam";
-//        public static final String kRearCameraName = "Rear_Arducam";
-//        public static final String kLeftCameraName = "Left_Arducam";
+        public static final String kFrontCameraName = "Front_ArduCam";
+        public static final String kRearCameraName = "Rear_ArduCam";
+        public static final String kLeftCameraName = "Left_ArduCam";
+        public static final String kRightCameraName = "Right_ArduCam";
+
 
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-//        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(110), 0.0));
+        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), 0.0));
         public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), Math.PI));
+        public static final Transform3d kLeftTransform = new Transform3d(new Translation3d(0.0, -0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (Math.PI / 2.0)));
+        public static final Transform3d kRightTransform = new Transform3d(new Translation3d(0.0, 0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (-Math.PI / 2.0)));
+
         // TODO: Add left when necessary
 
         // The layout of the AprilTags on the field
@@ -271,10 +276,10 @@ public final class Constants {
 
     public static final class ArmConstants {
         public static final double ARM_MIN_ANGLE = 0.08;
-        public static final double ARM_MAX_ANGLE = Math.PI;
-        public static final double kArmP = 1;
-        public static final double kArmI = 0;
-        public static final double kArmD = 0;
+        public static final double ARM_MAX_ANGLE = 2.95;
+        public static final double kArmP = 2.75;
+        public static final double kArmI = 0.0;
+        public static final double kArmD = 0.1;
         public static final double kArmFF = 0;
         public static final double ArmMoveSetPoint = .25;
         public static final double kArmMinOutput = -1;
