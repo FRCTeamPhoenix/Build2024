@@ -32,28 +32,30 @@ public class OakCamera extends SubsystemBase {
         }
     }
 
-  public static OakCameraObject findClosestNote() {
-    List<OakCameraObject> cameraObjects = extractOakData();
-    double minimumDistance = Double.MAX_VALUE;
-    OakCameraObject closestNote = null;
-    // loop through ever object the cammera detects
-    for (OakCameraObject objectInstance : cameraObjects) {
-      //filter out non notes
-      if (!objectInstance.getType().equals("note")) {
-        continue;
-      }
-      //filter out notes that are too far
-      if (objectInstance.getHorizontalDistance() >= minimumDistance) {
-        continue;
-      }
-      //update closest notes
-      minimumDistance = objectInstance.getHorizontalDistance();
-      closestNote = objectInstance;
-    }
+    public static OakCameraObject findClosestNote() {
+        List<OakCameraObject> cameraObjects = extractOakData();
+        double minimumDistance = Double.MAX_VALUE;
+        OakCameraObject closestNote = null;
+        // loop through ever object the cammera detects
+        for (OakCameraObject objectInstance : cameraObjects) {
+            //filter out non notes
+            if (!objectInstance.getType().equals("note")) {
+                continue;
+            }
+            //filter out notes that are too far
+            if (objectInstance.getHorizontalDistance() >= minimumDistance) {
+                continue;
+            }
+            //update closest notes
+            minimumDistance = objectInstance.getHorizontalDistance();
+            closestNote = objectInstance;
+        }
 
-    @Override
-    public void periodic() {
-
+        return closestNote;
+        //    @Override
+        //    public void periodic() {
+        //
+        //    }
     }
 }
 

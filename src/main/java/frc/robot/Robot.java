@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,11 +16,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.OakCamera;
+import frc.utils.NotePoseGenerator;
+import frc.utils.OakCameraObject;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private final Field2d field = new Field2d();
 
     private StructArrayPublisher<SwerveModuleState> currentStatePublisher;
 
@@ -88,28 +90,9 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putBoolean("hasNote", hasNote);
 
-        SwerveModuleState[] cS = m_drive.getModuleStates();
-        double[] currentStates = {
-            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
-            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
-            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
-            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
-        };
-
-        SmartDashboard.putNumberArray("Current State", currentStates);
-        
-        currentStatePublisher.set(m_drive.getModuleStates());
-        
-        cS = m_drive.getModuleStates();
-        double[] commandedStates = {
-            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
-            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
-            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
-            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
-        };
-
-        SmartDashboard.putNumberArray("Commanded State", commandedStates);
-
+        OakCameraObject closestNote = OakCamera.findClosestNote();
+        if (closestNote != null) field.setRobotPose(NotePoseGenerator.generateNotePose(closestNote, m_drive.getPhotonPose()));
+        SmartDashboard.putData("NoteField", field);
         Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
         Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));

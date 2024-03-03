@@ -10,12 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_IntakeNote extends Command {
     private final Intake m_intake;
-    private double time;
 
     public cmd_IntakeNote(Intake intake) {
         m_intake = intake;
         addRequirements(m_intake);
-        time = 0;
     }
 
     @Override
@@ -29,7 +27,7 @@ public class cmd_IntakeNote extends Command {
         if (status.equals("Found")){
             m_intake.setDesiredVelocity(0.0);
         }
-        else m_intake.setDesiredVelocity(3);
+        else m_intake.setDesiredVelocity(2.5);
     }
 
     @Override

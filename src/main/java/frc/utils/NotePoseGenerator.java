@@ -4,13 +4,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class NotePoseGenerator {
+    public static Pose2d generateNotePose(OakCameraObject trackedNote, Pose2d currentPose) {
+        double distance = trackedNote.getHorizontalDistance() / 1000.0;
+        double noteAngle = trackedNote.getXAngle();
 
-    public static Pose2d generateNotePose(OakCameraObject trackedNote, Pose2d currentPose){
-        double x = trackedNote.getHorizontalDistance() * Math.cos(Math.toRadians(trackedNote.getXAngle()));
-        x = (x/1000) + currentPose.getX();
-        double y = trackedNote.getHorizontalDistance() * Math.sin(Math.toRadians(trackedNote.getXAngle()));
-        y = (y/1000) + currentPose.getY();
-        Pose2d notePose = new Pose2d(x, y, new Rotation2d(Math.toRadians(trackedNote.getXAngle())).plus(currentPose.getRotation()));
-        return notePose;
+        double angle = currentPose.getRotation().getDegrees() - noteAngle;
+
+        if (angle < 0) angle += 360;
+
+        double x = distance * Math.cos(Math.toRadians(angle)) + currentPose.getX();
+        double y = distance * Math.sin(Math.toRadians(angle)) + currentPose.getY();
+
+        return new Pose2d(x, y, new Rotation2d(0.0));
     }
 }
