@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -22,11 +23,19 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 
 import frc.robot.Constants.DriveConstants;
+import frc.utils.NotePoseGenerator;
+import frc.utils.OakCameraObject;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.List;
 
 import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -180,6 +189,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     public Pose2d getPhotonPose() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public PathPlannerPath generateNotePath(OakCameraObject note) {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+            getPhotonPose(), NotePoseGenerator.generateNotePose(note, getPhotonPose())
+        );
+        PathPlannerPath path = new PathPlannerPath(
+        bezierPoints,
+        new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
+        new GoalEndState(0.0, Rotation2d.fromDegrees(-90))
+        );
+
+        path.preventFlipping = true;
+
+        return path;
     }
 
     /**
