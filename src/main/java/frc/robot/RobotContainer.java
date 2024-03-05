@@ -22,8 +22,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.utils.FireControlUtil;
+import frc.utils.NotePoseGenerator;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.ctre.phoenix.Util;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -31,9 +34,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonPose;
 import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.OakCamera;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
 import frc.utils.CameraDriveUtil;
+
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -51,6 +56,7 @@ public class RobotContainer {
     public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
     public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
+    public final OakCamera firstOakCamera = new OakCamera();
 
     public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
@@ -64,7 +70,7 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
-
+    
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
     private final int speakerTagID;
@@ -77,9 +83,8 @@ public class RobotContainer {
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
     private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
-
     private final FireControlUtil fireControlUtil = new FireControlUtil(isAllianceRed);
-
+    private final NotePoseGenerator notePoseGenerator = new NotePoseGenerator();
     public Pose2d currentPose2d = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
     private Pose2d priorPose2d;
 
@@ -91,7 +96,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
         NamedCommands.registerCommand("align", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera));
         NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
-
+        NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
+        NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil));
 
         SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
         SmartDashboard.putData("cg stop shoot", NamedCommands.getCommand("cg_StopShootNote"));
@@ -102,7 +108,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("praise chris");
+        autoChooser = AutoBuilder.buildAutoChooser("2 noteAuto");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
