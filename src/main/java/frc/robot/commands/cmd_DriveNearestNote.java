@@ -33,6 +33,7 @@ public class cmd_DriveNearestNote extends Command {
   public void initialize() {
     OakCameraObject nearestNote = OakCamera.findClosestNote();
     if (nearestNote == null) return;
+    // If nearest note is outside the angle range of the front cammera set an initial turn inorder to face the robot to the note
     if ( (nearestNote.getXAngle() >= 30) && (nearestNote.getXAngle() <= 330) ) {
       noteInCam1 = false;
       initialTurn = nearestNote.getXAngle() >= 180 ? nearestNote.getXAngle() : - ( 360 - nearestNote.getXAngle() );
@@ -46,12 +47,14 @@ public class cmd_DriveNearestNote extends Command {
   public void execute() {
     OakCameraObject nearestNote = OakCamera.findClosestNote();
     if (nearestNote == null) return;
+    // if the robot is not facing the note turn the robot untill it is inside the angles of the front cammera
     if (noteInCam1 == false) {
       m_robotDrive.drive(0, 0, CameraDriveUtil.getDriveRot(initialTurn, 0), false, false);
       if ( (nearestNote.getXAngle() <= 30) || (nearestNote.getXAngle() >= 330) ) {
         noteInCam1 = true;
       }
     }
+    // set some variables to make the code neater (drives to the note)
     xAngle = nearestNote.getXAngle();
     distance = nearestNote.getHorizontalDistance();
     xVelocity = CameraDriveUtil.getDriveX(xAngle, distance, 250);
@@ -68,6 +71,7 @@ public class cmd_DriveNearestNote extends Command {
 
   @Override
   public boolean isFinished() {
+    // if the robot is alligned with the note then finish the command
     if ( (xVelocity == 0) && (yVelocity == 0) && (thetaVelocity == 0) ) {
       return true;
     } else { 
