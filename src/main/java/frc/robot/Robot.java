@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,6 +71,13 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        if (m_robotContainer.getIntake().getVelocity() >= 0.5){
+            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+        }
+        else{
+            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+        }
 
         m_robotContainer.updatePose();
 

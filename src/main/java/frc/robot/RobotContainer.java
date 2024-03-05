@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
@@ -47,17 +48,17 @@ public class RobotContainer {
     //Vision Subsystems
     public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
-//    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
-//    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
+    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
+    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
 
     public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
-//    public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
-//    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
+    public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
+    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
 
 
-    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose};
+    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose, rightPhotonPose};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
@@ -220,7 +221,9 @@ public class RobotContainer {
 
     public double getRobotRotationFeedForward(boolean alignToSpeaker) {
         PhotonTrackedTarget target = rearPhotonCamera.getAprilTag(speakerTagID);
-        if (target != null && alignToSpeaker) return -CameraDriveUtil.getDriveRotWithFeedForward(target.getYaw(), 0, priorPose2d, currentPose2d, isAllianceRed);
+        if (target != null && alignToSpeaker){
+            return -CameraDriveUtil.getDriveRotWithFeedForward(target.getYaw(), 0, priorPose2d, currentPose2d, isAllianceRed);
+        }
         else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
     }
 
