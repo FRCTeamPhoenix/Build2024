@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.commands.*;
+import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
+import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -90,7 +92,8 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureShooterInterpolation();
-
+        NamedCommands.registerCommand("cg_AutoIntakeToFloor", new cg_AutoIntakeToFloor(m_intake, m_arm));
+        NamedCommands.registerCommand("cg_AutoNotePickup", new cg_AutoNotePickup(m_intake, m_arm, firstOakCamera, m_robotDrive));
         NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(fireControlUtil, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake));
         NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
         NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
@@ -104,6 +107,7 @@ public class RobotContainer {
         SmartDashboard.putData("cmd_lowerarm", NamedCommands.getCommand("cmd_LowerArm"));
         SmartDashboard.putData("align", NamedCommands.getCommand("align"));
         SmartDashboard.putData("Shoot", NamedCommands.getCommand("shoot"));
+        SmartDashboard.putData("cg_AutoNotePickup", NamedCommands.getCommand("cg_AutoNotePickup"));
 
         // Configure the button bindings
         configureButtonBindings();
