@@ -32,6 +32,12 @@
         {
           "type": "named",
           "data": {
+            "name": "cg_StopShootNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "cg_AutoIntakeToFloor"
           }
         },

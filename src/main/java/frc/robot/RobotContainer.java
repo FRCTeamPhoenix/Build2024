@@ -38,6 +38,7 @@ import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.OakCamera;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.utils.CameraDriveUtil;
 
@@ -72,6 +73,7 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
+    private final Climber m_climber = new Climber(15);
     
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
@@ -86,7 +88,6 @@ public class RobotContainer {
 
     private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
     private final FireControlUtil fireControlUtil = new FireControlUtil(isAllianceRed);
-    private final NotePoseGenerator notePoseGenerator = new NotePoseGenerator();
     public Pose2d currentPose2d = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
     private Pose2d priorPose2d;
 
@@ -102,6 +103,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
         NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil));
 
+
         SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
         SmartDashboard.putData("cg stop shoot", NamedCommands.getCommand("cg_StopShootNote"));
         SmartDashboard.putData("cmd_lowerarm", NamedCommands.getCommand("cmd_LowerArm"));
@@ -112,7 +114,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("2 noteAuto");
+        autoChooser = AutoBuilder.buildAutoChooser("new2Note");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
@@ -138,13 +140,13 @@ public class RobotContainer {
         //Force robot to stop in X formation
         new Trigger(m_driverController.x())
                 .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setX(),
+                        m_robotDrive::setX,
                         m_robotDrive));
 
         //Reset the Gyro to zero heading with B
         new Trigger(m_driverController.b())
                 .onTrue(new RunCommand(
-                        () -> m_robotDrive.zeroHeading(),
+                        m_robotDrive::zeroHeading,
                         m_robotDrive));
 
         //Move Arm To subwoofer shooting
@@ -172,7 +174,7 @@ public class RobotContainer {
         povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
       
         Trigger povLeftPressed = m_operatorController.povLeft();
-        povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+        //povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
        
         Trigger povDownPressed = m_operatorController.povDown();
         povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
@@ -181,7 +183,7 @@ public class RobotContainer {
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
         Trigger povRightPressed = m_operatorController.povRight();
-        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        //povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
     }
@@ -221,6 +223,10 @@ public class RobotContainer {
 
     public Shooter getShooter() {
         return m_shooter;
+    }
+
+    public Climber getClimber() {
+        return m_climber;
     }
 
     public double getRobotRotation(boolean alignToSpeaker) {

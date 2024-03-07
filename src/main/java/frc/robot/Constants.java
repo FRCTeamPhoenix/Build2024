@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -116,6 +117,10 @@ public final class Constants {
         public static final int kPigeonCanId = 9;
 
         public static final boolean kGyroReversed = false;
+    }
+
+    public static final class ClimberConstants {
+        public static final IdleMode kClimberIdleMode = IdleMode.kBrake;
     }
 
     public static final class ModuleConstants {

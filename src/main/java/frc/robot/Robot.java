@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -106,6 +107,17 @@ public class Robot extends TimedRobot {
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
         SmartDashboard.putNumber("Distance To Speaker", distance);
 
+        
+        field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
+        SmartDashboard.putData("NotePose", field);
+
+        if (m_robotContainer.getXboxOperator().pov(90).getAsBoolean()) {
+            m_robotContainer.getClimber().setPower(12);
+        }
+        else if (m_robotContainer.getXboxOperator().pov(270).getAsBoolean()){
+            m_robotContainer.getClimber().setPower(-6);
+        }
+        else m_robotContainer.getClimber().setPower(0);
     }
 
     /**

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class NotePoseGenerator {
     public static Pose2d generateNotePose(OakCameraObject trackedNote, Pose2d currentPose) {
+        if (trackedNote == null) return currentPose;
         double distance = trackedNote.getHorizontalDistance() / 1000.0;
         double noteAngle = trackedNote.getXAngle();
 
