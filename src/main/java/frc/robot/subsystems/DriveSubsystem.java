@@ -191,7 +191,7 @@ public class DriveSubsystem extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public PathPlannerPath generateNotePath(OakCameraObject note) {
+    public Command generateNotePath(OakCameraObject note) {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
             getPhotonPose(), NotePoseGenerator.generateNotePose(note, getPhotonPose())
         );
@@ -203,7 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         path.preventFlipping = true;
 
-        return path;
+        return AutoBuilder.followPath(path);
     }
 
     /**

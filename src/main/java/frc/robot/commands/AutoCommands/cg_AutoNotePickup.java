@@ -18,7 +18,7 @@ public class cg_AutoNotePickup extends ParallelCommandGroup {
         addCommands(
                 new ParallelDeadlineGroup(
                         new cmd_IntakeNote(intake),
-                        new cmd_AutoDriveNearestNote(oakCamera, drive)
+                        drive.generateNotePath(OakCamera.findClosestNote())
                 )
         );
     }
