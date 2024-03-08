@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.commands.*;
 import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
 import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
-import frc.robot.commands.AutoCommands.cmd_AlignToNote;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.cmd_TargetShooterToSpeaker;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -39,7 +39,7 @@ import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.OakCamera;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Climber;
+//import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.utils.CameraDriveUtil;
 
@@ -74,7 +74,7 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
-    private final Climber m_climber = new Climber(15);
+   // private final Climber m_climber = new Climber(15);
     
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
@@ -103,8 +103,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
         NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
         NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil));
-        NamedCommands.registerCommand("align to note", new cmd_AlignToNote(m_robotDrive));
-
+        NamedCommands.registerCommand("cmd_TargetShooterToSpaker", new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive));
+        NamedCommands.registerCommand("cmd_AlignShooterToSpeker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera));
 
         SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
         SmartDashboard.putData("cg stop shoot", NamedCommands.getCommand("cg_StopShootNote"));
@@ -112,7 +112,6 @@ public class RobotContainer {
         SmartDashboard.putData("align", NamedCommands.getCommand("align"));
         SmartDashboard.putData("Shoot", NamedCommands.getCommand("shoot"));
         SmartDashboard.putData("cg_AutoNotePickup", NamedCommands.getCommand("cg_AutoNotePickup"));
-        SmartDashboard.putData("align to note", NamedCommands.getCommand("align to note"));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -174,21 +173,19 @@ public class RobotContainer {
 
 
         Trigger povUpPressed = m_operatorController.povUp();
-        povUpPressed.whileTrue(new cmd_Climber(m_climber, 12).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
-        // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+        povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
       
         Trigger povLeftPressed = m_operatorController.povLeft();
-        // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+        //povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
        
         Trigger povDownPressed = m_operatorController.povDown();
-        povDownPressed.whileTrue(new cmd_Climber(m_climber, -6).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
-        // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
+        povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
         Trigger povRightPressed = m_operatorController.povRight();
-        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        //povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
     }
@@ -230,9 +227,9 @@ public class RobotContainer {
         return m_shooter;
     }
 
-    public Climber getClimber() {
-        return m_climber;
-    }
+   // public Climber getClimber() {
+   //     return m_climber;
+   // }
 
     public double getRobotRotation(boolean alignToSpeaker) {
         PhotonTrackedTarget target = rearPhotonCamera.getAprilTag(speakerTagID);

@@ -29,6 +29,10 @@ public class Robot extends TimedRobot {
 
     private final Field2d field = new Field2d();
 
+    private StructArrayPublisher<SwerveModuleState> currentStatePublisher;
+
+    private StructArrayPublisher<SwerveModuleState> commandedStatePublisher;
+
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -43,6 +47,15 @@ public class Robot extends TimedRobot {
         //CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
+
+        SmartDashboard.putNumber("ShooterV", 30.0);
+        SmartDashboard.putNumber("PercentSpin", 0.7);
+        SmartDashboard.putNumber("ShooterP", 0.0);
+        SmartDashboard.putNumber("ShooterI", 0.0);
+        SmartDashboard.putNumber("ShooterD", 0.0);
+
+        currentStatePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
     }
 
     /**
@@ -72,6 +85,10 @@ public class Robot extends TimedRobot {
         DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
         Arm m_arm = m_robotContainer.getArm();
 
+        if (m_robotContainer.getShooter().getVelocity() != 0.0) {
+            SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
+        }
+
         SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
 //        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
@@ -80,24 +97,27 @@ public class Robot extends TimedRobot {
 
         boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
 
-        SmartDashboard.putBoolean("Note in Intake?", hasNote);
+        SmartDashboard.putBoolean("hasNote", hasNote);
 
         OakCameraObject closestNote = OakCamera.findClosestNote();
         if (closestNote != null) field.setRobotPose(NotePoseGenerator.generateNotePose(closestNote, m_drive.getPhotonPose()));
+        SmartDashboard.putData("NoteField", field);
         Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
         Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
+        SmartDashboard.putNumber("Distance To Speaker", distance);
 
         
         field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
+        SmartDashboard.putData("NotePose", field);
 
-        // if (m_robotContainer.getXboxOperator().pov(0).getAsBoolean()) {
-        //     m_robotContainer.getClimber().setPower(12);
-        // }
-        // else if (m_robotContainer.getXboxOperator().pov(180).getAsBoolean()){
-        //     m_robotContainer.getClimber().setPower(-6);
-        // }
-        // else m_robotContainer.getClimber().setPower(0);
+     //   if (m_robotContainer.getXboxOperator().pov(90).getAsBoolean()) {
+       //     m_robotContainer.getClimber().setPower(12);
+       // }
+       // else if (m_robotContainer.getXboxOperator().pov(270).getAsBoolean()){
+        //    m_robotContainer.getClimber().setPower(-6);
+       // }
+        //else m_robotContainer.getClimber().setPower(0);
     }
 
     /**
