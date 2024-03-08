@@ -52,7 +52,6 @@ public class cmd_TargetShooterToSpeaker extends Command {
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putBoolean("IsAtPosition", m_arm.isAtPosition(calculatedSetPoint));
         return m_arm.isAtPosition(calculatedSetPoint);
     }
 }

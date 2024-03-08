@@ -24,13 +24,13 @@ public class FireControlUtil {
 
         //TODO: Put the new values from the arm here
         // Modifying calculated values to fine-tune angles (03/03/2024)
-        interpolator.put(0.61, 0.36);
-        interpolator.put(1.63, 0.51);
-        interpolator.put(2.35, 0.67);
-        interpolator.put(2.85, 0.72);
-        interpolator.put(3.40, 0.79);
-        interpolator.put(3.92, 0.80);
-        interpolator.put(4.58, 0.83);
+        interpolator.put(0.61, 0.364);
+        interpolator.put(1.63, 0.514);
+        interpolator.put(2.35, 0.674);
+        interpolator.put(2.85, 0.724);
+        interpolator.put(3.40, 0.794);
+        interpolator.put(3.92, 0.804);
+        interpolator.put(4.58, 0.834);
 
 
         // Calculated values for updated arm (03/02/2024)
@@ -51,7 +51,6 @@ public class FireControlUtil {
         Transform2d transformToSpeaker = robotPose.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
         if (distance <= 4.5754 && distance >= 0.60652) {
-            SmartDashboard.putNumber("InterpolatorDistance", interpolator.get(distance));
             return interpolator.get(distance);
         } else return currentArmPosition;
     }
@@ -63,9 +62,6 @@ public class FireControlUtil {
 
         field.setRobotPose(speakerPose);
 
-        SmartDashboard.putData("SpeakerPose", field);
-
-        SmartDashboard.putNumber("Speaker Rot", Math.toDegrees(angle));
         return pidController.calculate(currentHeading.getDegrees(), Math.toDegrees(angle) + 180.0);
     }
 }

@@ -15,6 +15,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 public class cg_AutoNotePickup extends ParallelCommandGroup {
     public cg_AutoNotePickup(Intake intake, Arm arm, OakCamera oakCamera, DriveSubsystem drive) {
+        if (OakCamera.findClosestNote() == null) return;
         addCommands(
                 new ParallelDeadlineGroup(
                         new cmd_IntakeNote(intake),
