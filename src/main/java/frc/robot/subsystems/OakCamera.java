@@ -32,7 +32,7 @@ public class OakCamera extends SubsystemBase {
         }
     }
 
-    public OakCameraObject findClosestNote() {
+    public static OakCameraObject findClosestNote() {
         List<OakCameraObject> cameraObjects = extractOakData();
         double minimumDistance = Double.MAX_VALUE;
         OakCameraObject closestNote = null;
@@ -50,13 +50,12 @@ public class OakCamera extends SubsystemBase {
             minimumDistance = objectInstance.getHorizontalDistance();
             closestNote = objectInstance;
         }
-        // return the closest notes
+
         return closestNote;
-    }
-
-    @Override
-    public void periodic() {
-
+        //    @Override
+        //    public void periodic() {
+        //
+        //    }
     }
 }
 

@@ -5,7 +5,7 @@
       "x": 0.532923156438648,
       "y": 7.1271185515657915
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -33,6 +33,24 @@
           "type": "named",
           "data": {
             "name": "cg_StopShootNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_AutoIntakeToFloor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_AutoNotePickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
           }
         }
       ]

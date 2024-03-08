@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -45,7 +46,7 @@ public final class Constants {
 //        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
 
         public static final String kFrontCameraName = "Front_ArduCam";
-        public static final String kRearCameraName = "Back_ArduCam";
+        public static final String kRearCameraName = "Back_ArduCam"; // TODO: Rename with the rear convention whenever feasible
         public static final String kLeftCameraName = "Left_ArduCam";
         public static final String kRightCameraName = "Right_ArduCam";
 
@@ -116,6 +117,10 @@ public final class Constants {
         public static final int kPigeonCanId = 9;
 
         public static final boolean kGyroReversed = false;
+    }
+
+    public static final class ClimberConstants {
+        public static final IdleMode kClimberIdleMode = IdleMode.kBrake;
     }
 
     public static final class ModuleConstants {
@@ -277,7 +282,7 @@ public final class Constants {
     public static final class ArmConstants {
         public static final double ARM_MIN_ANGLE = 0.08;
         public static final double ARM_MAX_ANGLE = 2.95;
-        public static final double kArmP = 2.75;
+        public static final double kArmP = 2.25;
         public static final double kArmI = 0.0;
         public static final double kArmD = 0.1;
         public static final double kArmFF = 0;

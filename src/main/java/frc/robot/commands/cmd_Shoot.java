@@ -23,7 +23,8 @@ public class cmd_Shoot extends Command {
 
     @Override
     public void execute() {
-        m_shooter.setDesiredVelocity(25.0);
+        m_shooter.setDesiredVelocity(27);
+        SmartDashboard.putNumber("shooter speed", m_shooter.getVelocity());
     }
 
     @Override
@@ -34,6 +35,9 @@ public class cmd_Shoot extends Command {
 
     @Override
     public boolean isFinished() {
+        if (m_shooter.getVelocity() >= 27){
+            return true;
+        }
         return false;
     }
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -22,11 +23,19 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 
 import frc.robot.Constants.DriveConstants;
+import frc.utils.NotePoseGenerator;
+import frc.utils.OakCameraObject;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.List;
 
 import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -60,6 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Slew rate filter variables for controlling lateral acceleration
     private double m_currentRotation = 0.0;
+    
     private double m_currentTranslationDir = 0.0;
     private double m_currentTranslationMag = 0.0;
 
@@ -71,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
             new Pose2d());
 
     Field2d field2d = new Field2d();
-
+    Field2d noteField = new Field2d();
     private SwerveModuleState[] commandedStates;
 
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
@@ -180,6 +190,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     public Pose2d getPhotonPose() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public Command generateNotePath(OakCameraObject note) {
+        Pose2d notePose = NotePoseGenerator.generateNotePose(note, getPhotonPose());
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+            getPhotonPose(), notePose
+        );
+        PathPlannerPath path = new PathPlannerPath(
+        bezierPoints,
+        new PathConstraints(1.0, 1.0, 0.5 * Math.PI, 1 * Math.PI),
+        new GoalEndState(0.0, new Rotation2d(0.0))
+        );
+        path.preventFlipping = true;
+
+        return AutoBuilder.followPath(path);
     }
 
     /**

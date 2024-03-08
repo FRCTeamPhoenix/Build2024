@@ -4,29 +4,30 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.OakCamera;
+import frc.utils.NotePoseGenerator;
+import frc.utils.OakCameraObject;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
 
-    private StructArrayPublisher<SwerveModuleState> currentStatePublisher;
-
-    private StructArrayPublisher<SwerveModuleState> commandedStatePublisher;
+    private final Field2d field = new Field2d();
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -42,15 +43,6 @@ public class Robot extends TimedRobot {
         //CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
-
-        SmartDashboard.putNumber("ShooterV", 30.0);
-        SmartDashboard.putNumber("PercentSpin", 0.7);
-        SmartDashboard.putNumber("ShooterP", 0.0);
-        SmartDashboard.putNumber("ShooterI", 0.0);
-        SmartDashboard.putNumber("ShooterD", 0.0);
-
-        currentStatePublisher = NetworkTableInstance.getDefault()
-            .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
     }
 
     /**
@@ -68,52 +60,30 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
+        if (m_robotContainer.getIntake().getVelocity() >= 0.5){
+            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+        }
+        else{
+            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+        }
+
         m_robotContainer.updatePose();
 
         DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
         Arm m_arm = m_robotContainer.getArm();
 
-        if (m_robotContainer.getShooter().getVelocity() != 0.0) {
-            SmartDashboard.putNumber("Shooter Velocity", m_robotContainer.getShooter().getVelocity());
-        }
-
         SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
-//        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
-//            SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
-//        }
 
         boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
 
-        SmartDashboard.putBoolean("hasNote", hasNote);
-
-        SwerveModuleState[] cS = m_drive.getModuleStates();
-        double[] currentStates = {
-            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
-            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
-            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
-            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
-        };
-
-        SmartDashboard.putNumberArray("Current State", currentStates);
-        
-        currentStatePublisher.set(m_drive.getModuleStates());
-        
-        cS = m_drive.getModuleStates();
-        double[] commandedStates = {
-            cS[0].speedMetersPerSecond, cS[0].angle.getRadians(),
-            cS[1].speedMetersPerSecond, cS[1].angle.getRadians(),
-            cS[2].speedMetersPerSecond, cS[2].angle.getRadians(),
-            cS[3].speedMetersPerSecond, cS[3].angle.getRadians()
-        };
-
-        SmartDashboard.putNumberArray("Commanded State", commandedStates);
+        SmartDashboard.putBoolean("Note in Intake?", hasNote);
 
         Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
         Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
         SmartDashboard.putNumber("Distance To Speaker", distance);
 
+        field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
     }
 
     /**
