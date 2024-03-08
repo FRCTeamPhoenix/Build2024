@@ -5,12 +5,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Climber;
+
 
 public class cmd_Climber extends Command {
-    private double setpoint;
+    Climber climber;
+    double voltage;
 
-    public cmd_Climber(boolean climb) {
-
+    /**
+     * @param climber If you can't figure out what this means, please socially distance yourself from any code for the robot, and let software handle it.
+     * @param voltage Max 12V. Positive moves the climbers down (moving the robot up).
+     */
+    public cmd_Climber(Climber climber, double voltage) {
+        this.climber = climber;
+        this.voltage = voltage;
     }
 
     @Override
@@ -20,7 +28,7 @@ public class cmd_Climber extends Command {
 
     @Override
     public void execute() {
-
+        climber.setPower(voltage);
     }
 
     @Override
@@ -30,6 +38,6 @@ public class cmd_Climber extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

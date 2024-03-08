@@ -41,7 +41,6 @@ public class cmd_MoveArmToPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putBoolean("IsAtPosition", m_arm.isAtPosition(m_setPoint));
         return m_arm.isAtPosition(m_setPoint);
     }
 }

@@ -195,12 +195,12 @@ public class DriveSubsystem extends SubsystemBase {
     public Command generateNotePath(OakCameraObject note) {
         Pose2d notePose = NotePoseGenerator.generateNotePose(note, getPhotonPose());
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-            getPhotonPose(), NotePoseGenerator.generateNotePose(note, getPhotonPose())
+            getPhotonPose(), notePose
         );
         PathPlannerPath path = new PathPlannerPath(
         bezierPoints,
-        new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
-        new GoalEndState(0.0, notePose.getRotation())
+        new PathConstraints(1.0, 1.0, 0.5 * Math.PI, 1 * Math.PI),
+        new GoalEndState(0.0, new Rotation2d(0.0))
         );
         path.preventFlipping = true;
 

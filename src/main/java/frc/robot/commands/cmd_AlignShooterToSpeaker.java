@@ -29,7 +29,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
         PhotonTrackedTarget target = m_cam.getAprilTag(speakerTagID);
         if (target != null){
             setpoint = -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
-            SmartDashboard.putNumber("TURN", setpoint);
             m_drive.drive(0, 0, setpoint, false, false);
 
         }
@@ -59,7 +58,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putBoolean("is finished", Math.abs(setpoint) <= 0.005);
         if (Math.abs(setpoint) <= 0.005){
             return true;
         }

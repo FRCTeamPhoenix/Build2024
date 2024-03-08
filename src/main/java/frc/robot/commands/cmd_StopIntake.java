@@ -22,7 +22,7 @@ public class cmd_StopIntake extends Command {
 
     @Override
     public void execute() {
-        m_intake.setDesiredVelocity(0);
+        m_intake.stopIntake();
     }
 
     @Override

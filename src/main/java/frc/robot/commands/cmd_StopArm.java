@@ -23,7 +23,6 @@ public class cmd_StopArm extends Command {
     @Override
     public void initialize() {
         currentPositionToHold = m_arm.getArmPosition();
-        SmartDashboard.putNumber("Hold Angle", currentPositionToHold);
     }
 
     @Override

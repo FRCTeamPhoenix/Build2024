@@ -13,7 +13,7 @@ public class cg_ShootAndMoveArm extends SequentialCommandGroup {
         addCommands(
                 new cmd_TargetShooterToSpeaker(util, arm, drive).withTimeout(1),
                 new cmd_AlignShooterToSpeaker(drive, camera).withTimeout(1),
-                new cg_ShootNote(intake, shooter)
+                new cg_ShootNote(intake, shooter).withTimeout(2)
         );
     }
 }

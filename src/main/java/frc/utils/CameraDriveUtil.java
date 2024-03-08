@@ -106,8 +106,6 @@ public class CameraDriveUtil {
         if (isAllianceRed) speakerPose = VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
         else speakerPose = VisionConstants.kTagLayout.getTagPose(7).get().toPose2d();
 
-        SmartDashboard.putNumberArray("Speaker Pose", new double[]{speakerPose.getX(), speakerPose.getY(), speakerPose.getRotation().getRadians()});
-
         //Calculating feed forward
         Transform2d currentTransform = new Transform2d(currentPose, speakerPose);
         Transform2d priorTransform = new Transform2d(priorPose, speakerPose);
@@ -116,10 +114,6 @@ public class CameraDriveUtil {
                 currentTransform.getY() - priorTransform.getY(),
                 new Rotation2d(currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians())
         );
-
-        SmartDashboard.putNumberArray("Current Transform", new double[]{currentTransform.getX(), currentTransform.getY(), currentTransform.getRotation().getRadians()});
-        SmartDashboard.putNumberArray("Prior Transform", new double[]{priorTransform.getX(), priorTransform.getY(), priorTransform.getRotation().getRadians()});
-        SmartDashboard.putNumberArray("Delta Transform", new double[]{deltaTransform.getX(), deltaTransform.getY(), deltaTransform.getRotation().getRadians()});
 
         double deltaTheta = currentTransform.getRotation().getRadians() - priorTransform.getRotation().getRadians();
 

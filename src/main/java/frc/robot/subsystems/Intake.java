@@ -58,6 +58,11 @@ public class Intake extends SubsystemBase {
         m_PIDController.setReference(desiredVelocity, ControlType.kVelocity);
     }
 
+    public void stopIntake() {
+        // Command intake motors towards their respective setpoints, with one motor being flipped
+        m_PIDController.setReference(0.0, ControlType.kVoltage);
+    }
+
     public double getVelocity() {
         return m_encoder.getVelocity();
     }
