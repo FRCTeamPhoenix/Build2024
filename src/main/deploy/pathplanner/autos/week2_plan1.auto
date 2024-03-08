@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8400155353098376,
+      "y": 7.07
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "preload"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "cg_FloorIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "pick_home"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "cg_FloorIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "pick_center1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot_center1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "cg_ShootAndMoveArm"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
