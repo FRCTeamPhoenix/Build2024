@@ -43,6 +43,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "reverse_pick_home"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "cg_ShootAndMoveArm"
