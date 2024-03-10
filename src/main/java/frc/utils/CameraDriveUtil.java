@@ -83,7 +83,7 @@ public class CameraDriveUtil {
         }
 
         double thetaError = desiredTheta - theta;
-        if (Math.abs(thetaError) < 1) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
+        if (Math.abs(thetaError) < 0.5) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
             thetaError = 0;
         }
 

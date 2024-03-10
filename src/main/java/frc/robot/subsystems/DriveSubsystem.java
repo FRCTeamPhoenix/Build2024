@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -39,6 +40,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import java.util.Optional;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -112,6 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
         poseEsts = photonPoses;
 
         m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
+        
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -161,9 +164,10 @@ public class DriveSubsystem extends SubsystemBase {
                 });
 
         for (PhotonPose poseEst : poseEsts) {
-            var visionEst = poseEst.getEstimatedGlobalPose();
+            if (poseEst.getPhotonCamera().getCamera().isConnected()){
+                var visionEst = poseEst.getEstimatedGlobalPose();
 
-            visionEst.ifPresent(
+                visionEst.ifPresent(
                     est -> {
                         var estPose = est.estimatedPose.toPose2d();
                         // Change our trust in the measurement based on the tags we can see
@@ -172,6 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
                         poseEstimator.addVisionMeasurement(
                                 est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
                     });
+            }
         }
 
         poseEstimator.update(getRotation(), getModulePositions());

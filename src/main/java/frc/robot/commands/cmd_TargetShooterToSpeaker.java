@@ -29,7 +29,7 @@ public class cmd_TargetShooterToSpeaker extends Command {
         m_drive = drive;
         armStartpoint = m_arm.getArmPosition();
 
-        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), armStartpoint);
+        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), 0.1);
         m_arm.setArmPosition(calculatedSetPoint);
 
         addRequirements(m_arm);

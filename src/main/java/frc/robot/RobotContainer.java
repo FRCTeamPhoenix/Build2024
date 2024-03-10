@@ -117,7 +117,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("new2Note");
+        autoChooser = AutoBuilder.buildAutoChooser("exper");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
@@ -158,7 +158,7 @@ public class RobotContainer {
 
         //Move Arm To Amp shoot
         final Trigger btn_op_B = new Trigger(m_operatorController.b());
-        btn_op_B.onTrue(new cmd_MoveArmToPosition(3.11, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_B.onTrue(new cmd_MoveArmToPosition(3.0, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         //Move Arm Up
         final Trigger btn_op_Y = new Trigger(m_operatorController.y());
@@ -170,7 +170,7 @@ public class RobotContainer {
 
         //Move Arm To speaker shooting based on distance
         final Trigger btn_drv_Y = new Trigger(m_driverController.y());
-        btn_drv_Y.onTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
 
         Trigger povUpPressed = m_operatorController.povUp();
@@ -186,6 +186,9 @@ public class RobotContainer {
 
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
+        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
 
         Trigger povRightPressed = m_operatorController.povRight();
         povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));

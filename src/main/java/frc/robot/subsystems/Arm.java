@@ -11,6 +11,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
@@ -19,6 +22,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 
 //import frc.robot.Constants.ModuleConstants;
@@ -112,6 +118,14 @@ public class Arm extends SubsystemBase {
 
         armPositionRequest = getArmPosition();  // initialize to where we are
 
+        SmartDashboard.putData("Arm Angle", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder){
+                builder.setSmartDashboardType("Gyro");
+                builder.addDoubleProperty("Value",  () -> getArmPosition(), null);
+            }
+        });
+
     }
 
     /**
@@ -171,7 +185,7 @@ public class Arm extends SubsystemBase {
     public boolean isAtPosition(double setPosition) {
         //Need to account for some error
         double armPosition = getArmPosition();
-        if ((armPosition < setPosition - .05) && (armPosition > setPosition + .05))
+        if ((armPosition < setPosition - .01) && (armPosition > setPosition + .01))
             return true;
         return false;
     }

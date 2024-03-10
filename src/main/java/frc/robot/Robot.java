@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -40,7 +41,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         //Startup the Camera Server for the driver
-        //CameraServer.startAutomaticCapture(0);
+        CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
     }
