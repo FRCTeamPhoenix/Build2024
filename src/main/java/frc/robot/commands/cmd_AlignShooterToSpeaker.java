@@ -5,12 +5,14 @@
 package frc.robot.commands;
 
 import frc.robot.Constants.General;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonClass;
 import frc.utils.CameraDriveUtil;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -25,13 +27,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
         m_cam = camera;
         if (drive.isAllianceRed()) speakerTagID = 4;
         else speakerTagID = 7;
-
-        PhotonTrackedTarget target = m_cam.getAprilTag(speakerTagID);
-        if (target != null){
-            setpoint = -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
-            m_drive.drive(0, 0, setpoint, false, false);
-
-        }
     }
 
     @Override
@@ -41,13 +36,14 @@ public class cmd_AlignShooterToSpeaker extends Command {
 
     @Override
     public void execute() {
-        PhotonTrackedTarget target = m_cam.getAprilTag(speakerTagID);
-        if (target != null){
-            setpoint = -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
-            SmartDashboard.putNumber("TURN", setpoint);
-            m_drive.drive(0, 0, setpoint, false, false);
-
-        };
+        PhotonTrackedTarget target = null;
+        if (m_cam.getCamera().isConnected()) {
+            target = m_cam.getAprilTag(speakerTagID);
+        }
+        if (target != null) {
+            double rot = -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
+            m_drive.drive(0, 0, rot, true, false);
+        }
     }
 
     @Override

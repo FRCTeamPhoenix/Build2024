@@ -29,7 +29,7 @@ public class Climber {
 
         m_sparkMax.setIdleMode(ClimberConstants.kClimberIdleMode);
 
-        m_sparkMax.setSmartCurrentLimit(40);
+        m_sparkMax.setSmartCurrentLimit(20);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.

@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         //Startup the Camera Server for the driver
-        CameraServer.startAutomaticCapture(0);
+        //CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
     }

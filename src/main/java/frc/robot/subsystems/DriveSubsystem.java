@@ -392,6 +392,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public boolean isAllianceRed() {
-        return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+        return true;
     }
 }

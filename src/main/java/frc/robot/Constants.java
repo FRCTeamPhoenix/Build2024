@@ -280,7 +280,8 @@ public final class Constants {
     }
 
     public static final class ArmConstants {
-        public static final double ARM_MIN_ANGLE = 0.08;
+        //public static final double ARM_MIN_ANGLE = 0.08;
+        public static final double ARM_MIN_ANGLE = 0.11;
         public static final double ARM_MAX_ANGLE = 2.95;
         public static final double kArmP = 2.25;
         public static final double kArmI = 0.0;
