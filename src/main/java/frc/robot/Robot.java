@@ -75,30 +75,16 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
-//        if (m_robotContainer.photonCamera.getAprilTag(4) != null) {
-//            SmartDashboard.putNumber("X-Distance", m_robotContainer.photonCamera.getAprilTag(4).getBestCameraToTarget().getX());
-//        }
-
         boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
 
         SmartDashboard.putBoolean("Note in Intake?", hasNote);
 
-        OakCameraObject closestNote = OakCamera.findClosestNote();
-        if (closestNote != null) field.setRobotPose(NotePoseGenerator.generateNotePose(closestNote, m_drive.getPhotonPose()));
         Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
         Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
+        SmartDashboard.putNumber("Distance To Speaker", distance);
 
-        
         field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
-
-        // if (m_robotContainer.getXboxOperator().pov(0).getAsBoolean()) {
-        //     m_robotContainer.getClimber().setPower(12);
-        // }
-        // else if (m_robotContainer.getXboxOperator().pov(180).getAsBoolean()){
-        //     m_robotContainer.getClimber().setPower(-6);
-        // }
-        // else m_robotContainer.getClimber().setPower(0);
     }
 
     /**
