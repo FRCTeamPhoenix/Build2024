@@ -68,4 +68,8 @@ public class PhotonPose extends SubsystemBase {
 
         return estStdDevs;
     }
+
+    public PhotonClass getPhotonCamera(){
+        return camera;
+    }
 }

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.utils.FireControlUtil;
 import frc.utils.NotePoseGenerator;
 
+import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix.Util;
@@ -58,17 +59,17 @@ public class RobotContainer {
     public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
     public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
-    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
+    // public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
     public final OakCamera firstOakCamera = new OakCamera();
 
     public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
     public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
-    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
+    // public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
 
 
-    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose, rightPhotonPose};
+    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose}; // rightPhotonPose};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
@@ -116,7 +117,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("new2Note");
+        autoChooser = AutoBuilder.buildAutoChooser("macmahon");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
@@ -153,11 +154,11 @@ public class RobotContainer {
 
         //Move Arm To subwoofer shooting
         final Trigger btn_op_X = new Trigger(m_operatorController.x());
-        btn_op_X.onTrue(new cmd_MoveArmToPosition(.6, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_X.onTrue(new cmd_MoveArmToPosition(.436, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         //Move Arm To Amp shoot
         final Trigger btn_op_B = new Trigger(m_operatorController.b());
-        btn_op_B.onTrue(new cmd_MoveArmToPosition(3.11, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_B.onTrue(new cmd_MoveArmToPosition(3.0, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         //Move Arm Up
         final Trigger btn_op_Y = new Trigger(m_operatorController.y());
@@ -169,21 +170,24 @@ public class RobotContainer {
 
         //Move Arm To speaker shooting based on distance
         final Trigger btn_drv_Y = new Trigger(m_driverController.y());
-        btn_drv_Y.onTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         Trigger povUpPressed = m_operatorController.povUp();
-        povUpPressed.whileTrue(new cmd_Climber(m_climber, 12).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povUpPressed.whileTrue(new cmd_Climber(m_climber, 8).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povLeftPressed = m_operatorController.povLeft();
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
-        povDownPressed.whileTrue(new cmd_Climber(m_climber, -6).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povDownPressed.whileTrue(new cmd_Climber(m_climber, -8).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
+        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
 
         Trigger povRightPressed = m_operatorController.povRight();
         //povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -233,8 +237,11 @@ public class RobotContainer {
     }
 
     public double getRobotRotation(boolean alignToSpeaker) {
-        PhotonTrackedTarget target = rearPhotonCamera.getAprilTag(speakerTagID);
-        if (target != null && alignToSpeaker) return -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
+        PhotonTrackedTarget target = null;
+        if (rearPhotonCamera.getCamera().isConnected()) target = rearPhotonCamera.getAprilTag(speakerTagID);
+        if (target != null && alignToSpeaker) {
+            return -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
+        }
         else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
     }
 
