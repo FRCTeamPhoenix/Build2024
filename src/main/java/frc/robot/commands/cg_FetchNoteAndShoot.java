@@ -8,8 +8,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.PhotonClass;
 import frc.utils.FireControlUtil;
 
-
-
 public class cg_FetchNoteAndShoot extends SequentialCommandGroup {
     public cg_FetchNoteAndShoot(Intake intake, Shooter shooter, DriveSubsystem driveSubsystem,Arm arm, PhotonClass photonClass, OakCamera oakCamera, FireControlUtil util) {
         addCommands(

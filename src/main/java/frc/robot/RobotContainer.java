@@ -10,7 +10,6 @@ import frc.robot.commands.*;
 import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
 import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.cmd_TargetShooterToSpeaker;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -136,6 +135,8 @@ public class RobotContainer {
                                 getRobotRotation(m_driverController.getHID().getYButton()),
                                 true, m_driverController.getHID().getRightBumper()),
                         m_robotDrive));
+
+        m_shooter.setDefaultCommand(new cmd_SpinShooter(m_shooter, m_robotDrive));
     }
 
 
@@ -190,7 +191,7 @@ public class RobotContainer {
 
 
         Trigger povRightPressed = m_operatorController.povRight();
-        //povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
     }
