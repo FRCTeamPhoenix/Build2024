@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.commands.*;
@@ -58,17 +59,17 @@ public class RobotContainer {
     public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
     public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
-    // public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
+    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
     public final OakCamera firstOakCamera = new OakCamera();
 
     public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
     public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
     public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
-    // public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
+    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
 
 
-    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose}; // rightPhotonPose};
+    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose, rightPhotonPose};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
     private final Shooter m_shooter = new Shooter(10, 11);
@@ -89,6 +90,7 @@ public class RobotContainer {
 
     private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
     private final FireControlUtil fireControlUtil = new FireControlUtil(isAllianceRed);
+    private final PIDController turningPID = new PIDController(0.01, 0.0, 0.0);
     public Pose2d currentPose2d = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
     private Pose2d priorPose2d;
 
@@ -96,15 +98,14 @@ public class RobotContainer {
         configureShooterInterpolation();
         NamedCommands.registerCommand("cg_AutoIntakeToFloor", new cg_AutoIntakeToFloor(m_intake, m_arm));
         NamedCommands.registerCommand("cg_AutoNotePickup", new cg_AutoNotePickup(m_intake, m_arm, firstOakCamera, m_robotDrive));
-        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(fireControlUtil, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake));
+        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(fireControlUtil, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake, m_driverController));
         NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
         NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
-        NamedCommands.registerCommand("align", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera));
         NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
         NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
         NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil));
-        NamedCommands.registerCommand("cmd_TargetShooterToSpaker", new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive));
-        NamedCommands.registerCommand("cmd_AlignShooterToSpeker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera));
+        NamedCommands.registerCommand("cmd_TargetShooterToSpeaker", new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive));
+        NamedCommands.registerCommand("cmd_AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
 
         SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
         SmartDashboard.putData("cg stop shoot", NamedCommands.getCommand("cg_StopShootNote"));
@@ -132,23 +133,22 @@ public class RobotContainer {
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                                getRobotRotation(m_driverController.getHID().getYButton()),
-                                true, m_driverController.getHID().getRightBumper()),
+                                getRobotRotation(),
+                                true, m_driverController.getHID().getLeftBumper()),
                         m_robotDrive));
 
-        m_shooter.setDefaultCommand(new cmd_SpinShooter(m_shooter, m_robotDrive));
     }
 
 
     private void configureButtonBindings() {
         //Force robot to stop in X formation
-        new Trigger(m_driverController.x())
+        new Trigger(m_driverController.povLeft())
                 .whileTrue(new RunCommand(
                         m_robotDrive::setX,
                         m_robotDrive));
 
         //Reset the Gyro to zero heading with B
-        new Trigger(m_driverController.b())
+        new Trigger(m_driverController.povDown())
                 .onTrue(new RunCommand(
                         m_robotDrive::zeroHeading,
                         m_robotDrive));
@@ -170,7 +170,7 @@ public class RobotContainer {
         btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm, ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         //Move Arm To speaker shooting based on distance
-        final Trigger btn_drv_Y = new Trigger(m_driverController.y());
+        final Trigger btn_drv_Y = new Trigger(m_driverController.rightBumper());
         btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         Trigger povUpPressed = m_operatorController.povUp();
@@ -178,6 +178,7 @@ public class RobotContainer {
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povLeftPressed = m_operatorController.povLeft();
+        povLeftPressed.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
@@ -188,7 +189,6 @@ public class RobotContainer {
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
         m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
-
 
         Trigger povRightPressed = m_operatorController.povRight();
         povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -237,26 +237,33 @@ public class RobotContainer {
         return m_climber;
     }
 
-    public double getRobotRotation(boolean alignToSpeaker) {
-        PhotonTrackedTarget target = null;
-        if (rearPhotonCamera.getCamera().isConnected()) target = rearPhotonCamera.getAprilTag(speakerTagID);
-        if (target != null && alignToSpeaker) {
-            return -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
-        }
-        else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
-    }
+    public double getRobotRotation() {
+        boolean alignToSpeaker = m_driverController.rightBumper().getAsBoolean();
+        boolean alignForward = m_driverController.y().getAsBoolean();
+        boolean alignBack = m_driverController.a().getAsBoolean();
+        boolean alignRight = m_driverController.b().getAsBoolean();
+        boolean alignLeft = m_driverController.x().getAsBoolean();
 
-    public double getRobotRotationFeedForward(boolean alignToSpeaker) {
-        PhotonTrackedTarget target = rearPhotonCamera.getAprilTag(speakerTagID);
-        if (target != null && alignToSpeaker){
-            return -CameraDriveUtil.getDriveRotWithFeedForward(target.getYaw(), 0, priorPose2d, currentPose2d, isAllianceRed);
+        if (alignToSpeaker) {
+            //PhotonTrackedTarget rear = rearPhotonCamera.getAprilTag(speakerTagID);
+            //if (rear != null) return -CameraDriveUtil.getDriveRot(rear.getYaw(), 0);
+            return fireControlUtil.getPIDValue(currentPose2d, m_robotDrive.getRotation());
         }
-        else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
-    }
-
-    public double getRobotRotationFireControl(boolean alignToSpeaker) {
-        if (alignToSpeaker) return -fireControlUtil.getPIDValue(currentPose2d, m_robotDrive.getRotation());
-        else return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+        else if (alignForward) {
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 0);
+        }
+        else if (alignBack) {
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 180);
+        }
+        else if (alignRight) {
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 90);
+        }
+        else if (alignLeft) {
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), -90);
+        }
+        else {
+            return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+        }
     }
 
     public Intake getIntake() {

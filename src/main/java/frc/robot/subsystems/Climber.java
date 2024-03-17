@@ -12,13 +12,6 @@ import frc.robot.Constants.ClimberConstants;
 public class Climber {
     private final CANSparkMax m_sparkMax;
 
-
-    /**
-     * Constructs a MAXSwerveModule and configures the driving and turning motor,
-     * encoder, and PID controller. This configuration is specific to the REV
-     * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
-     * Encoder.
-     */
     public Climber(int canID) {
         m_sparkMax = new CANSparkMax(canID, MotorType.kBrushed);
 
@@ -29,7 +22,7 @@ public class Climber {
 
         m_sparkMax.setIdleMode(ClimberConstants.kClimberIdleMode);
 
-        m_sparkMax.setSmartCurrentLimit(20);
+        m_sparkMax.setSmartCurrentLimit(50);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.

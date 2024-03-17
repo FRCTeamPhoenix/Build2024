@@ -235,11 +235,11 @@ public class DriveSubsystem extends SubsystemBase {
      * @param xSpeed        Speed of the robot in the x direction (forward).
      * @param ySpeed        Speed of the robot in the y direction (sideways).
      * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the
-     *                      field.
+     * @param justinRelative Whether the provided x and y speeds are relative to the
+     *                      Justin.
      * @param rateLimit     Whether to enable rate limiting for smoother control.
      */
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+    public void drive(double xSpeed, double ySpeed, double rot, boolean justinRelative, boolean rateLimit) {
 
         double xSpeedCommanded;
         double ySpeedCommanded;
@@ -295,7 +295,7 @@ public class DriveSubsystem extends SubsystemBase {
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
         SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-                fieldRelative
+                justinRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getYaw()))
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -309,6 +309,15 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
         this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false, false);
+    }
+
+    public ChassisSpeeds getFieldRelativeChassisSpeeds() {
+        return new ChassisSpeeds(
+                getRobotRelativeSpeeds().vxMetersPerSecond * getRotation().getCos()
+                        - getRobotRelativeSpeeds().vyMetersPerSecond * getRotation().getSin(),
+                getRobotRelativeSpeeds().vyMetersPerSecond * getRotation().getCos()
+                        + getRobotRelativeSpeeds().vxMetersPerSecond * getRotation().getSin(),
+                getRobotRelativeSpeeds().omegaRadiansPerSecond);
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {

@@ -1,5 +1,6 @@
 package frc.utils;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,6 +9,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystems.DriveSubsystem;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class FireControlUtil {
@@ -44,7 +46,7 @@ public class FireControlUtil {
 
 
         //TODO: Get actual values for the PID controller
-        pidController = new PIDController(0.00015, 0.0, 0.0);
+        pidController = new PIDController(0.015, 0.0, 0.0);
     }
 
     public double getShooterAngle(Pose2d robotPose, double currentArmPosition) {
@@ -62,6 +64,24 @@ public class FireControlUtil {
 
         field.setRobotPose(speakerPose);
 
-        return pidController.calculate(currentHeading.getDegrees(), Math.toDegrees(angle) + 180.0);
+        return pidController.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle);
+    }
+
+    public double getPIDWithFeedForward(Pose2d robotPose, Rotation2d currentHeading, DriveSubsystem drive) {
+        double deltaX = robotPose.getX() - speakerPose.getX();
+        double deltaY = robotPose.getY() - speakerPose.getY();
+        double angle = Math.atan2(deltaY, deltaX);
+
+        Transform2d transformToSpeaker = robotPose.minus(speakerPose);
+        double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
+        double ff = (drive.getFieldRelativeChassisSpeeds().vyMetersPerSecond / distance);
+
+        field.setRobotPose(speakerPose);
+
+        return pidController.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle) + ff;
+    }
+
+    public double turnToDirection(Rotation2d currentHeading, double desiredAngle) {
+        return pidController.calculate(currentHeading.getDegrees(), desiredAngle);
     }
 }

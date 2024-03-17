@@ -22,14 +22,14 @@ public class cmd_TargetShooterToSpeaker extends Command {
 
     private double calculatedSetPoint;
 
-    private final double armStartpoint;
+    private double armStartpoint;
     public cmd_TargetShooterToSpeaker(FireControlUtil util, Arm arm, DriveSubsystem drive) {
         m_util = util;
         m_arm = arm;
         m_drive = drive;
         armStartpoint = m_arm.getArmPosition();
 
-        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), 0.1);
+        calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), armStartpoint);
         m_arm.setArmPosition(calculatedSetPoint);
 
         addRequirements(m_arm);
@@ -42,6 +42,7 @@ public class cmd_TargetShooterToSpeaker extends Command {
 
     @Override
     public void execute() {
+        armStartpoint = m_arm.getArmPosition();
         calculatedSetPoint = m_util.getShooterAngle(m_drive.getPhotonPose(), armStartpoint);
         m_arm.setArmPosition(calculatedSetPoint);
     }
