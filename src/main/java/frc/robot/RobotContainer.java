@@ -103,7 +103,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
         NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
         NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
-        NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil));
+        NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil, m_driverController));
         NamedCommands.registerCommand("cmd_TargetShooterToSpeaker", new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive));
         NamedCommands.registerCommand("cmd_AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
 
