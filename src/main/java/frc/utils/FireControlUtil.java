@@ -17,6 +17,7 @@ public class FireControlUtil {
     private final Pose2d speakerPose;
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
     private final PIDController pidController;
+    private final PIDController otherPID;
     private final Field2d field = new Field2d();
 
     public FireControlUtil(boolean allianceIsRed) {
@@ -47,6 +48,9 @@ public class FireControlUtil {
 
         //TODO: Get actual values for the PID controller
         pidController = new PIDController(0.015, 0.0, 0.0);
+        otherPID = new PIDController(0.015, 0.0, 0.0);
+        otherPID.enableContinuousInput(0, 360);
+        pidController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public double getShooterAngle(Pose2d robotPose, double currentArmPosition) {
@@ -64,7 +68,12 @@ public class FireControlUtil {
 
         field.setRobotPose(speakerPose);
 
-        return pidController.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle);
+        double number = pidController.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle);
+
+        SmartDashboard.putNumber("Angle", angle);
+        SmartDashboard.putNumber("pdi", number);
+
+        return number;
     }
 
     public double getPIDWithFeedForward(Pose2d robotPose, Rotation2d currentHeading, DriveSubsystem drive) {
@@ -78,7 +87,7 @@ public class FireControlUtil {
 
         field.setRobotPose(speakerPose);
 
-        return pidController.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle) + ff;
+        return otherPID.calculate(MathUtil.angleModulus(currentHeading.getRadians()), angle) + ff;
     }
 
     public double turnToDirection(Rotation2d currentHeading, double desiredAngle) {

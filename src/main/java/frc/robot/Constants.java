@@ -212,7 +212,7 @@ public final class Constants {
     public static final class IntakeConstants {
         public static final double kIntakeWheelDiameterMeters = 0.0508;
         public static final double kIntakeWheelCircumferenceMeters = 0.0508 * Math.PI;
-        public static final double kIntakeMotorReduction = 3.0;
+        public static final double kIntakeMotorReduction = 1.0;
 
         public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kIntakeWheelCircumferenceMeters)
                 / kIntakeMotorReduction;

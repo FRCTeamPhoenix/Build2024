@@ -256,10 +256,10 @@ public class RobotContainer {
             return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 180);
         }
         else if (alignRight) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 90);
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), -90);
         }
         else if (alignLeft) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), -90);
+            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 90);
         }
         else {
             return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);

@@ -27,7 +27,7 @@ public class cmd_IntakeNote extends Command {
         if (status.equals("Found")){
             m_intake.setDesiredVelocity(0.0);
         }
-        else m_intake.setDesiredVelocity(2.5);
+        else m_intake.setDesiredVelocity(7.5);
     }
 
     @Override
