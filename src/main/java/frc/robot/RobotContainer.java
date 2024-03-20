@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.*;
 import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
 import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
@@ -147,9 +148,9 @@ public class RobotContainer {
                         m_robotDrive::setX,
                         m_robotDrive));
 
-        //Reset the Gyro to zero heading with B
+        //Reset the Gyro to zero heading with the D-Pad
         new Trigger(m_driverController.povDown())
-                .onTrue(new RunCommand(
+                .onTrue(new InstantCommand(
                         m_robotDrive::zeroHeading,
                         m_robotDrive));
 
