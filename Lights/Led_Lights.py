@@ -16,7 +16,7 @@ FIRE_COLORS = [(255, 10, 0), (255, 60, 0), (255, 100, 0), (255, 150, 0), (255, 2
 
 #lights
 # Using a DotStar Digital LED Strip with 60*4 (240 leds) LEDs connected to hardware SPI
-dots = dotstar.DotStar(board.SCK, board.MOSI, 240, brightness=1)
+dots = dotstar.DotStar(board.SCK, board.MOSI, 119, brightness=1)
 
 # Start Loggign for pubsub
 logging.basicConfig(level=logging.DEBUG)
@@ -121,18 +121,76 @@ def fireee():
         dots.show()
         time.sleep(0.05)
 
+def pattern(led):
+    n_dots = len(dots)
+    aled = led % n_dots
+    dots[led % n_dots]=Colors["yellow"]
+    dots[(led+1) % n_dots]=Colors["orange_yellow"]
+    dots[(led+2) % n_dots]=Colors["orange"]
+    dots[(led+3) % n_dots]=Colors["orange"]
+    dots[(led+4) % n_dots]=Colors["orange"]
+    dots[(led+5) % n_dots]=Colors["red_orange"]
+    dots[(led+6) % n_dots]=Colors["red_orange"]
+    dots[(led+7) % n_dots]=Colors["red"]
+    dots[(led+8) % n_dots]=Colors["red"]
+    dots[(led+9) % n_dots]=Colors["red"]
+    dots[(led+10) % n_dots]=Colors["red"]
+    dots[(led+11) % n_dots]=Colors["red"]
+    dots[(led+12) % n_dots]=Colors["red"]
+
 #New team color function
 def teamColor():
     n_dots = len(dots)
+    changeColorAll("yellow")
     while True:
         for led in range(13,n_dots):
-            dots[led-13]=Colors["off"]
+            dots[led-13]=Colors["yellow"]
             dots[led-12]=Colors["orange_yellow"]
             dots[led-11]=Colors["orange"]
-            dots[led-10]=Colors["red_orange"]
-            dots[led-9]=Colors["red_orange"]
+            dots[led-10]=Colors["orange"]
+            dots[led-9]=Colors["orange"]
             dots[led-8]=Colors["red_orange"]
-            dots[led-7]=Colors["red"]
+            dots[led-7]=Colors["red_orange"]
+            dots[led-6]=Colors["red"]
+            dots[led-5]=Colors["red"]
+            dots[led-4]=Colors["red"]
+            dots[led-3]=Colors["red"]
+            dots[led-2]=Colors["red"]
+            dots[led-1]=Colors["red"]
+            dots[led]=Colors["red"]
+        #for led in reversed(range(13, n_dots)):
+            #dots[led-13]=Colors["red"]
+            #dots[led-12]=Colors["red"]
+            #dots[led-11]=Colors["red"]
+            #dots[led-10]=Colors["red"]
+            #dots[led-9]=Colors["red"]
+            #dots[led-8]=Colors["red"]
+            #dots[led-7]=Colors["red"]
+            #dots[led-6]=Colors["red"]
+            #dots[led-5]=Colors["red_orange"]
+            #dots[led-4]=Colors["red_orange"]
+            #dots[led-3]=Colors["red_orange"]
+            #dots[led-2]=Colors["orange"]
+            #dots[led-1]=Colors["orange_yellow"]
+            #dots[led]=Colors["off"]
+            #Bail out if the color changed.
+        nt_color = ColorTable.getString("color","TeamColor")
+        if (nt_color != "TeamColor"):
+            return
+
+#Basic code that loops the fire back and forth
+def team_color():
+    n_dots = len(dots)
+    changeColorAll("yellow")
+    while True:
+        for led in range(13,n_dots):
+            dots[led-13]=Colors["yellow"]
+            dots[led-12]=Colors["orange_yellow"]
+            dots[led-11]=Colors["orange"]
+            dots[led-10]=Colors["orange"]
+            dots[led-9]=Colors["orange"]
+            dots[led-8]=Colors["red_orange"]
+            dots[led-7]=Colors["red_orange"]
             dots[led-6]=Colors["red"]
             dots[led-5]=Colors["red"]
             dots[led-4]=Colors["red"]
@@ -141,7 +199,6 @@ def teamColor():
             dots[led-1]=Colors["red"]
             dots[led]=Colors["red"]
         for led in reversed(range(13, n_dots)):
-            print(led)
             dots[led-13]=Colors["red"]
             dots[led-12]=Colors["red"]
             dots[led-11]=Colors["red"]
@@ -161,6 +218,16 @@ def teamColor():
         if (nt_color != "TeamColor"):
             return
 
+def coolFire():
+    n_dots = len(dots)
+    while True:
+        changeColorAll("yellow")
+        for led in range(0, n_dots):
+            pattern(led)
+            led = (led + 10) % n_dots
+        nt_color = ColorTable.getString("color","fire")
+        if (nt_color != "fire"):
+            return
 
 #def amp():
 #  n_dots = len(dots)
@@ -182,7 +249,7 @@ def teamColor():
 #      return
 #  dots.fill(Colors["off"])
 
-#def cooperation():
+#def coopertition():
 #  n_dots = len(dots)
 #  dots[0]=Colors["yellow"];
 #  dots[1]=Colors["off"];
@@ -222,7 +289,13 @@ def runExample():
             uptime += 1
             try:
                 if (currentColor == "fire"):
-                    fireee();
+                    coolFire();
+                elif (currentColor == "teamColor"):
+                    team_color()
+                elif (currentColor == "noNote"):
+                    changeColorAll("red")
+                elif (currentColor == "noteFound"):
+                    changeColorAll("green")
                 else:
                     changeColorAll(currentColor)
             except:
