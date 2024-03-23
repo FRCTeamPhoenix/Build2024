@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;

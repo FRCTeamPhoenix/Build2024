@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.*;
 import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
@@ -27,17 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.utils.FireControlUtil;
-import frc.utils.NotePoseGenerator;
 
-import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-import com.ctre.phoenix.Util;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.subsystems.PhotonPose;
 import frc.robot.subsystems.PhotonClass;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.OakCamera;
@@ -65,15 +58,9 @@ public class RobotContainer {
 
     public final OakCamera firstOakCamera = new OakCamera();
 
-    public final PhotonPose frontPhotonPose = new PhotonPose(frontPhotonCamera);
-    public final PhotonPose rearPhotonPose = new PhotonPose(rearPhotonCamera);
-    public final PhotonPose leftPhotonPose = new PhotonPose(leftPhotonCamera);
-    public final PhotonPose rightPhotonPose = new PhotonPose(rightPhotonCamera);
+    public final PhotonClass[] photonCams = {frontPhotonCamera, rearPhotonCamera, leftPhotonCamera, rightPhotonCamera};
 
-
-    public final PhotonPose[] photonPoses = {frontPhotonPose, rearPhotonPose, leftPhotonPose, rightPhotonPose};
-
-    private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonPoses);
+    private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCams);
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
@@ -91,22 +78,19 @@ public class RobotContainer {
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
     private final boolean isAllianceRed = m_robotDrive.isAllianceRed();
-    private final FireControlUtil fireControlUtil = new FireControlUtil(isAllianceRed);
-    private final PIDController turningPID = new PIDController(0.01, 0.0, 0.0);
+
     public Pose2d currentPose2d = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
-    private Pose2d priorPose2d;
 
     public RobotContainer() {
         configureShooterInterpolation();
         NamedCommands.registerCommand("cg_AutoIntakeToFloor", new cg_AutoIntakeToFloor(m_intake, m_arm));
         NamedCommands.registerCommand("cg_AutoNotePickup", new cg_AutoNotePickup(m_intake, m_arm, firstOakCamera, m_robotDrive));
-        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(fireControlUtil, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake, m_driverController));
+        NamedCommands.registerCommand("cg_ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, rearPhotonCamera, m_shooter, m_intake, m_driverController));
         NamedCommands.registerCommand("cg_StopShootNote", new cg_StopShootNote(m_intake,m_shooter));
         NamedCommands.registerCommand("cmd_LowerArm", new cmd_MoveArmToPosition(0.1, 1, m_arm).withTimeout(1));
         NamedCommands.registerCommand("shoot", new cg_ShootNote(m_intake, m_shooter));
         NamedCommands.registerCommand("cg_FloorIntake", new cg_FloorIntake(m_intake, m_arm));
-        NamedCommands.registerCommand("cg_FetchNoteAndShoot", new cg_FetchNoteAndShoot(m_intake,m_shooter,m_robotDrive, m_arm, rearPhotonCamera, firstOakCamera, fireControlUtil, m_driverController));
-        NamedCommands.registerCommand("cmd_TargetShooterToSpeaker", new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive));
+        NamedCommands.registerCommand("cmd_TargetShooterToSpeaker", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
         NamedCommands.registerCommand("cmd_AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
 
         SmartDashboard.putData("cg_moveArm + shoot", NamedCommands.getCommand("cg_ShootAndMoveArm"));
@@ -172,41 +156,55 @@ public class RobotContainer {
         btn_op_A.whileTrue(new cmd_MoveArmDown(m_arm, ArmConstants.ArmMoveSetPoint).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         //Move Arm To speaker shooting based on distance
-        final Trigger btn_drv_Y = new Trigger(m_driverController.rightBumper());
-        btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(fireControlUtil, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        Trigger btn_drv_Y = new Trigger(m_driverController.rightBumper());
+        btn_drv_Y.whileTrue(new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
+        //Operator Dpad
         Trigger povUpPressed = m_operatorController.povUp();
         povUpPressed.whileTrue(new cmd_Climber(m_climber, 8).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povLeftPressed = m_operatorController.povLeft();
-        povLeftPressed.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povLeftPressed.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).toggleOnFalse(new cmd_StopShoot(m_shooter));
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
         povDownPressed.whileTrue(new cmd_Climber(m_climber, -8).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
+        Trigger povRightPressed = m_operatorController.povRight();
+        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        //Operator Bumpers and Triggers
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
+
         m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
         m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
 
-        Trigger povRightPressed = m_operatorController.povRight();
-        povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
         m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+
+        //Cardinal Directions
+        m_driverController.a().whileTrue(new cmd_RotateToHeading(m_robotDrive, frontPhotonCamera, m_driverController, 0).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        m_driverController.y().whileTrue(new cmd_RotateToHeading(m_robotDrive, frontPhotonCamera, m_driverController, 180).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        m_driverController.b().whileTrue(new cmd_RotateToHeading(m_robotDrive, frontPhotonCamera, m_driverController, -90).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        m_driverController.x().whileTrue(new cmd_RotateToHeading(m_robotDrive, frontPhotonCamera, m_driverController, 90).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
     }
 
     public void configureShooterInterpolation() {
         //Put values for shooter angles into interpolation tree
-        interpolator.put(0.60652, 0.3497);
-        interpolator.put(1.6333, 0.4969);
-        interpolator.put(2.3544, 0.6624);
-        interpolator.put(2.8532, 0.7114);
-        interpolator.put(3.3961, 0.7788);
-        interpolator.put(3.9187, 0.7791);
-        interpolator.put(4.5754, 0.8218);
+        // Modifying calculated values to fine-tune angles (03/03/2024)
+        interpolator.put(0.61, 0.364);
+        interpolator.put(1.63, 0.514);
+        interpolator.put(2.35, 0.674);
+        interpolator.put(2.85, 0.724);
+        interpolator.put(3.40, 0.794);
+        interpolator.put(3.92, 0.804);
+        interpolator.put(4.58, 0.834);
     }
 
     //All Getters/Setters for the robot objects.
@@ -241,28 +239,9 @@ public class RobotContainer {
 
     public double getRobotRotation() {
         boolean alignToSpeaker = m_driverController.rightBumper().getAsBoolean();
-        boolean alignForward = m_driverController.y().getAsBoolean();
-        boolean alignBack = m_driverController.a().getAsBoolean();
-        boolean alignRight = m_driverController.b().getAsBoolean();
-        boolean alignLeft = m_driverController.x().getAsBoolean();
 
-        if (alignToSpeaker) {
-            //PhotonTrackedTarget rear = rearPhotonCamera.getAprilTag(speakerTagID);
-            //if (rear != null) return -CameraDriveUtil.getDriveRot(rear.getYaw(), 0);
-            return fireControlUtil.getPIDValue(currentPose2d, m_robotDrive.getRotation());
-        }
-        else if (alignForward) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 0);
-        }
-        else if (alignBack) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 180);
-        }
-        else if (alignRight) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), -90);
-        }
-        else if (alignLeft) {
-            return fireControlUtil.turnToDirection(m_robotDrive.getRotation(), 90);
-        }
+        PhotonTrackedTarget rear = rearPhotonCamera.getAprilTag(speakerTagID);
+        if (rear != null && alignToSpeaker) return -CameraDriveUtil.getDriveRot(rear.getYaw(), 0);
         else {
             return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
         }
@@ -277,12 +256,10 @@ public class RobotContainer {
     }
 
     public void updatePose() {
-        priorPose2d = currentPose2d;
         currentPose2d = m_robotDrive.getPhotonPose();
     }
 
     public void initPose() {
         currentPose2d = m_robotDrive.getPhotonPose();
-        priorPose2d = currentPose2d;
     }
 }

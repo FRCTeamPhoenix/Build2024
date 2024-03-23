@@ -23,8 +23,6 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
-import java.util.function.DoubleSupplier;
-
 import com.revrobotics.AbsoluteEncoder;
 
 //import frc.robot.Constants.ModuleConstants;
