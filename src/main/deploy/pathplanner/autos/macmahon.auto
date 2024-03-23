@@ -18,9 +18,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "New New New New New Path"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "New New New New New Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "cg_FloorIntake"
+                }
+              }
+            ]
           }
         }
       ]
