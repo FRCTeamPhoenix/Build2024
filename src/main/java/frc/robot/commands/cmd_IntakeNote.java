@@ -7,6 +7,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class cmd_IntakeNote extends Command {
     private final Intake m_intake;
@@ -26,8 +30,12 @@ public class cmd_IntakeNote extends Command {
         String status = SmartDashboard.getString("FRC-Note", "Not Found");
         if (status.equals("Found")){
             m_intake.setDesiredVelocity(0.0);
+            SmartDashboard.putString("color", "noteFound");
         }
-        else m_intake.setDesiredVelocity(7.5);
+        else {
+            m_intake.setDesiredVelocity(2.5);
+            SmartDashboard.putString("color", "noNote");
+        }
     }
 
     @Override
@@ -38,6 +46,7 @@ public class cmd_IntakeNote extends Command {
     public boolean isFinished() {
         String status = SmartDashboard.getString("FRC-Note", "Not Found");
         if (status.equals("Found")) {
+            SmartDashboard.putString("color", "teamColor");
             return true;
         }
         return false;

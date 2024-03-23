@@ -23,6 +23,10 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 
 import frc.utils.FireControlUtil;
 
@@ -99,6 +103,7 @@ public class RobotContainer {
         SmartDashboard.putData("align", NamedCommands.getCommand("align"));
         SmartDashboard.putData("Shoot", NamedCommands.getCommand("shoot"));
         SmartDashboard.putData("cg_AutoNotePickup", NamedCommands.getCommand("cg_AutoNotePickup"));
+        SmartDashboard.putString("color", "teamColor");
 
         // Configure the button bindings
         configureButtonBindings();
