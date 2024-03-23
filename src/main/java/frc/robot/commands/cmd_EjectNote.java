@@ -22,7 +22,7 @@ public class cmd_EjectNote extends Command {
 
     @Override
     public void execute() {
-        m_intake.setDesiredVelocity(-2.5);
+        m_intake.setDesiredVelocity(-7.5);
     }
 
     @Override

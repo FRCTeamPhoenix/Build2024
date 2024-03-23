@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
+        DataLogManager.start();
         //Startup the Camera Server for the driver
         //CameraServer.startAutomaticCapture(0);
 
@@ -72,6 +74,12 @@ public class Robot extends TimedRobot {
 
         DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
         Arm m_arm = m_robotContainer.getArm();
+
+        double[] pose = {m_drive.getPhotonPose().getX(), m_drive.getPhotonPose().getY(), m_drive.getPhotonPose().getRotation().getRadians()};
+        SmartDashboard.putNumberArray("PhotonPose", pose);
+
+        double[] odometryPose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getRadians()};
+        SmartDashboard.putNumberArray("OdometryPose", odometryPose);
 
         SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 

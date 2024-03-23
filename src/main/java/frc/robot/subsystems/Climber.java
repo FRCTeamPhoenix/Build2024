@@ -7,36 +7,38 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
-public class Climber {
-    private final CANSparkMax m_sparkMax;
+public class Climber extends SubsystemBase {
+    private final CANSparkMax m_sparkMaxLeft;
+    private final CANSparkMax m_sparkMaxRight;
 
-
-    /**
-     * Constructs a MAXSwerveModule and configures the driving and turning motor,
-     * encoder, and PID controller. This configuration is specific to the REV
-     * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
-     * Encoder.
-     */
-    public Climber(int canID) {
-        m_sparkMax = new CANSparkMax(canID, MotorType.kBrushed);
+    public Climber(int canIDLeft, int canIDRight) {
+        m_sparkMaxLeft = new CANSparkMax(canIDLeft, MotorType.kBrushless);
+        m_sparkMaxRight = new CANSparkMax(canIDRight, MotorType.kBrushless);
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
         // them. This is useful in case a SPARK MAX is swapped out.
-        m_sparkMax.restoreFactoryDefaults();
+        m_sparkMaxLeft.restoreFactoryDefaults();
+        m_sparkMaxLeft.restoreFactoryDefaults();
 
 
-        m_sparkMax.setIdleMode(ClimberConstants.kClimberIdleMode);
+        m_sparkMaxLeft.setIdleMode(ClimberConstants.kClimberIdleMode);
+        m_sparkMaxRight.setIdleMode(ClimberConstants.kClimberIdleMode);
 
-        m_sparkMax.setSmartCurrentLimit(20);
+        m_sparkMaxLeft.setSmartCurrentLimit(50);
+        m_sparkMaxRight.setSmartCurrentLimit(50);
 
+        m_sparkMaxRight.follow(m_sparkMaxLeft);
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
-        m_sparkMax.burnFlash();
+        m_sparkMaxLeft.burnFlash();
+        m_sparkMaxRight.burnFlash();
+
     }
 
     public void setPower(double voltage) {
-        m_sparkMax.setVoltage(voltage);
+        m_sparkMaxLeft.setVoltage(voltage);
     }
 }

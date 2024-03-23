@@ -68,10 +68,10 @@ public class Shooter extends SubsystemBase {
 
 
         m_leftMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
-        m_leftMotor.setSmartCurrentLimit(40);
+        m_leftMotor.setSmartCurrentLimit(50);
 
         m_rightMotor.setIdleMode(ShooterConstants.kShooterMotorIdleMode);
-        m_rightMotor.setSmartCurrentLimit(40);
+        m_rightMotor.setSmartCurrentLimit(50);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
@@ -86,6 +86,11 @@ public class Shooter extends SubsystemBase {
         // Command shooter motors towards their respective setpoints, with one motor being flipped
         m_PIDControllerLeft.setReference(desiredVelocity, ControlType.kVelocity);
         m_PIDControllerRight.setReference(desiredVelocity * SmartDashboard.getNumber("PercentSpin", 0.7), ControlType.kVelocity);
+    }
+
+    public void setDesiredVoltage(double desiredVoltage) {
+        m_leftMotor.setVoltage(desiredVoltage);
+        m_rightMotor.setVoltage(desiredVoltage);
     }
 
     public void killShooter() {

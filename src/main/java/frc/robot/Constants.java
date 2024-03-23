@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -45,10 +44,10 @@ public final class Constants {
     public static final class VisionConstants {
 //        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
 
-        public static final String kFrontCameraName = "Front_ArduCam";
-        public static final String kRearCameraName = "Back_ArduCam"; // TODO: Rename with the rear convention whenever feasible
-        public static final String kLeftCameraName = "Left_ArduCam";
-        public static final String kRightCameraName = "Right_ArduCam";
+        public static final String kFrontCameraName = "front_arducam";
+        public static final String kRearCameraName = "back_arducam"; // TODO: Rename with the rear convention whenever feasible
+        public static final String kLeftCameraName = "left_arducam";
+        public static final String kRightCameraName = "right_arducam";
 
 
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -73,13 +72,13 @@ public final class Constants {
 
         // VERY IMPORTANT!!!!!!
         // Neos = 1, Falcons = 2, Krakens = 3
-        public static final int motorType = 2;
+        public static final int motorType = 3;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
 
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 4.8;
+        public static final double kMaxSpeedMetersPerSecond = 6.72;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -121,6 +120,8 @@ public final class Constants {
 
     public static final class ClimberConstants {
         public static final IdleMode kClimberIdleMode = IdleMode.kBrake;
+        public static final int kClimberLeftCanId = 15;
+        public static final int kClimberRightCanId = 16;
     }
 
     public static final class ModuleConstants {
@@ -212,7 +213,7 @@ public final class Constants {
     public static final class IntakeConstants {
         public static final double kIntakeWheelDiameterMeters = 0.0508;
         public static final double kIntakeWheelCircumferenceMeters = 0.0508 * Math.PI;
-        public static final double kIntakeMotorReduction = 3.0;
+        public static final double kIntakeMotorReduction = 1.0;
 
         public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kIntakeWheelCircumferenceMeters)
                 / kIntakeMotorReduction;

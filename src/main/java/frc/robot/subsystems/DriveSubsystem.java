@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -32,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.List;
 
-import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -40,7 +37,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import java.util.Optional;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -90,7 +86,7 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-    private PhotonPose[] poseEsts;
+    private PhotonClass[] poseEsts;
 
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -106,12 +102,12 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Creates a new DriveSubsystem.
      */
-    public DriveSubsystem(PhotonPose[] photonPoses) {
+    public DriveSubsystem(PhotonClass[] photonCameras) {
         if (Constants.DriveConstants.usingPigeon2) {
             m_gyro = new IMU_Pigeon2();
         }
 
-        poseEsts = photonPoses;
+        poseEsts = photonCameras;
 
         m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
         
@@ -163,8 +159,8 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 });
 
-        for (PhotonPose poseEst : poseEsts) {
-            if (poseEst.getPhotonCamera().getCamera().isConnected()){
+        for (PhotonClass poseEst : poseEsts) {
+            if (poseEst.getCamera().isConnected()){
                 var visionEst = poseEst.getEstimatedGlobalPose();
 
                 visionEst.ifPresent(
@@ -235,11 +231,11 @@ public class DriveSubsystem extends SubsystemBase {
      * @param xSpeed        Speed of the robot in the x direction (forward).
      * @param ySpeed        Speed of the robot in the y direction (sideways).
      * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the
-     *                      field.
+     * @param justinRelative Whether the provided x and y speeds are relative to the
+     *                      Justin.
      * @param rateLimit     Whether to enable rate limiting for smoother control.
      */
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+    public void drive(double xSpeed, double ySpeed, double rot, boolean justinRelative, boolean rateLimit) {
 
         double xSpeedCommanded;
         double ySpeedCommanded;
@@ -295,7 +291,7 @@ public class DriveSubsystem extends SubsystemBase {
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
         SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-                fieldRelative
+                justinRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getYaw()))
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -309,6 +305,15 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
         this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false, false);
+    }
+
+    public ChassisSpeeds getFieldRelativeChassisSpeeds() {
+        return new ChassisSpeeds(
+                getRobotRelativeSpeeds().vxMetersPerSecond * getRotation().getCos()
+                        - getRobotRelativeSpeeds().vyMetersPerSecond * getRotation().getSin(),
+                getRobotRelativeSpeeds().vyMetersPerSecond * getRotation().getCos()
+                        + getRobotRelativeSpeeds().vxMetersPerSecond * getRotation().getSin(),
+                getRobotRelativeSpeeds().omegaRadiansPerSecond);
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
