@@ -13,6 +13,7 @@ import frc.utils.FireControlUtil;
 public class cg_ShootAndMoveArm extends SequentialCommandGroup {
     public cg_ShootAndMoveArm(FireControlUtil util, Arm arm, DriveSubsystem drive, PhotonClass camera, Shooter shooter, Intake intake, CommandXboxController controller) {
         addCommands(
+            //Need to probably take the timeout from here as that MAY be why we shot into the stands.   we couldnt align in 1 second.
                 new cmd_TargetShooterToSpeaker(util, arm, drive).withTimeout(1),
                 new cmd_AlignShooterToSpeaker(drive, camera, controller).withTimeout(1),
                 new cg_ShootNote(intake, shooter).withTimeout(2)

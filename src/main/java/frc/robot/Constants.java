@@ -73,7 +73,7 @@ public final class Constants {
 
         // VERY IMPORTANT!!!!!!
         // Neos = 1, Falcons = 2, Krakens = 3
-        public static final int motorType = 2;
+        public static final int motorType = 3;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
 
@@ -121,6 +121,8 @@ public final class Constants {
 
     public static final class ClimberConstants {
         public static final IdleMode kClimberIdleMode = IdleMode.kBrake;
+        public static final int kClimberLeftCanId = 15;
+        public static final int kClimberRightCanId = 16;
     }
 
     public static final class ModuleConstants {
