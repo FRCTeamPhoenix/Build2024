@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
@@ -92,8 +93,8 @@ public class RobotContainer {
 
         SmartDashboard.putString("Color", "teamColor");
 
-        SmartDashboard.putData("alignToNote", new cmd_AlignToNote(m_robotDrive));
-        SmartDashboard.putData("Drive to Note", new cmd_DriveAndIntake(m_robotDrive, m_intake));
+        SmartDashboard.putData("alignToNote", new cmd_AlignToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        SmartDashboard.putData("Drive to Note", new cmd_DriveAndIntake(m_robotDrive, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -111,11 +112,12 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_robotDrive.drive(
+                        () -> //m_robotDrive.driveRobotRelative(new ChassisSpeeds(2.0, 0.0, 0.0)), m_robotDrive));
+                        m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 getRobotRotation(),
-                                true, m_driverController.getHID().getLeftBumper()),
+                                false, m_driverController.getHID().getLeftBumper()),
                         m_robotDrive));
 
     }

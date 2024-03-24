@@ -159,6 +159,24 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 });
 
+        SmartDashboard.putNumber("FrontR Speed", m_frontRight.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("FrontL Speed", m_frontLeft.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("RearR Speed", m_rearRight.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("RearL Speed", m_rearLeft.getState().speedMetersPerSecond);
+
+        SmartDashboard.putNumber("FrontR Angle", m_frontRight.getState().angle.getDegrees());
+        SmartDashboard.putNumber("FrontL Angle", m_frontLeft.getState().angle.getDegrees());
+        SmartDashboard.putNumber("RearR Angle", m_rearRight.getState().angle.getDegrees());
+        SmartDashboard.putNumber("RearL Angle", m_rearLeft.getState().angle.getDegrees());
+
+        double[] states = {
+            m_frontLeft.getState().angle.getRadians(), m_frontLeft.getState().speedMetersPerSecond,
+            m_frontRight.getState().angle.getRadians(), m_frontRight.getState().speedMetersPerSecond,
+            m_rearLeft.getState().angle.getRadians(), m_rearLeft.getState().speedMetersPerSecond,
+            m_rearRight.getState().angle.getRadians(), m_rearRight.getState().speedMetersPerSecond};
+
+        SmartDashboard.putNumberArray("States", states);
+        
         for (PhotonClass poseEst : poseEsts) {
             if (poseEst.getCamera().isConnected()){
                 var visionEst = poseEst.getEstimatedGlobalPose();
@@ -304,7 +322,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false, false);
+        this.drive(speeds.vxMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond, 
+                   speeds.vyMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,  
+                   speeds.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed, 
+                false, false);
     }
 
     public ChassisSpeeds getFieldRelativeChassisSpeeds() {

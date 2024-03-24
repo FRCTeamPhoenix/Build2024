@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -85,7 +86,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
 
         boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
-
         SmartDashboard.putBoolean("Note in Intake?", hasNote);
 
         Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
