@@ -4,15 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.General;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.PhotonClass;
-import frc.utils.CameraDriveUtil;
-
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,26 +17,19 @@ public class cmd_RotateToHeading extends Command {
     private final DriveSubsystem m_drive;
     private final PIDController pidController;
     private final CommandXboxController m_controller;
-    private final int speakerTagID;
     private final double desiredAngle;
 
     private double rot;
 
-    private boolean isAutonomous;
-    private double setpoint;
-
-    public cmd_RotateToHeading(DriveSubsystem drive, PhotonClass camera, CommandXboxController controller, double desiredHeading) {
+    public cmd_RotateToHeading(DriveSubsystem drive, CommandXboxController controller, double desiredHeading) {
         m_drive = drive;
 
         desiredAngle = desiredHeading;
 
-        pidController = new PIDController(0.015, 0.0, 0.0);
+        pidController = new PIDController(0.0075, 0.0, 0.00);
         pidController.enableContinuousInput(0, 360);
 
         m_controller = controller;
-
-        if (drive.isAllianceRed()) speakerTagID = 4;
-        else speakerTagID = 7;
 
         addRequirements(m_drive);
     }
@@ -70,9 +58,6 @@ public class cmd_RotateToHeading extends Command {
 
     @Override
     public boolean isFinished() {
-        if (rot <= 0.005){
-            return true;
-        }
         return false;
     }
 }

@@ -213,7 +213,7 @@ public final class Constants {
     public static final class IntakeConstants {
         public static final double kIntakeWheelDiameterMeters = 0.0508;
         public static final double kIntakeWheelCircumferenceMeters = 0.0508 * Math.PI;
-        public static final double kIntakeMotorReduction = 1.0;
+        public static final double kIntakeMotorReduction = 3.0;
 
         public static final double kIntakeFreeSpeedRps = (NeoMotorConstants.kFreeSpeedRps * kIntakeWheelCircumferenceMeters)
                 / kIntakeMotorReduction;
@@ -282,17 +282,17 @@ public final class Constants {
 
     public static final class ArmConstants {
         //public static final double ARM_MIN_ANGLE = 0.08;
-        public static final double ARM_MIN_ANGLE = 0.11;
+        public static final double ARM_MIN_ANGLE = 0.031;
         public static final double ARM_MAX_ANGLE = 2.95;
         public static final double kArmP = 2.25;
         public static final double kArmI = 0.0;
         public static final double kArmD = 0.1;
-        public static final double kArmFF = 0;
+        public static final double kArmFF = 0.0;
         public static final double ArmMoveSetPoint = .25;
         public static final double kArmMinOutput = -1;
         public static final double kArmMaxOutput = 1;
         public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-        public static final int kArmMotorCurrentLimit = 30; // amps
+        public static final int kArmMotorCurrentLimit = 40; // amps
 
         public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
         public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second

@@ -44,6 +44,7 @@ public class cmd_SpinShooter extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        m_shooter.setDesiredVoltage(0);
         if (General.LOGGING)
             System.out.println("End Move Arm Down");
     }

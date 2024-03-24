@@ -30,11 +30,11 @@ public class cmd_IntakeNote extends Command {
         String status = SmartDashboard.getString("FRC-Note", "Not Found");
         if (status.equals("Found")){
             m_intake.setDesiredVelocity(0.0);
-            SmartDashboard.putString("color", "noteFound");
+            SmartDashboard.putString("Color", "noteFound");
         }
         else {
             m_intake.setDesiredVelocity(2.5);
-            SmartDashboard.putString("color", "noNote");
+            SmartDashboard.putString("Color", "noNote");
         }
     }
 
@@ -46,7 +46,7 @@ public class cmd_IntakeNote extends Command {
     public boolean isFinished() {
         String status = SmartDashboard.getString("FRC-Note", "Not Found");
         if (status.equals("Found")) {
-            SmartDashboard.putString("color", "teamColor");
+            SmartDashboard.putString("Color", "teamColor");
             return true;
         }
         return false;

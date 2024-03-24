@@ -48,8 +48,6 @@ public class Intake extends SubsystemBase {
         m_intakeMotor.setIdleMode(IntakeConstants.kIntakeMotorIdleMode);
         m_intakeMotor.setSmartCurrentLimit(40);
 
-        m_intakeMotor.setInverted(true);
-
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
         m_intakeMotor.burnFlash();
