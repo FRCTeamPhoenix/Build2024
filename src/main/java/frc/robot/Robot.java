@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
 
         m_robotContainer.updatePose();
 
+        SmartDashboard.putBoolean("Intake Running", m_robotContainer.getIntake().getVelocity() != 0.0);
         DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
         Arm m_arm = m_robotContainer.getArm();
 

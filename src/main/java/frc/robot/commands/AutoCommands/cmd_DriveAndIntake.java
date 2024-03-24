@@ -27,10 +27,11 @@ public class cmd_DriveAndIntake extends Command {
 
   @Override
   public void execute() {
-    if (SmartDashboard.getString("FRC-Note", "Not Found").equals("Found")){
+    boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
+
+    if (hasNote){
       m_robotDrive.drive(0.0, 0.0, 0.0, false, false);
       m_intake.stopIntake();
-      end(false);
     }
     else {
       m_robotDrive.drive(1.0, 0.0, 0.0, false, false);
@@ -45,10 +46,8 @@ public class cmd_DriveAndIntake extends Command {
 
   @Override
   public boolean isFinished() {
+    boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
     // if the robot is alligned with the note then finish the command
-    if (SmartDashboard.getString("FRC-Note", "Not Found").equals("Found")){
-      return true;
-    }
-    return false;
+    return hasNote;
   }
 }

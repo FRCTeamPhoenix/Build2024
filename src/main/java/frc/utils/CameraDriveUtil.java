@@ -72,7 +72,7 @@ public class CameraDriveUtil {
 
     public static double getDriveRot(double theta, double desiredTheta) {
         // These numbers must be tuned for your Robot!  Be careful!
-        final double turnSpeed = 0.025;                  // How hard to turn toward the target
+        final double turnSpeed = 0.02;                  // How hard to turn toward the target
         final double maxTurnVelocity = 0.15;    // Maximum allowed rotational velocity
 
         // if angle within 2 degrees of desired angle set error to 0
@@ -83,7 +83,7 @@ public class CameraDriveUtil {
         }
 
         double thetaError = desiredTheta - theta;
-        if (Math.abs(thetaError) < 0.5) { // TODO: Mr. Galpin's notes recommended 1 instead of 5, change if needed.
+        if (Math.abs(thetaError) < 1.0) {
             thetaError = 0;
         }
 
