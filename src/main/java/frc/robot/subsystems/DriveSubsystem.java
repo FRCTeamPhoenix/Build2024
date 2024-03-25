@@ -119,7 +119,7 @@ public class DriveSubsystem extends SubsystemBase {
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
-                        4.8, // Max module speed, in m/s
+                        DriveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
                         0.46, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),

@@ -12,8 +12,8 @@ public class cg_AutoNotePickup extends ParallelCommandGroup {
         if (OakCamera.findClosestNote() == null) return;
         addCommands(
                 new ParallelDeadlineGroup(
-                        new cmd_AlignAndDriveToNote(drive),
-                        new cmd_IntakeNote(intake)
+                        new cmd_IntakeNote(intake),
+                        new cmd_AlignAndDriveToNote(drive)
                 ));
     }
 }
