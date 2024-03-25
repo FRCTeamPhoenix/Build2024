@@ -4,6 +4,8 @@
 
 package frc.robot.commands.AutoCommands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.Constants;
 import frc.robot.Constants.General;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.OakCamera;
@@ -11,14 +13,15 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.utils.OakCameraObject;
-import frc.utils.CameraDriveUtil;
 
-public class cmd_AlignToNote extends Command {
+public class cmd_AlignAndDriveToNote extends Command {
   private DriveSubsystem m_robotDrive;
   private double setpoint;
+
+  //TODO: Tune PID
   private PIDController pid = new PIDController(0.0015, 0.0, 0.0);
 
-  public cmd_AlignToNote(DriveSubsystem robotDrive) {
+  public cmd_AlignAndDriveToNote(DriveSubsystem robotDrive) {
     m_robotDrive = robotDrive;
     addRequirements(m_robotDrive);
     pid.enableContinuousInput(0, 360);
@@ -34,7 +37,7 @@ public class cmd_AlignToNote extends Command {
     OakCameraObject nearestNote = OakCamera.findClosestNote();
     
     if (nearestNote == null){
-      //SmartDashboard.putBoolean("Sees Note", false);
+      SmartDashboard.putBoolean("Sees Note", false);
       setpoint = 0.0;
       return;
     }
@@ -43,23 +46,23 @@ public class cmd_AlignToNote extends Command {
       SmartDashboard.putNumber("XAngle", nearestNote.getXAngle());
     }
     SmartDashboard.putNumber("XAngle", nearestNote.getXAngle());
-    // if the robot is not facing the note turn the robot until it is inside the angles of the front camera
+
+    //Turn based on PID calculation
     setpoint = pid.calculate(nearestNote.getXAngle(), 0.0);
-    m_robotDrive.drive(0.0, 0.0, -setpoint, false, false);
+    m_robotDrive.drive(1.0 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+            0.0, -setpoint, false, false);
   }
 
   @Override
   public void end(boolean interrupted) {
     if (General.LOGGING)
       System.out.println("End Drive Nearest Note");
+    m_robotDrive.drive(0.0, 0.0, 0.0, false, false);
   }
 
   @Override
   public boolean isFinished() {
-    // if the robot is alligned with the note then finish the command
-    if (Math.abs(setpoint) <= 0.005){
-      return true;
-    }
+    //Need to run this constantly
     return false;
   }
 }

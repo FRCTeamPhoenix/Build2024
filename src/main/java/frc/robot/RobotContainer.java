@@ -7,15 +7,12 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.*;
-import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
 import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
-import frc.robot.commands.AutoCommands.cmd_AlignToNote;
-import frc.robot.commands.AutoCommands.cmd_DriveAndIntake;
+import frc.robot.commands.AutoCommands.cmd_AlignAndDriveToNote;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
@@ -26,16 +23,9 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-
-import frc.utils.FireControlUtil;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonClass;
@@ -93,8 +83,8 @@ public class RobotContainer {
 
         SmartDashboard.putString("Color", "teamColor");
 
-        SmartDashboard.putData("alignToNote", new cmd_AlignToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-        SmartDashboard.putData("Drive to Note", new cmd_DriveAndIntake(m_robotDrive, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        SmartDashboard.putData("alignToNote", new cmd_AlignAndDriveToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        SmartDashboard.putData("Drive and Intake Note", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         // Configure the button bindings
         configureButtonBindings();
