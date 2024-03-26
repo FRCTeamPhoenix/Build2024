@@ -24,7 +24,7 @@ public class OakCamera extends SubsystemBase {
         return cameraObjects;
     }
 
-    public boolean hasValidTarget() {
+    public static boolean hasValidTarget() {
         if (extractOakData().size() != 0) {
             return true;
         } else {

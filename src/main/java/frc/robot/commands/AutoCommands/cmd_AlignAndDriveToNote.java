@@ -49,12 +49,13 @@ public class cmd_AlignAndDriveToNote extends Command {
 
     //Turn based on PID calculation
     setpoint = pid.calculate(nearestNote.getXAngle(), 0.0);
-    m_robotDrive.drive(1.0 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+    m_robotDrive.drive(1.5 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
             0.0, -setpoint, false, false);
   }
 
   @Override
   public void end(boolean interrupted) {
+    System.out.println("Ended command");
     if (General.LOGGING)
       System.out.println("End Drive Nearest Note");
     m_robotDrive.drive(0.0, 0.0, 0.0, false, false);

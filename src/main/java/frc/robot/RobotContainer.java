@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonClass;
@@ -81,15 +82,27 @@ public class RobotContainer {
     public RobotContainer() {
         configureShooterInterpolation();
 
+        NamedCommands.registerCommand("ShootSlow", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        NamedCommands.registerCommand("DriveAndIntake", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        NamedCommands.registerCommand("RotateToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
+        NamedCommands.registerCommand("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
+
         SmartDashboard.putString("Color", "teamColor");
 
+        SmartDashboard.putData("aimArm", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
+        SmartDashboard.putData("cg_shootNote", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        SmartDashboard.putData("stopShoot", new cmd_StopShoot(m_shooter));
+        SmartDashboard.putData("stopIntake", new cmd_StopIntake(m_intake));
         SmartDashboard.putData("alignToNote", new cmd_AlignAndDriveToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         SmartDashboard.putData("Drive and Intake Note", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        SmartDashboard.putData("RotateToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
+        SmartDashboard.putData("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
+        
 
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("macmahon");
+        autoChooser = AutoBuilder.buildAutoChooser("onenote_center");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
@@ -102,13 +115,21 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> //m_robotDrive.driveRobotRelative(new ChassisSpeeds(2.0, 0.0, 0.0)), m_robotDrive));
-                        m_robotDrive.drive(
-                                -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                                getRobotRotation(),
-                                false, m_driverController.getHID().getLeftBumper()),
-                        m_robotDrive));
+                    () -> m_robotDrive.drive(
+                        -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+                        getRobotRotation(),
+                        true, m_driverController.getHID().getLeftBumper()),
+                    m_robotDrive));
+        
+                // new RunCommand(
+                //         () -> //m_robotDrive.driveRobotRelative(new ChassisSpeeds(2.0, 0.0, 0.0)), m_robotDrive));
+                //         m_robotDrive.drive(
+                //                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+                //                 0.0, //-MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
+                //                 getRobotRotation(),
+                //                 true, m_driverController.getHID().getLeftBumper()),
+                //         m_robotDrive));
 
     }
 
@@ -165,11 +186,11 @@ public class RobotContainer {
         //Operator Bumpers and Triggers
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
 
-        m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).onFalse(new cmd_StopIntake(m_intake));
 
-        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).onFalse(new cmd_StopIntake(m_intake));
 
-        m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).onFalse(new cmd_StopIntake(m_intake));
 
         //Cardinal Directions
         m_driverController.a().whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, 180).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -179,6 +200,8 @@ public class RobotContainer {
         m_driverController.b().whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, 90).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         m_driverController.x().whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, -90).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        m_driverController.povRight().whileTrue(new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).onFalse(new cmd_StopIntake(m_intake));
 
     }
 

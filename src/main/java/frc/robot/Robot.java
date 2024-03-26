@@ -93,7 +93,9 @@ public class Robot extends TimedRobot {
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
         SmartDashboard.putNumber("Distance To Speaker", distance);
 
-        field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
+        //SmartDashboard.putBoolean("Note Visible", OakCamera.hasValidTarget());
+
+        //field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));
     }
 
     /**

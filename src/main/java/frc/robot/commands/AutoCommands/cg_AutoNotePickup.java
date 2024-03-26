@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 
 public class cg_AutoNotePickup extends ParallelCommandGroup {
     public cg_AutoNotePickup(Intake intake, DriveSubsystem drive) {
+        System.out.println("Started command");
         if (OakCamera.findClosestNote() == null) return;
         addCommands(
                 new ParallelDeadlineGroup(

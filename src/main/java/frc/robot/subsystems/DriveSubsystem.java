@@ -121,7 +121,7 @@ public class DriveSubsystem extends SubsystemBase {
                         new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
                         DriveConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
                         0.46, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                        new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
                 ),
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -211,10 +211,9 @@ public class DriveSubsystem extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Command generateNotePath(OakCameraObject note) {
-        Pose2d notePose = NotePoseGenerator.generateNotePose(note, getPhotonPose());
+    public Command generatePath(Pose2d pose) {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-            getPhotonPose(), notePose
+            getPhotonPose(), pose
         );
         PathPlannerPath path = new PathPlannerPath(
         bezierPoints,
