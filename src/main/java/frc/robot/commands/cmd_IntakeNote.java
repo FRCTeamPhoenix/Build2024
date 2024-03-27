@@ -40,7 +40,6 @@ public class cmd_IntakeNote extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Ended intake");
         m_intake.setDesiredVelocity(0.0);
     }
 

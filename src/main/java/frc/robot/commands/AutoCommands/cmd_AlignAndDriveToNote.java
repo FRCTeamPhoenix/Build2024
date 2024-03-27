@@ -19,7 +19,7 @@ public class cmd_AlignAndDriveToNote extends Command {
   private double setpoint;
 
   //TODO: Tune PID
-  private PIDController pid = new PIDController(0.0015, 0.0, 0.0);
+  private PIDController pid = new PIDController(0.0020, 0.0, 0.0);
 
   public cmd_AlignAndDriveToNote(DriveSubsystem robotDrive) {
     m_robotDrive = robotDrive;
@@ -49,13 +49,17 @@ public class cmd_AlignAndDriveToNote extends Command {
 
     //Turn based on PID calculation
     setpoint = pid.calculate(nearestNote.getXAngle(), 0.0);
-    m_robotDrive.drive(1.5 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+    if (setpoint >= 0.0025){
+      m_robotDrive.drive(0.0, 0.0, -setpoint, false, false);
+    }
+    else {
+      m_robotDrive.drive(1.5 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
             0.0, -setpoint, false, false);
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Ended command");
     if (General.LOGGING)
       System.out.println("End Drive Nearest Note");
     m_robotDrive.drive(0.0, 0.0, 0.0, false, false);

@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7809879104245078,
+      "y": 6.769240841584309
+    },
+    "rotation": 57.5
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "subwoofer start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveAndIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1ToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSlow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToNote2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveAndIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.*;
+import frc.robot.commands.AutoCommands.cg_AutoIntakeToFloor;
 import frc.robot.commands.AutoCommands.cg_AutoNotePickup;
 import frc.robot.commands.AutoCommands.cmd_AlignAndDriveToNote;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -82,15 +83,20 @@ public class RobotContainer {
     public RobotContainer() {
         configureShooterInterpolation();
 
-        NamedCommands.registerCommand("ShootSlow", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        NamedCommands.registerCommand("Shoot", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        NamedCommands.registerCommand("ShootSlow", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
         NamedCommands.registerCommand("DriveAndIntake", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         NamedCommands.registerCommand("RotateToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
         NamedCommands.registerCommand("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
+        NamedCommands.registerCommand("ShooterToSpeaker", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
+        NamedCommands.registerCommand("FloorIntake", new cg_AutoIntakeToFloor(m_intake, m_arm));
+        NamedCommands.registerCommand("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController));
+        NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
 
         SmartDashboard.putString("Color", "teamColor");
 
         SmartDashboard.putData("aimArm", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
-        SmartDashboard.putData("cg_shootNote", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        SmartDashboard.putData("cg_shootNote", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
         SmartDashboard.putData("stopShoot", new cmd_StopShoot(m_shooter));
         SmartDashboard.putData("stopIntake", new cmd_StopIntake(m_intake));
         SmartDashboard.putData("alignToNote", new cmd_AlignAndDriveToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -102,7 +108,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("onenote_center");
+        autoChooser = AutoBuilder.buildAutoChooser("twonote_right");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
