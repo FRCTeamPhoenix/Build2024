@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7591284920344472,
-      "y": 6.7140524925982525
+      "x": 0.7709003612451671,
+      "y": 4.345986321602273
     },
-    "rotation": 58.60973189581214
+    "rotation": -57.5
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,24 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootSlow"
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "left_autos",
   "choreoAuto": false
 }

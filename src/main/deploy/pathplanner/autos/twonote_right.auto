@@ -64,24 +64,6 @@
           "data": {
             "name": "FloorIntake"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DriveAndIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RotateToSpeaker"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
         }
       ]
     }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7809879104245078,
-      "y": 6.769240841584309
+      "x": 0.7709003612451671,
+      "y": 4.345986321602273
     },
-    "rotation": 57.5
+    "rotation": -57.5
   },
   "command": {
     "type": "sequential",
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "subwoofer_right"
+            "pathName": "subwoofer_left"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "note1ToShoot_right"
+            "pathName": "note1ToShoot_left"
           }
         },
         {
@@ -86,6 +86,6 @@
       ]
     }
   },
-  "folder": "right_autos",
+  "folder": "left_autos",
   "choreoAuto": false
 }
