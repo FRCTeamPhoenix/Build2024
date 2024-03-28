@@ -8,15 +8,16 @@ import board
 import adafruit_dotstar as dotstar
 import logging
 
-serverIP = '10.11.25.105'
+serverIP = '10.23.42.2'
 NetworkTables.initialize(server=serverIP)
 proximityDataTable = NetworkTables.getTable('SmartDashboard')
-defaultColor = "off"
+defaultColor = "yellow"
 FIRE_COLORS = [(255, 10, 0), (255, 60, 0), (255, 100, 0), (255, 150, 0), (255, 200, 0), (255, 255, 0)]
 
 #lights
 # Using a DotStar Digital LED Strip with 60*4 (240 leds) LEDs connected to hardware SPI
-dots = dotstar.DotStar(board.SCK, board.MOSI, 119, brightness=1)
+no_dots = 119
+dots = dotstar.DotStar(board.SCK, board.MOSI, no_dots, brightness=1)
 
 # Start Loggign for pubsub
 logging.basicConfig(level=logging.DEBUG)
@@ -198,6 +199,7 @@ def team_color():
             dots[led-2]=Colors["red"]
             dots[led-1]=Colors["red"]
             dots[led]=Colors["red"]
+            #Bail out if the color changed.
         nt_color = ColorTable.getString("color","TeamColor")
         if (nt_color != "TeamColor"):
             return
