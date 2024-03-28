@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "SpinMotors"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "FloorIntake"
           }
         },
@@ -56,13 +62,19 @@
         {
           "type": "named",
           "data": {
+            "name": "SpinMotors"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "FloorIntake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "note1ToShoot_right"
+            "pathName": "centerline_right"
           }
         },
         {
@@ -74,7 +86,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "centerline_right1"
           }
         },
         {
@@ -88,10 +100,16 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinMotors"
+          }
         }
       ]
     }
   },
-  "folder": "right_autos",
+  "folder": "centerlines",
   "choreoAuto": false
 }
