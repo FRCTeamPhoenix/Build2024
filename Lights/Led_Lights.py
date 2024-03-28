@@ -198,22 +198,6 @@ def team_color():
             dots[led-2]=Colors["red"]
             dots[led-1]=Colors["red"]
             dots[led]=Colors["red"]
-        for led in reversed(range(13, n_dots)):
-            dots[led-13]=Colors["red"]
-            dots[led-12]=Colors["red"]
-            dots[led-11]=Colors["red"]
-            dots[led-10]=Colors["red"]
-            dots[led-9]=Colors["red"]
-            dots[led-8]=Colors["red"]
-            dots[led-7]=Colors["red"]
-            dots[led-6]=Colors["red"]
-            dots[led-5]=Colors["red_orange"]
-            dots[led-4]=Colors["red_orange"]
-            dots[led-3]=Colors["red_orange"]
-            dots[led-2]=Colors["orange"]
-            dots[led-1]=Colors["orange_yellow"]
-            dots[led]=Colors["off"]
-            #Bail out if the color changed.
         nt_color = ColorTable.getString("color","TeamColor")
         if (nt_color != "TeamColor"):
             return
