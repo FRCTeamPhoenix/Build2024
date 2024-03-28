@@ -16,7 +16,7 @@ FIRE_COLORS = [(255, 10, 0), (255, 60, 0), (255, 100, 0), (255, 150, 0), (255, 2
 
 #lights
 # Using a DotStar Digital LED Strip with 60*4 (240 leds) LEDs connected to hardware SPI
-no_dots = 119
+no_dots = 121
 dots = dotstar.DotStar(board.SCK, board.MOSI, no_dots, brightness=1)
 
 # Start Loggign for pubsub
