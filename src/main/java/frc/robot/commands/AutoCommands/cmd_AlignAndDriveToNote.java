@@ -17,7 +17,7 @@ import frc.utils.OakCameraObject;
 public class cmd_AlignAndDriveToNote extends Command {
   private DriveSubsystem m_robotDrive;
   private double setpoint;
-  private double turnspeed = 0.002;
+  private double turnspeed = 0.003;
 
   //TODO: Tune PID
   private PIDController pid = new PIDController(turnspeed, 0.0, 0.0);
@@ -50,12 +50,12 @@ public class cmd_AlignAndDriveToNote extends Command {
     SmartDashboard.putNumber("XAngle", nearestNote.getXAngle());
 
     //Turn based on PID calculation
-    setpoint = pid.calculate(nearestNote.getXAngle(), 350.0);
-    if (setpoint >= 0.0025){
+    setpoint = pid.calculate(nearestNote.getXAngle(), 5.0);
+    if (setpoint >= 0.003){
       m_robotDrive.drive(0.0, 0.0, -setpoint, false, false);
     }
     else {
-      m_robotDrive.drive(1.5 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+      m_robotDrive.drive(3 / Constants.DriveConstants.kMaxSpeedMetersPerSecond,
             0.0, -setpoint, false, false);
     }
   }

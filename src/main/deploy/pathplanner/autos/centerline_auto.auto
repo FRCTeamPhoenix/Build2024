@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.1896656536048724,
-      "y": 6.580236888326364
+      "x": 1.2478463511143894,
+      "y": 6.551146539571605
     },
-    "rotation": 57.5
+    "rotation": 35.0
   },
   "command": {
     "type": "sequential",
@@ -33,12 +33,6 @@
           "type": "named",
           "data": {
             "name": "FloorIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "subwoofer_right"
           }
         },
         {
