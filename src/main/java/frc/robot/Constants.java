@@ -45,7 +45,7 @@ public final class Constants {
 //        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
 
         public static final String kFrontCameraName = "front_arducam";
-        public static final String kRearCameraName = "back_arducam"; // TODO: Rename with the rear convention whenever feasible
+        public static final String kRearCameraName = "back_arducam";
         public static final String kLeftCameraName = "left_arducam";
         public static final String kRightCameraName = "right_arducam";
 

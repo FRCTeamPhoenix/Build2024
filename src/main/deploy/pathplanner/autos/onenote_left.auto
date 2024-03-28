@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7709003612451671,
+      "y": 4.345986321602273
+    },
+    "rotation": -57.5
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "left_autos",
+  "choreoAuto": false
+}

@@ -26,7 +26,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
 
     private double rot;
 
-    private boolean isAutonomous;
     private double setpoint;
 
     public cmd_AlignShooterToSpeaker(DriveSubsystem drive, PhotonClass camera, CommandXboxController controller) {
@@ -35,7 +34,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
         m_controller = controller;
         if (drive.isAllianceRed()) speakerTagID = 4;
         else speakerTagID = 7;
-        isAutonomous = DriverStation.isAutonomous();
         addRequirements(m_drive);
     }
 
@@ -46,7 +44,6 @@ public class cmd_AlignShooterToSpeaker extends Command {
 
     @Override
     public void execute() {
-        isAutonomous = DriverStation.isAutonomous();
         PhotonTrackedTarget target = null;
         if (m_cam.getCamera().isConnected()) {
             target = m_cam.getAprilTag(speakerTagID);
@@ -55,23 +52,9 @@ public class cmd_AlignShooterToSpeaker extends Command {
             rot = -CameraDriveUtil.getDriveRot(target.getYaw(), 0);
         }
         else {
-            if (isAutonomous) {
-                rot = 0;
-            }
-            else {
-                rot = -MathUtil.applyDeadband(m_controller.getRightX(), OIConstants.kDriveDeadband);
-            }
+            rot = 0;
         }
-        if (isAutonomous){
-            m_drive.drive(0, 0, rot, false, false);
-        }
-        else {
-            m_drive.drive(
-                    -MathUtil.applyDeadband(m_controller.getLeftY() * (1.0 - m_controller.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_controller.getLeftX() * (1.0 - m_controller.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
-                    rot,
-                    true, m_controller.getHID().getRightBumper());
-        }
+        m_drive.drive(0, 0, rot, false, false);
     }
 
     @Override
@@ -82,7 +65,7 @@ public class cmd_AlignShooterToSpeaker extends Command {
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(setpoint) <= 0.005){
+        if (Math.abs(rot) <= 0.005){
             return true;
         }
         return false;

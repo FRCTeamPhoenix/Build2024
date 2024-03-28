@@ -14,7 +14,7 @@ public class cg_AutoIntakeToFloor extends ParallelCommandGroup {
     public cg_AutoIntakeToFloor(Intake intake, Arm arm) {
         addCommands(
                 new ParallelCommandGroup(
-                        new cmd_MoveArmToPosition(0.05, 0.25, arm).withTimeout(2)
+                        new cmd_MoveArmToPosition(0.05, 0.25, arm).withTimeout(1)
                 )
         );
     }

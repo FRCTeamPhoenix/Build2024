@@ -1,0 +1,91 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7709003612451671,
+      "y": 4.345986321602273
+    },
+    "rotation": -57.5
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "subwoofer_left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveAndIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "note1ToShoot_left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FloorIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveAndIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "left_autos",
+  "choreoAuto": false
+}
