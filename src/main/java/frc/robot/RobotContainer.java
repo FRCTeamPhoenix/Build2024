@@ -92,8 +92,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("FloorIntake", new cg_AutoIntakeToFloor(m_intake, m_arm));
         NamedCommands.registerCommand("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController));
         NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
+        NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
 
         SmartDashboard.putString("Color", "teamColor");
+        SmartDashboard.putNumber("Turnspeed", 0.002);
+        SmartDashboard.putNumber("Movespeed", 1.5);
+        SmartDashboard.putNumber("Turnsetpoint", 0.0025);
+
 
         SmartDashboard.putData("aimArm", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
         SmartDashboard.putData("cg_shootNote", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
