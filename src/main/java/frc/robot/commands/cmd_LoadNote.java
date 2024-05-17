@@ -6,8 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 public class cmd_LoadNote extends Command {
     private final Intake m_intake;
@@ -29,6 +27,7 @@ public class cmd_LoadNote extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        m_intake.stopIntake();
     }
 
     @Override

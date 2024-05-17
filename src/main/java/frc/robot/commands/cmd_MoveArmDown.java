@@ -33,7 +33,7 @@ public class cmd_MoveArmDown extends Command {
     @Override
     public void end(boolean interrupted) {
         if (General.LOGGING)
-            System.out.println("End Move Arm Down");
+            System.out.println("End Move Arm DOWN");
     }
 
     @Override

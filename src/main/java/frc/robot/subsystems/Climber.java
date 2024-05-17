@@ -21,21 +21,20 @@ public class Climber extends SubsystemBase {
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
         // them. This is useful in case a SPARK MAX is swapped out.
         m_sparkMaxLeft.restoreFactoryDefaults();
-        m_sparkMaxLeft.restoreFactoryDefaults();
+        m_sparkMaxRight.restoreFactoryDefaults();
 
 
         m_sparkMaxLeft.setIdleMode(ClimberConstants.kClimberIdleMode);
         m_sparkMaxRight.setIdleMode(ClimberConstants.kClimberIdleMode);
 
-        m_sparkMaxLeft.setSmartCurrentLimit(50);
-        m_sparkMaxRight.setSmartCurrentLimit(50);
+        m_sparkMaxLeft.setSmartCurrentLimit(20);
+        m_sparkMaxRight.setSmartCurrentLimit(20);
 
         m_sparkMaxRight.follow(m_sparkMaxLeft);
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
         m_sparkMaxLeft.burnFlash();
         m_sparkMaxRight.burnFlash();
-
     }
 
     public void setPower(double voltage) {

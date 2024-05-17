@@ -13,11 +13,11 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class cmd_Shoot extends Command {
+public class cmd_Pass extends Command {
     private final Shooter m_shooter;
-    private final int velocity = 27;
+    private final int velocity = 18;
 
-    public cmd_Shoot(Shooter shooter) {
+    public cmd_Pass(Shooter shooter) {
         m_shooter = shooter;
         addRequirements(m_shooter);
     }

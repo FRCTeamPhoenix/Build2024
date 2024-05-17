@@ -108,8 +108,8 @@ public final class Constants {
         public static final int kRearRightTurningCanId = 3;
         public static final int kRearLeftTurningCanId = 4;
 
-        public static final int kFrontLeftDrivingCanId = 5;
-        public static final int kFrontRightDrivingCanId = 6;
+        public static final int kFrontLeftDrivingCanId = 6;
+        public static final int kFrontRightDrivingCanId = 5;
         public static final int kRearRightDrivingCanId = 7;
         public static final int kRearLeftDrivingCanId = 8;
 
@@ -206,7 +206,7 @@ public final class Constants {
 
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
-        public static final double kDriveDeadband = 0.01;
+        public static final double kDriveDeadband = 0.1;
         public static final int kOperatorControllerPort = 1;
     }
 

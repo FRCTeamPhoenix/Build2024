@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonClass;
@@ -81,20 +82,17 @@ public class RobotContainer {
     public RobotContainer() {
         configureShooterInterpolation();
 
-<<<<<<< Updated upstream
         NamedCommands.registerCommand("Shoot", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
         NamedCommands.registerCommand("ShootSlow", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
         NamedCommands.registerCommand("DriveAndIntake", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         NamedCommands.registerCommand("RotateToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
         NamedCommands.registerCommand("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
         NamedCommands.registerCommand("ShooterToSpeaker", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
-        NamedCommands.registerCommand("FloorIntake", new cg_AutoIntakeToFloor(m_intake, m_arm));
+        // NamedCommands.registerCommand("FloorIntake", new cg_AutoIntakeToFloor(m_intake, m_arm));
         NamedCommands.registerCommand("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController));
         NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
         NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
 
-=======
->>>>>>> Stashed changes
         SmartDashboard.putString("Color", "teamColor");
         SmartDashboard.putNumber("Turnspeed", 0.002);
         SmartDashboard.putNumber("Movespeed", 1.5);
@@ -126,9 +124,8 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 getRobotRotation(),
-                                false, m_driverController.getHID().getLeftBumper()),
+                                true, m_driverController.getHID().getLeftBumper()),
                         m_robotDrive));
-
     }
 
 
@@ -145,13 +142,18 @@ public class RobotContainer {
                         m_robotDrive::zeroHeading,
                         m_robotDrive));
 
+        new Trigger(m_driverController.povUp()).whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
         //Move Arm To subwoofer shooting
         final Trigger btn_op_X = new Trigger(m_operatorController.x());
-        btn_op_X.onTrue(new cmd_MoveArmToPosition(.436, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_X.whileTrue(new cg_PassingStrat(m_arm, m_robotDrive, m_shooter, m_intake, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        //btn_op_X.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+
 
         //Move Arm To Amp shoot
         final Trigger btn_op_B = new Trigger(m_operatorController.b());
-        btn_op_B.onTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MAX_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_B.onTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MAX_ANGLE, 1, m_arm));
 
         //Move Arm Up
         final Trigger btn_op_Y = new Trigger(m_operatorController.y());
@@ -167,15 +169,15 @@ public class RobotContainer {
 
         //Operator Dpad
         Trigger povUpPressed = m_operatorController.povUp();
-        povUpPressed.whileTrue(new cmd_Climber(m_climber, 12).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povUpPressed.whileTrue(new cmd_Climber(m_climber, 9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povLeftPressed = m_operatorController.povLeft();
-        povLeftPressed.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povLeftPressed.onTrue(new cmd_MoveArmToPosition(.436, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
-        povDownPressed.whileTrue(new cmd_Climber(m_climber, -12).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povDownPressed.whileTrue(new cmd_Climber(m_climber, -9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povRightPressed = m_operatorController.povRight();

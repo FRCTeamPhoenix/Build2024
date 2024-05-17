@@ -11,6 +11,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_RotateToHeading extends Command {
@@ -36,13 +37,14 @@ public class cmd_RotateToHeading extends Command {
 
     @Override
     public void initialize() {
-
+        
     }
 
     @Override
     public void execute() {
         rot = pidController.calculate(m_drive.getRotation().getDegrees(), desiredAngle);
-
+        SmartDashboard.putNumber("PassDriveRotation", m_drive.getRotation().getDegrees());
+        SmartDashboard.putNumber("PassDesiredAngle", desiredAngle);
         m_drive.drive(
             -MathUtil.applyDeadband(m_controller.getLeftY() * (1.0 - m_controller.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(m_controller.getLeftX() * (1.0 - m_controller.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
