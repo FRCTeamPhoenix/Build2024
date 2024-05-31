@@ -284,6 +284,8 @@ public final class Constants {
         //public static final double ARM_MIN_ANGLE = 0.08;
         public static final double ARM_MIN_ANGLE = 0.031;
         public static final double ARM_MAX_ANGLE = 2.95;
+        public static final double ARM_CLIMBER_ANGLE = 1.99;
+        public static final double ARM_BALANCED_ANGLE = 0.96;
         public static final double kArmP = 2.25;
         public static final double kArmI = 0.0;
         public static final double kArmD = 0.1;

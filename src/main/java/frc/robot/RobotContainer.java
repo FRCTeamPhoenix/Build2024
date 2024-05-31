@@ -93,6 +93,7 @@ public class RobotContainer {
         // NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
         // NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
         NamedCommands.registerCommand("StopShoot", new cmd_StopShoot(m_shooter));
+        NamedCommands.registerCommand("RotateToHeading", new cmd_RotateToHeading(m_robotDrive, m_driverController, 180));
 
         SmartDashboard.putString("Color", "teamColor");
         SmartDashboard.putNumber("Turnspeed", 0.002);
@@ -182,6 +183,12 @@ public class RobotContainer {
 
         Trigger povRightPressed = m_operatorController.povRight();
         povRightPressed.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_MIN_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        Trigger menu = m_operatorController.start();
+        menu.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_CLIMBER_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+        Trigger back = m_operatorController.back();
+        back.toggleOnTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_BALANCED_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         //Operator Bumpers and Triggers
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));

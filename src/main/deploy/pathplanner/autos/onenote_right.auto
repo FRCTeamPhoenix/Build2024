@@ -34,6 +34,12 @@
           "data": {
             "name": "StopShoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RotateToHeading"
+          }
         }
       ]
     }
