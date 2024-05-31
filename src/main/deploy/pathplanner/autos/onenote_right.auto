@@ -2,36 +2,42 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7809879104245078,
-      "y": 6.769240841584309
+      "x": 0.7993316836492033,
+      "y": 6.773250940269587
     },
-    "rotation": 57.5
+    "rotation": -29.827084654474795
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "RotateToSpeaker"
+            "pathName": "move_right"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "AlignShooterToSpeaker"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "FloorIntake"
+            "name": "ShootAndMoveArm"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShoot"
           }
         }
       ]
     }
   },
-  "folder": "right_autos",
+  "folder": null,
   "choreoAuto": false
 }

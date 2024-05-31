@@ -34,8 +34,7 @@ public class cmd_TargetShooterToSpeaker extends Command {
         armStartpoint = m_arm.getArmPosition();
 
         if (drive.isAllianceRed()) speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
-        else
-            speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(7).get().toPose2d(); 
+        else speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(7).get().toPose2d(); 
 
         Transform2d transformToSpeaker = m_drive.getPhotonPose().minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));

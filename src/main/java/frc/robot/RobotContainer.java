@@ -82,16 +82,17 @@ public class RobotContainer {
     public RobotContainer() {
         configureShooterInterpolation();
 
-        NamedCommands.registerCommand("Shoot", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
-        NamedCommands.registerCommand("ShootSlow", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
-        NamedCommands.registerCommand("DriveAndIntake", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-        NamedCommands.registerCommand("RotateToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
-        NamedCommands.registerCommand("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
-        NamedCommands.registerCommand("ShooterToSpeaker", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
+        // NamedCommands.registerCommand("Shoot", new cg_AutoShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        // NamedCommands.registerCommand("ShootSlow", new cg_AutoSlowShootNote(interpolator, m_arm, m_robotDrive, m_intake, m_shooter));
+        // NamedCommands.registerCommand("DriveAndIntake", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        NamedCommands.registerCommand("AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
+        // NamedCommands.registerCommand("PathToShoot", new cg_DriveToShootPos(m_robotDrive));
+        // NamedCommands.registerCommand("TargetShooterToSpeaker", new cmd_TargetShooterToSpeaker(interpolator, m_arm, m_robotDrive));
         // NamedCommands.registerCommand("FloorIntake", new cg_AutoIntakeToFloor(m_intake, m_arm));
         NamedCommands.registerCommand("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController));
-        NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
-        NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
+        // NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
+        // NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
+        NamedCommands.registerCommand("StopShoot", new cmd_StopShoot(m_shooter));
 
         SmartDashboard.putString("Color", "teamColor");
         SmartDashboard.putNumber("Turnspeed", 0.002);
@@ -99,14 +100,15 @@ public class RobotContainer {
         SmartDashboard.putNumber("Turnsetpoint", 0.0025);
 
 
-        SmartDashboard.putData("alignToNote", new cmd_AlignAndDriveToNote(m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        SmartDashboard.putData("AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
+        SmartDashboard.putData("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         SmartDashboard.putData("Drive and Intake Note", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
         
         // Configure the button bindings
         configureButtonBindings();
 
-        autoChooser = AutoBuilder.buildAutoChooser("macmahon");
+        autoChooser = AutoBuilder.buildAutoChooser("onenote_right");
 
         //Add Autos
         SmartDashboard.putData("Auto", autoChooser);
@@ -124,7 +126,7 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverController.getLeftX() * (1.0 - m_driverController.getLeftTriggerAxis() * 0.5), OIConstants.kDriveDeadband),
                                 getRobotRotation(),
-                                true, m_driverController.getHID().getLeftBumper()),
+                                !m_driverController.getHID().getLeftBumper(), false),
                         m_robotDrive));
     }
 
@@ -146,10 +148,8 @@ public class RobotContainer {
 
         //Move Arm To subwoofer shooting
         final Trigger btn_op_X = new Trigger(m_operatorController.x());
-        btn_op_X.whileTrue(new cg_PassingStrat(m_arm, m_robotDrive, m_shooter, m_intake, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        btn_op_X.whileTrue(new cg_PassingStrat(m_arm, m_robotDrive, m_shooter, m_intake, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
         //btn_op_X.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
-
 
         //Move Arm To Amp shoot
         final Trigger btn_op_B = new Trigger(m_operatorController.b());
@@ -206,14 +206,13 @@ public class RobotContainer {
     public void configureShooterInterpolation() {
         //Put values for shooter angles into interpolation tree
         // Modifying calculated values to fine-tune angles (03/03/2024)
-        interpolator.put(1.06, 0.3863);
-        interpolator.put(1.46, 0.5149);
-        interpolator.put(1.98, 0.5824);
-        interpolator.put(2.51, 0.6744);
-        interpolator.put(3.32, 0.7605);
-        interpolator.put(3.82, 0.7850);
-        interpolator.put(4.33, 0.7855); // 
-        interpolator.put(5.33, 0.8276);
+        interpolator.put(1.020, 0.368);
+        interpolator.put(1.516, 0.490);
+        interpolator.put(2.074, 0.563);
+        interpolator.put(2.640, 0.668);
+        interpolator.put(3.078, 0.723);
+        interpolator.put(4.013, 0.754);
+        interpolator.put(5.080, 0.766);
     }
 
     //All Getters/Setters for the robot objects.

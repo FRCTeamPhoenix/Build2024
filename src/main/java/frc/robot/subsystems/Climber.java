@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,22 +16,30 @@ import frc.robot.Constants.ClimberConstants;
 public class Climber extends SubsystemBase {
     private final CANSparkMax m_sparkMaxLeft;
     private final CANSparkMax m_sparkMaxRight;
+    private final SparkPIDController pidController;
+    private final RelativeEncoder relativeEncoder;
 
     public Climber(int canIDLeft, int canIDRight) {
         m_sparkMaxLeft = new CANSparkMax(canIDLeft, MotorType.kBrushless);
         m_sparkMaxRight = new CANSparkMax(canIDRight, MotorType.kBrushless);
+
+        relativeEncoder = m_sparkMaxLeft.getEncoder();
+        pidController = m_sparkMaxLeft.getPIDController();
+        pidController.setFeedbackDevice(relativeEncoder);
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
         // them. This is useful in case a SPARK MAX is swapped out.
         m_sparkMaxLeft.restoreFactoryDefaults();
         m_sparkMaxRight.restoreFactoryDefaults();
 
+        pidController.setP(0.04);
+        pidController.setFF(0.001);
 
         m_sparkMaxLeft.setIdleMode(ClimberConstants.kClimberIdleMode);
         m_sparkMaxRight.setIdleMode(ClimberConstants.kClimberIdleMode);
 
-        m_sparkMaxLeft.setSmartCurrentLimit(20);
-        m_sparkMaxRight.setSmartCurrentLimit(20);
+        m_sparkMaxLeft.setSmartCurrentLimit(40);
+        m_sparkMaxRight.setSmartCurrentLimit(40);
 
         m_sparkMaxRight.follow(m_sparkMaxLeft);
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
@@ -39,5 +50,8 @@ public class Climber extends SubsystemBase {
 
     public void setPower(double voltage) {
         m_sparkMaxLeft.setVoltage(voltage);
+    }
+    public void setPosition(double position) {
+        pidController.setReference(position, ControlType.kPosition);
     }
 }

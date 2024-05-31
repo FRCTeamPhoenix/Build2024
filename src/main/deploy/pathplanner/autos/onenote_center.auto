@@ -2,27 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531354685350875,
-      "y": 4.341827174220386
+      "x": 1.411428105875079,
+      "y": 5.561604708115078
     },
-    "rotation": 30.343248884239596
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "move_left"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignShooterToSpeaker"
-          }
-        },
         {
           "type": "named",
           "data": {

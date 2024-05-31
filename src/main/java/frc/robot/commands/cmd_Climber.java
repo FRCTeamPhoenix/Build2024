@@ -29,6 +29,12 @@ public class cmd_Climber extends Command {
     @Override
     public void execute() {
         climber.setPower(voltage);
+        // if (voltage > 0) {
+        //     climber.setPosition(2.0);
+        // }
+        // else {
+        //     climber.setPosition(-2.0);
+        // }
     }
 
     @Override
