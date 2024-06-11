@@ -5,18 +5,12 @@
       "x": 0.7993316836492033,
       "y": 6.773250940269587
     },
-    "rotation": -29.827084654474795
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "move_right"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -33,12 +27,6 @@
           "type": "named",
           "data": {
             "name": "StopShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RotateToHeading"
           }
         }
       ]

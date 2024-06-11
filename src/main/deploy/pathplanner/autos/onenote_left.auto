@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531354685350875,
-      "y": 4.341827174220386
+      "x": 0.8574711766987276,
+      "y": 4.186043499565752
     },
-    "rotation": 30.343248884239596
+    "rotation": -65.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "move_left"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -32,7 +26,19 @@
         {
           "type": "named",
           "data": {
+            "name": "AlignShooterToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "StopShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move_left"
           }
         }
       ]

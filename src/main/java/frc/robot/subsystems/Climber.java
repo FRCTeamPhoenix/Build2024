@@ -10,12 +10,13 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
-    private final CANSparkMax m_sparkMaxLeft;
-    private final CANSparkMax m_sparkMaxRight;
+    public final CANSparkMax m_sparkMaxLeft;
+    public final CANSparkMax m_sparkMaxRight;
     private final SparkPIDController pidController;
     private final RelativeEncoder relativeEncoder;
 
@@ -41,7 +42,8 @@ public class Climber extends SubsystemBase {
         m_sparkMaxLeft.setSmartCurrentLimit(40);
         m_sparkMaxRight.setSmartCurrentLimit(40);
 
-        m_sparkMaxRight.follow(m_sparkMaxLeft);
+        //m_sparkMaxRight.setInverted(true);
+
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
         m_sparkMaxLeft.burnFlash();
@@ -49,9 +51,18 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPower(double voltage) {
-        m_sparkMaxLeft.setVoltage(voltage);
+        SmartDashboard.putNumber("climber volt", voltage);
+        if (encoderPosition() <= -68.7 && voltage < 0){
+            m_sparkMaxLeft.setVoltage(0.0);
+            }
+        else if ((encoderPosition() <= -68.7 && voltage >= 0) || encoderPosition() > -68.7){
+            m_sparkMaxLeft.setVoltage(voltage);
+        }
     }
     public void setPosition(double position) {
         pidController.setReference(position, ControlType.kPosition);
+    }
+    public double encoderPosition(){
+        return relativeEncoder.getPosition();
     }
 }

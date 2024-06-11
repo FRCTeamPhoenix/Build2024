@@ -103,6 +103,8 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumber("shooter speed", m_robotContainer.getShooter().getVelocity());
 
+       // SmartDashboard.putNumber("Climber", m_robotContainer.getClimber().encoderPosition());
+        //SmartDashboard.putBoolean("Can Climb", m_robotContainer.getClimber().encoderPosition() > -60);
         //SmartDashboard.putBoolean("Note Visible", OakCamera.hasValidTarget());
 
         //field.setRobotPose(NotePoseGenerator.generateNotePose(OakCamera.findClosestNote(), m_drive.getPhotonPose()));

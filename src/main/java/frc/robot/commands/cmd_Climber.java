@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Climber;
 
@@ -28,7 +29,16 @@ public class cmd_Climber extends Command {
 
     @Override
     public void execute() {
-        climber.setPower(voltage);
+        //climber.setPower(voltage);
+        SmartDashboard.putNumber("climber volt", voltage);
+        if (climber.encoderPosition() <= -68.7 && voltage < 0){
+            climber.m_sparkMaxLeft.setVoltage(0.0);
+            climber.m_sparkMaxRight.setVoltage(0.0);
+            }
+        else if ((climber.encoderPosition() <= -68.7 && voltage >= 0) || climber.encoderPosition() > -68.7){
+            climber.m_sparkMaxLeft.setVoltage(-voltage);
+            climber.m_sparkMaxRight.setVoltage(voltage);
+        } 
         // if (voltage > 0) {
         //     climber.setPosition(2.0);
         // }

@@ -62,7 +62,7 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
-    private final Climber m_climber = new Climber(ClimberConstants.kClimberLeftCanId,ClimberConstants.kClimberRightCanId);
+    //private final Climber m_climber = new Climber(ClimberConstants.kClimberLeftCanId,ClimberConstants.kClimberRightCanId);
     
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
@@ -93,7 +93,8 @@ public class RobotContainer {
         // NamedCommands.registerCommand("SubwooferShoot", new cg_SubwooferShoot(m_arm, m_robotDrive, m_intake, m_shooter));
         // NamedCommands.registerCommand("SpinMotors", new cmd_SpinShootMotors(m_shooter));
         NamedCommands.registerCommand("StopShoot", new cmd_StopShoot(m_shooter));
-        NamedCommands.registerCommand("RotateToHeading", new cmd_RotateToHeading(m_robotDrive, m_driverController, 180));
+        NamedCommands.registerCommand("RotateToHeading", new cmd_RotateToHeading(m_robotDrive, m_driverController, 180
+        ));
 
         SmartDashboard.putString("Color", "teamColor");
         SmartDashboard.putNumber("Turnspeed", 0.002);
@@ -170,7 +171,7 @@ public class RobotContainer {
 
         //Operator Dpad
         Trigger povUpPressed = m_operatorController.povUp();
-        povUpPressed.whileTrue(new cmd_Climber(m_climber, 9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+       // povUpPressed.whileTrue(new cmd_Climber(m_climber, 9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povLeftPressed = m_operatorController.povLeft();
@@ -178,7 +179,7 @@ public class RobotContainer {
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
-        povDownPressed.whileTrue(new cmd_Climber(m_climber, -9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        //povDownPressed.whileTrue(new cmd_Climber(m_climber, -9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povRightPressed = m_operatorController.povRight();
@@ -248,9 +249,9 @@ public class RobotContainer {
         return m_shooter;
     }
 
-    public Climber getClimber() {
-        return m_climber;
-    }
+   // public Climber getClimber() {
+      ///  return m_climber;
+  //  }
 
     public double getRobotRotation() {
         boolean alignToSpeaker = m_driverController.rightBumper().getAsBoolean();
