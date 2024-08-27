@@ -64,7 +64,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
     // The gyro sensor
-    private PigeonBase m_gyro = new IMU_Pigeon();
+    private PigeonBase m_gyro = new IMU_Pigeon2();
 
     // Slew rate filter variables for controlling lateral acceleration
     private double m_currentRotation = 0.0;
@@ -87,8 +87,6 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-    private PhotonClass[] poseEsts;
-
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
             DriveConstants.kDriveKinematics,
@@ -103,12 +101,11 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Creates a new DriveSubsystem.
      */
-    public DriveSubsystem(PhotonClass[] photonCameras) {
+    public DriveSubsystem() {
         if (Constants.DriveConstants.usingPigeon2) {
             m_gyro = new IMU_Pigeon2();
         }
 
-        poseEsts = photonCameras;
 
         m_gyro.setupPigeon(DriveConstants.kPigeonCanId, "rio");
         
@@ -177,22 +174,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getState().angle.getRadians(), m_rearRight.getState().speedMetersPerSecond};
 
         SmartDashboard.putNumberArray("States", states);
-        
-        for (PhotonClass poseEst : poseEsts) {
-            if (poseEst.getCamera().isConnected()){
-                var visionEst = poseEst.getEstimatedGlobalPose();
-
-                visionEst.ifPresent(
-                    est -> {
-                        var estPose = est.estimatedPose.toPose2d();
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = poseEst.getEstimationStdDevs(estPose);
-
-                        poseEstimator.addVisionMeasurement(
-                                est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    });
-            }
-        }
 
         poseEstimator.update(getRotation(), getModulePositions());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
@@ -224,7 +205,7 @@ public class DriveSubsystem extends SubsystemBase {
         path.preventFlipping = true;
 
         return AutoBuilder.followPath(path);
-    }
+    } 
 
     /**
      * Resets the odometry to the specified pose.
@@ -259,7 +240,7 @@ public class DriveSubsystem extends SubsystemBase {
         double ySpeedCommanded;
 
         if (rateLimit) {
-            // Convert XY to polar for rate limiting
+            // Convert XY to polar for rate limitingphoe
             double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
             double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
 

@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.OakCamera;
 import frc.utils.NotePoseGenerator;
@@ -68,40 +67,6 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        if (m_robotContainer.getIntake().getVelocity() >= 0.5){
-            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-        }
-        else{
-            m_robotContainer.getXboxOperator().getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-        }
-
-        m_robotContainer.updatePose();
-
-        SmartDashboard.putBoolean("Intake Running", m_robotContainer.getIntake().getVelocity() != 0.0);
-        DriveSubsystem m_drive = m_robotContainer.getDrivetrain();
-        Arm m_arm = m_robotContainer.getArm();
-
-        double[] pose = {m_drive.getPhotonPose().getX(), m_drive.getPhotonPose().getY(), m_drive.getPhotonPose().getRotation().getRadians()};
-        SmartDashboard.putNumberArray("PhotonPose", pose);
-
-        double[] odometryPose = {m_drive.getPose().getX(), m_drive.getPose().getY(), m_drive.getPose().getRotation().getRadians()};
-        SmartDashboard.putNumberArray("OdometryPose", odometryPose);
-
-        SmartDashboard.putNumber("Current Angle", m_arm.getArmPosition());
-
-        boolean hasNote = SmartDashboard.getString("FRC-Note", "Not Found").equals("Found");
-        SmartDashboard.putBoolean("Note in Intake?", hasNote);
-
-        Pose2d speakerPose = Constants.VisionConstants.kTagLayout.getTagPose(4).get().toPose2d();
-        Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
-        double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
-        SmartDashboard.putNumber("Distance To Speaker", distance);
-
-        SmartDashboard.putNumber("Total Memory", Runtime.getRuntime().totalMemory() / 1024);
-        SmartDashboard.putNumber("Memory Used", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
-        SmartDashboard.putNumber("Memory Available", Runtime.getRuntime().freeMemory() / 1024);
-
-        SmartDashboard.putNumber("shooter speed", m_robotContainer.getShooter().getVelocity());
 
        // SmartDashboard.putNumber("Climber", m_robotContainer.getClimber().encoderPosition());
         //SmartDashboard.putBoolean("Can Climb", m_robotContainer.getClimber().encoderPosition() > -60);
@@ -126,19 +91,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        /*
-         * String autoSelected = SmartDashboard.getString("Auto Selector",
-         * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-         * = new MyAutoCommand(); break; case "Default Auto": default:
-         * autonomousCommand = new ExampleCommand(); break; }
-         */
-
-        // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.schedule();
-        }
     }
 
     /**

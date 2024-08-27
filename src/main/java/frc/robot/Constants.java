@@ -42,37 +42,37 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-//        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
-
-        public static final String kFrontCameraName = "front_arducam";
-        public static final String kRearCameraName = "back_arducam";
-        public static final String kLeftCameraName = "left_arducam";
-        public static final String kRightCameraName = "right_arducam";
-
-
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), 0.0));
-        public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), Math.PI));
-        public static final Transform3d kLeftTransform = new Transform3d(new Translation3d(0.0, -0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (Math.PI / 2.0)));
-        public static final Transform3d kRightTransform = new Transform3d(new Translation3d(0.0, 0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (-Math.PI / 2.0)));
-
-        // TODO: Add left when necessary
-
-        // The layout of the AprilTags on the field
-        public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-
-        // The standard deviations of our vision estimated poses, which affect correction rate
-        // (Fake values. Experiment and determine estimation noise on an actual robot.)
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-    }
+        //        public static final String kGenericCameraName = "Arducam_OV9281_USB_Camera";
+        
+                public static final String kFrontCameraName = "front_arducam";
+                public static final String kRearCameraName = "back_arducam";
+                public static final String kLeftCameraName = "left_arducam";
+                public static final String kRightCameraName = "right_arducam";
+        
+        
+                // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+                public static final Transform3d kFrontTransform = new Transform3d(new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), 0.0));
+                public static final Transform3d kRearTransform = new Transform3d(new Translation3d(-0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), Math.PI));
+                public static final Transform3d kLeftTransform = new Transform3d(new Translation3d(0.0, -0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (Math.PI / 2.0)));
+                public static final Transform3d kRightTransform = new Transform3d(new Translation3d(0.0, 0.3048, 0.12065), new Rotation3d(0, Math.toRadians(20), (-Math.PI / 2.0)));
+        
+                // TODO: Add left when necessary
+        
+                // The layout of the AprilTags on the field
+                public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+        
+                // The standard deviations of our vision estimated poses, which affect correction rate
+                // (Fake values. Experiment and determine estimation noise on an actual robot.)
+                public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+                public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+            }
 
     public static final class DriveConstants {
 
 
         // VERY IMPORTANT!!!!!!
         // Neos = 1, Falcons = 2, Krakens = 3
-        public static final int motorType = 3;
+        public static final int motorType = 2;
         //Are we using Pigeon2 or Pigeon
         public static final boolean usingPigeon2 = true;
 
