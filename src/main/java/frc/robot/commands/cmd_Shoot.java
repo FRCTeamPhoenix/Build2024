@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class cmd_Shoot extends Command {
     private final Shooter m_shooter;
-    private final int velocity = 27;
+    private final int velocity = 60;
 
     public cmd_Shoot(Shooter shooter) {
         m_shooter = shooter;

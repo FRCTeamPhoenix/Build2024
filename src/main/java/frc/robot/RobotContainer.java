@@ -51,18 +51,18 @@ public class RobotContainer {
     //Vision Subsystems
     public final PhotonClass frontPhotonCamera = new PhotonClass(VisionConstants.kFrontCameraName, VisionConstants.kFrontTransform);
     public final PhotonClass rearPhotonCamera = new PhotonClass(VisionConstants.kRearCameraName, VisionConstants.kRearTransform);
-    public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
-    public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
+    // public final PhotonClass leftPhotonCamera = new PhotonClass(VisionConstants.kLeftCameraName, VisionConstants.kLeftTransform);
+    // public final PhotonClass rightPhotonCamera = new PhotonClass(VisionConstants.kRightCameraName, VisionConstants.kRightTransform);
 
-    public final OakCamera firstOakCamera = new OakCamera();
+    // public final OakCamera firstOakCamera = new OakCamera();
 
-    public final PhotonClass[] photonCams = {frontPhotonCamera, rearPhotonCamera, leftPhotonCamera, rightPhotonCamera};
+    public final PhotonClass[] photonCams = {frontPhotonCamera, rearPhotonCamera};//, leftPhotonCamera, rightPhotonCamera};
 
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCams);
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
     private final Arm m_arm = new Arm(13, 14);
-    //private final Climber m_climber = new Climber(ClimberConstants.kClimberLeftCanId,ClimberConstants.kClimberRightCanId);
+    private final Climber m_climber = new Climber(ClimberConstants.kClimberLeftCanId,ClimberConstants.kClimberRightCanId);
     
     private final InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
 
@@ -148,7 +148,6 @@ public class RobotContainer {
 
         new Trigger(m_driverController.povUp()).whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-        //Move Arm To subwoofer shooting
         final Trigger btn_op_X = new Trigger(m_operatorController.x());
         btn_op_X.whileTrue(new cg_PassingStrat(m_arm, m_robotDrive, m_shooter, m_intake, m_driverController, 45).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
         //btn_op_X.toggleOnTrue(new cmd_SpinShooter(m_shooter, m_robotDrive, m_arm, m_intake).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -171,15 +170,16 @@ public class RobotContainer {
 
         //Operator Dpad
         Trigger povUpPressed = m_operatorController.povUp();
-       // povUpPressed.whileTrue(new cmd_Climber(m_climber, 9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povUpPressed.whileTrue(new cmd_Climber(m_climber, 9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povUpPressed.whileTrue(new cmd_MoveArmUp(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
+        // Arm subwoofer preset
         Trigger povLeftPressed = m_operatorController.povLeft();
-        povLeftPressed.onTrue(new cmd_MoveArmToPosition(.436, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+        povLeftPressed.onTrue(new cmd_MoveArmToPosition(ArmConstants.ARM_SUBWOOFER_ANGLE, 1, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         // povLeftPressed.whileTrue(new cg_FloorIntake(m_intake, m_arm).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povDownPressed = m_operatorController.povDown();
-        //povDownPressed.whileTrue(new cmd_Climber(m_climber, -9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
+        povDownPressed.whileTrue(new cmd_Climber(m_climber, -9).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_Climber(m_climber, 0.0));
         // povDownPressed.whileTrue(new cmd_MoveArmDown(m_arm, .05).withInterruptBehavior(InterruptionBehavior.kCancelSelf)).whileFalse(new cmd_StopArm(m_arm));
 
         Trigger povRightPressed = m_operatorController.povRight();
@@ -214,13 +214,18 @@ public class RobotContainer {
     public void configureShooterInterpolation() {
         //Put values for shooter angles into interpolation tree
         // Modifying calculated values to fine-tune angles (03/03/2024)
-        interpolator.put(1.020, 0.368);
-        interpolator.put(1.516, 0.490);
-        interpolator.put(2.074, 0.563);
-        interpolator.put(2.640, 0.668);
-        interpolator.put(3.078, 0.723);
-        interpolator.put(4.013, 0.754);
-        interpolator.put(5.080, 0.766);
+        interpolator.put(1.064, 0.349);
+        interpolator.put(1.254, 0.368);
+        interpolator.put(1.510, 0.484);
+        interpolator.put(1.755, 0.521);
+        interpolator.put(2.003,0.576);
+        interpolator.put(2.260,0.631);
+        interpolator.put(2.507, 0.668);
+        interpolator.put(2.908, 0.699);
+        interpolator.put(3.235, 0.705);
+        interpolator.put(3.417, 0.729);
+        interpolator.put(3.753, 0.748);
+        interpolator.put(4.022, 0.772);
     }
 
     //All Getters/Setters for the robot objects.
@@ -249,9 +254,9 @@ public class RobotContainer {
         return m_shooter;
     }
 
-   // public Climber getClimber() {
-      ///  return m_climber;
-  //  }
+   public Climber getClimber() {
+      return m_climber;
+   }
 
     public double getRobotRotation() {
         boolean alignToSpeaker = m_driverController.rightBumper().getAsBoolean();
