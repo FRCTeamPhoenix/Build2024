@@ -12,16 +12,19 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
-
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;;
 
 public class Intake extends SubsystemBase {
     private final CANSparkMax m_intakeMotor;
     private final RelativeEncoder m_encoder;
     private final SparkPIDController m_PIDController;
+    private final DigitalInput sensor;
 
     // TODO: Confirm that constants used apply to the intake. We may need new constants specific to the intake.
     public Intake(int CANID) {
+        sensor = new DigitalInput(0);
         m_intakeMotor = new CANSparkMax(CANID, MotorType.kBrushless);
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
@@ -67,6 +70,11 @@ public class Intake extends SubsystemBase {
         return m_encoder.getVelocity();
     }
 
+    public void rollOne() {
+        m_PIDController.setReference(m_encoder.getPosition() + 1000, ControlType.kPosition);
+        SmartDashboard.putNumber("intake setpoint", m_encoder.getPosition() + 1000);
+    }
+
     public void intakeNote(boolean noteInShooter) {
         if (!noteInShooter) {
             setDesiredVelocity(5.0);
@@ -89,5 +97,9 @@ public class Intake extends SubsystemBase {
         } else {
             setDesiredVelocity(0.0);
         }
+    }
+
+    public boolean sensorStatus() {
+        return sensor.get();
     }
 }

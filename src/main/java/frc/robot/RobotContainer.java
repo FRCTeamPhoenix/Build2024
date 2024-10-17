@@ -30,6 +30,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.PhotonClass;
+import frc.robot.subsystems.PhotonNote;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.OakCamera;
 import frc.robot.subsystems.Arm;
@@ -57,7 +58,7 @@ public class RobotContainer {
     // public final OakCamera firstOakCamera = new OakCamera();
 
     public final PhotonClass[] photonCams = {frontPhotonCamera, rearPhotonCamera};//, leftPhotonCamera, rightPhotonCamera};
-
+    public final PhotonNote note_sys = new PhotonNote("note_cam");
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(photonCams);
     private final Shooter m_shooter = new Shooter(10, 11);
     private final Intake m_intake = new Intake(12);
@@ -105,7 +106,7 @@ public class RobotContainer {
         SmartDashboard.putData("AlignShooterToSpeaker", new cmd_AlignShooterToSpeaker(m_robotDrive, rearPhotonCamera, m_driverController));
         SmartDashboard.putData("ShootAndMoveArm", new cg_ShootAndMoveArm(interpolator, m_arm, m_robotDrive, frontPhotonCamera, m_shooter, m_intake, m_driverController).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
         SmartDashboard.putData("Drive and Intake Note", new cg_AutoNotePickup(m_intake, m_robotDrive).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
+        SmartDashboard.putData("point 2 note", new cmd_AlignBotToNote(m_robotDrive, note_sys, m_driverController));
         
         // Configure the button bindings
         configureButtonBindings();
@@ -194,11 +195,11 @@ public class RobotContainer {
         //Operator Bumpers and Triggers
         m_operatorController.rightTrigger(.5).whileTrue(new cg_ShootNote(m_intake, m_shooter)).whileFalse(new cg_StopShootNote(m_intake, m_shooter));
 
-        m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.leftBumper().whileTrue(new cmd_IntakeNote(m_intake));//.whileFalse(new cmd_StopIntake(m_intake));
 
-        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.rightBumper().whileTrue(new cmd_ManualIntake(m_intake));//.whileFalse(new cmd_StopIntake(m_intake));
 
-        m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake)).whileFalse(new cmd_StopIntake(m_intake));
+        m_operatorController.leftTrigger(.5).whileTrue(new cmd_EjectNote(m_intake));//.whileFalse(new cmd_StopIntake(m_intake));
 
         //Cardinal Directions
         m_driverController.a().whileTrue(new cmd_RotateToHeading(m_robotDrive, m_driverController, 180).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -222,7 +223,7 @@ public class RobotContainer {
         interpolator.put(2.260,0.631);
         interpolator.put(2.507, 0.668);
         interpolator.put(2.908, 0.699);
-        interpolator.put(3.235, 0.705);
+        interpolator.put(3.235, 0.705); //wipe here
         interpolator.put(3.417, 0.729);
         interpolator.put(3.753, 0.748);
         interpolator.put(4.022, 0.772);

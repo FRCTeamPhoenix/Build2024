@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
 
         DataLogManager.start();
         //Startup the Camera Server for the driver
-        //CameraServer.startAutomaticCapture(0);
+        CameraServer.startAutomaticCapture(0);
 
         m_robotContainer.initPose();
     }
@@ -96,13 +96,17 @@ public class Robot extends TimedRobot {
         Transform2d transformToSpeaker = m_robotContainer.currentPose2d.minus(speakerPose);
         double distance = Math.sqrt(Math.pow(transformToSpeaker.getX(), 2) + Math.pow(transformToSpeaker.getY(), 2));
         SmartDashboard.putNumber("Distance To Speaker", distance);
-
+        
         SmartDashboard.putNumber("Total Memory", Runtime.getRuntime().totalMemory() / 1024);
         SmartDashboard.putNumber("Memory Used", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
         SmartDashboard.putNumber("Memory Available", Runtime.getRuntime().freeMemory() / 1024);
 
         SmartDashboard.putNumber("shooter speed", m_robotContainer.getShooter().getVelocity());
+        SmartDashboard.putNumber("note yaw", m_robotContainer.note_sys.getNearestNoteYaw());
 
+        boolean status = !m_robotContainer.getIntake().sensorStatus();
+        SmartDashboard.putBoolean("note status", status);
+        
        // SmartDashboard.putNumber("Climber", m_robotContainer.getClimber().encoderPosition());
         //SmartDashboard.putBoolean("Can Climb", m_robotContainer.getClimber().encoderPosition() > -60);
         //SmartDashboard.putBoolean("Note Visible", OakCamera.hasValidTarget());

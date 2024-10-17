@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8574711766987276,
-      "y": 4.186043499565752
+      "x": 1.2952588169327277,
+      "y": 4.390231044613032
     },
     "rotation": -65.0
   },
@@ -21,12 +21,6 @@
           "type": "named",
           "data": {
             "name": "ShootAndMoveArm"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignShooterToSpeaker"
           }
         },
         {

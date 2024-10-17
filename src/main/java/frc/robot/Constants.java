@@ -200,7 +200,7 @@ public final class Constants {
         public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
         public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-        public static final int kDrivingMotorCurrentLimit = 40; // amps
+        public static final int kDrivingMotorCurrentLimit = 30; // amps
         public static final int kTurningMotorCurrentLimit = 20; // amps
     }
 
@@ -282,7 +282,7 @@ public final class Constants {
 
     public static final class ArmConstants {
         //public static final double ARM_MIN_ANGLE = 0.08;
-        public static final double ARM_MIN_ANGLE = 0.031;
+        public static final double ARM_MIN_ANGLE = 0.068;
         public static final double ARM_MAX_ANGLE = 2.95;
         public static final double ARM_CLIMBER_ANGLE = 1.99;
         public static final double ARM_SUBWOOFER_ANGLE = 0.4;
@@ -295,7 +295,7 @@ public final class Constants {
         public static final double kArmMinOutput = -1;
         public static final double kArmMaxOutput = 1;
         public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-        public static final int kArmMotorCurrentLimit = 40; // amps
+        public static final int kArmMotorCurrentLimit = 30; // amps
 
         public static final double kArmEncoderPositionFactor = (2 * Math.PI); // radians
         public static final double kArmEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second

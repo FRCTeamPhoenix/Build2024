@@ -50,6 +50,9 @@ public class TalonSwerveModule {
 
         m_currentLimit = new CurrentLimitsConfigs();
         m_currentLimit.SupplyCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
+        m_currentLimit.SupplyCurrentLimitEnable = true;
+        m_currentLimit.StatorCurrentLimit = 70;
+        m_currentLimit.StatorCurrentLimitEnable = true;
 
         // Factory reset, so we get the SPARK MAX to a known state before configuring
         // them. This is useful in case a SPARK MAX is swapped out.

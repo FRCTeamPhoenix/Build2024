@@ -45,9 +45,11 @@ public class cmd_IntakeNote extends Command {
 
     @Override
     public boolean isFinished() {
-        String status = SmartDashboard.getString("FRC-Note", "Not Found");
-        if (status.equals("Found")) {
+        boolean status = !m_intake.sensorStatus();
+        SmartDashboard.putBoolean("note status", status);
+        if (status) {
             SmartDashboard.putString("Color", "teamColor");
+            m_intake.rollOne();
             return true;
         }
         return false;

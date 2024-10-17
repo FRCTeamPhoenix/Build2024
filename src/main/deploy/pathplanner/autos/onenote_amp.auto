@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7993316836492033,
-      "y": 6.773250940269587
+      "x": 1.2710568817364047,
+      "y": 6.602287921556975
     },
-    "rotation": 60.0
+    "rotation": 24.304549265936902
   },
   "command": {
     "type": "sequential",
@@ -27,6 +27,12 @@
           "type": "named",
           "data": {
             "name": "StopShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move_right"
           }
         }
       ]
